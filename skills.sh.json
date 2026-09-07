@@ -3,8 +3,8 @@
   "notGrouped": "bottom",
   "groupings": [
     {
-      "title": "Mercuryo",
-      "description": "Skills for Mercuryo MagicPay and related agent payment workflows.",
+      "title": "MagicPay",
+      "description": "Skills for MagicPay and related agent payment workflows.",
       "skills": [
         "magicpay"
       ]

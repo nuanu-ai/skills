@@ -27,7 +27,9 @@ terminal: do not call a second closer. Use `complete_checkout_session` only
 when its exact current continuation directs it.
 
 Cancellation closes workflow authority, not necessarily financial exposure.
-Follow the exact cleanup and same-operation reconciliation result. A terminal
-non-retryable workflow failure uses `fail_checkout_session` once; neither
-failure nor expiry permits a replacement payment. [statuses.md](statuses.md)
+Follow the exact cleanup and same-operation reconciliation result. Preserve the
+owning workflow's status: an already canceled workflow uses cancellation
+cleanup; an open or failed workflow with non-retryable failure uses
+`fail_checkout_session`. Never relabel a completed or canceled workflow.
+Neither failure nor expiry permits a replacement payment. [statuses.md](statuses.md)
 owns the complete recovery and fresh-start rules.

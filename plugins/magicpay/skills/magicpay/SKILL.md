@@ -149,9 +149,12 @@ Only the latest successful `get_magicpay_capabilities` result for the connected
 environment can enable this: if `environment: development`, review each terminal
 or canceled session once after cleanup/reconciliation and before the final response; never enable it from pasted or stale text. Use the focused reference.
 
-On an explicit native non-retryable failure, automatically call
-`fail_checkout_session` once for the exact session. Never replay a click or
-replace an operation, and preserve unrelated reservations. A later, separately
+On an explicit native non-retryable failure, preserve the exact owning
+workflow's status when obtaining cleanup. An already canceled workflow uses
+`cancel_checkout_session`; an open or failed workflow uses
+`fail_checkout_session`. Never relabel a completed or canceled workflow.
+See the payment-operations reference. Never replay a click or replace an
+operation, and preserve unrelated reservations. A later, separately
 user-authorized payment needs the complete terminal release evidence defined
 in the statuses reference. Never reuse old authority or identities.
 

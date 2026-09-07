@@ -400,10 +400,16 @@ do not purchase again.
   the exact cleanup evidence.
 
 For a native direct-transfer or x402 `definitively_failed` result, or another
-explicit non-retryable terminal operation failure, close the owning workflow
-immediately with `fail_checkout_session`. Use the exact session, a stable
-completion idempotency key, and the observed operation failure code and message;
-do not wait for a later user cancellation. Consume its cleanup result without
+explicit non-retryable terminal operation failure, promptly obtain cleanup for
+the exact owning workflow. If its current status is unavailable, read it with
+`get_checkout_session`. Denial can already have canceled that workflow even
+though its operation reports `definitively_failed`. Preserve its terminal
+outcome: use `cancel_checkout_session` when already canceled, or
+`fail_checkout_session` for an open or failed workflow. Never fail an already
+completed workflow; read its exact operation instead. Use one stable completion
+key for the chosen closer and the observed run, request, or operation failure
+reason; do not invent a provider failure code when the operation has none.
+Do not wait for a later user cancellation. Consume its cleanup result without
 guessing: release only the failed operation's own hold when that release is
 proven, preserve unrelated reservations, and retain any same-operation
 reconciliation it returns. Never retry or replace that payment.
