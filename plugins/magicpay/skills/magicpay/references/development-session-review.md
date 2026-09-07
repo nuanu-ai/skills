@@ -53,7 +53,7 @@ settlement truth.
 Before the final response, give the user a concise review with:
 
 - **Outcome:** what happened, whether merchant submission occurred, exact
-  settlement truth, and whether a fresh start is allowed.
+  settlement truth, and the old payment's safe-replacement disposition.
 - **First divergence:** the earliest state that differed from the intended
   workflow, followed separately by any error-masking or recovery failure.
 - **Evidence:** the shortest source-tagged timeline that proves those claims.
@@ -62,9 +62,12 @@ Before the final response, give the user a concise review with:
   deployment checks, and one fresh acceptance scenario. Say `No change
   proposed` when the evidence supports none.
 
-Never infer safe cancellation or a fresh start from the word `canceled` alone.
+Never infer safe cancellation or a fresh start without unresolved exposure from
+the word `canceled` alone.
 Report it only from the exact terminal cleanup disposition, settlement status,
 `freshStartAllowed`, and `nextAction` facts returned for that same operation.
+Do not turn that old-operation disposition into an account-wide purchase lock;
+separately authorized additional spending follows [statuses.md](statuses.md).
 
 Keep observations separate from implementation. Do not edit runtime code,
 apply a migration, deploy, retry a payment, or create a tracking item unless the

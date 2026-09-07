@@ -72,7 +72,9 @@ state as the funding and settlement authority.
 ## Actionable payment recovery
 
 Branch only on the backend's normalized recovery reason. This table overrides
-generic top-up wording and the usual request-only widget rule:
+generic top-up wording and the usual request-only widget rule. It governs
+recovery of the existing payment, not a separately authorized additional
+purchase under [statuses.md](statuses.md#separately-authorized-additional-purchase):
 
 | Recovery | Required action | Forbidden action |
 | --- | --- | --- |
@@ -104,6 +106,16 @@ email delivery. Notification delivery never proves settlement, resume, or
 failure cleanup.
 
 ## Direct transfer
+
+MagicPay supports exactly two direct crypto-transfer asset/network pairings:
+
+- USDT on TRON mainnet (TRC20; `tron:mainnet`).
+- USDC on Ethereum mainnet (ERC20; `eip155:1`).
+
+When asked which networks are supported for direct crypto transfers, answer
+with those exact pairings; do not generalize either asset to the other network.
+This list applies only to direct crypto transfers. It does not describe funding
+methods, x402 settlement networks, or browser/card payments.
 
 Before the first fresh crypto transfer in a newly connected task, use the
 current `get_magicpay_capabilities` result only when
@@ -285,14 +297,15 @@ confirmation or browser approval to replace the native approval. Approval,
 reservation, seller HTTP response, and provider submission are not settlement.
 On a bounded `running` response, call `wait_payment` on the same run. On seller
 pending or a reconciliation state, read or reconcile the same returned
-operation. Never create a replacement purchase. Only a terminal composed
+operation. Never automatically create a replacement purchase. Only a terminal composed
 `completed` response with its integrity-verified `result` establishes a usable
 result.
 Reconciliation of the same operation may use exact matching on-chain transfer
 evidence to establish financial settlement without resubmitting the seller
 request. Financial settlement can be complete while a result artifact is missing or unavailable;
-report that fulfillment loss explicitly and never buy the resource again to
-compensate.
+report that fulfillment loss explicitly. It does not itself authorize buying
+the resource again; a separately authorized additional purchase follows
+[statuses.md](statuses.md#separately-authorized-additional-purchase).
 
 ### Composed payment errors
 
@@ -335,7 +348,7 @@ the returned operation. If it is false, do not claim a payment operation exists.
 - `OPERATION_BUSY`: wait on the same run. `OPERATION_OUTCOME_UNKNOWN`,
   `RECONCILIATION_REQUIRED`, `LEDGER_CONSEQUENCE_PENDING`, and
   `INVALID_OPERATION_EVIDENCE` require same-operation recovery according to
-  `action`; never repurchase.
+  `action`; never repurchase automatically.
 - `PAYMENT_RUNTIME_UNAVAILABLE`: retain the unchanged input and retry the same
   client request after service recovery.
 
@@ -387,8 +400,8 @@ Examples:
 If the result is missing, expired, corrupt, or belongs to another operation,
 report result retrieval failure without creating a replacement payment. If an
 explicit continuation still has no usable final output after its bounded wait,
-report the same seller order as pending fulfillment; do not claim delivery and
-do not purchase again.
+report the same seller order as pending fulfillment; do not claim delivery or
+automatically purchase again.
 
 ## State truth
 
@@ -419,10 +432,10 @@ guessing: release only the failed operation's own hold when that release is
 proven, preserve unrelated reservations, and retain any same-operation
 reconciliation it returns. Never retry or replace that payment.
 
-A later separately user-authorized payment requires the complete terminal
-release evidence in [statuses.md](statuses.md). The old operation remains
-non-retryable. Never infer new authority from provider non-submission, the
-failure reason, or `retry.allowed:false` alone.
+For a later payment, distinguish safe replacement after release from a
+separately authorized additional purchase in [statuses.md](statuses.md). The old
+operation remains non-retryable. Never infer new authority from provider
+non-submission, the failure reason, or `retry.allowed:false` alone.
 
 An expired consent or approval request does not release a held reservation. A
 cancel request or canceled session also does not prove release. Cancellation

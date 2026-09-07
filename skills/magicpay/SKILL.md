@@ -145,7 +145,8 @@ credentials with arbitrary page-evaluation code. See the guardrails reference.
 User cancellation preempts approval, fill, commit, and reconciliation. Cancel
 the exact session immediately, then follow its cleanup and same-operation
 reconciliation result. Cancellation does not prove settlement or release.
-`preserved_for_reconciliation` permits only same-operation reconciliation.
+`preserved_for_reconciliation` permits only same-operation reconciliation for
+that old payment; it does not block an independently authorized purchase.
 
 Only the latest successful `get_magicpay_capabilities` result for the connected
 environment can enable this: if `environment: development`, review each terminal
@@ -155,10 +156,11 @@ On an explicit native non-retryable failure, preserve the exact owning
 workflow's status when obtaining cleanup. An already canceled workflow uses
 `cancel_checkout_session`; an open or failed workflow uses
 `fail_checkout_session`. Never relabel a completed or canceled workflow.
-See the payment-operations reference. Never replay a click or replace an
-operation, and preserve unrelated reservations. A later, separately
-user-authorized payment needs the complete terminal release evidence defined
-in the statuses reference. Never reuse old authority or identities.
+See the payment-operations reference. Never replay a click or automatically
+replace an operation, and preserve unrelated reservations. The statuses
+reference distinguishes safe replacement after release from a separately
+authorized additional purchase that may incur another charge. Never reuse old
+authority or identities.
 
 ## Hard rules
 

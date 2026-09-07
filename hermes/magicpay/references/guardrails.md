@@ -47,6 +47,6 @@
   reconcile that exact operation separately and never replay it.
 - `retry.allowed:false`, non-retryable failure, and terminal remediation are
   hard stops for that exact operation. Do not retry it, replace it, submit it to
-  a provider, or click a merchant control to bypass the stop. A later separately
-  user-authorized payment requires the complete terminal release evidence in
-  [statuses.md](statuses.md); never reuse any old identity or authority.
+  a provider, or click a merchant control to bypass the stop. For a separately
+  authorized additional purchase, follow [statuses.md](statuses.md); never reuse
+  any old identity or authority or treat unresolved funds as released.

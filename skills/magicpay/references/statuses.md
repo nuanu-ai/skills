@@ -36,8 +36,8 @@ the same word is not a universal workflow transition.
   every three seconds while approval is open. Never require a chat reply or
   create a replacement request.
 - Payment-run `reconciliation_required`: reconcile only its exact returned
-  operation. A missing x402 result after financial completion does not permit
-  another purchase.
+  operation. A missing x402 result after financial completion does not itself
+  authorize another purchase.
 - funding_required: only authoritative insufficient unified user balance
   automatically opens `show_topup`. Durable top-up settlement may wake only the
   same approved, unchanged, definitely-not-submitted operation; continue its
@@ -63,7 +63,8 @@ the same word is not a universal workflow transition.
   preserved dispatched or uncertain operation may still be nonterminal and
   require same-operation reconciliation; cancellation does not release its
   held Ledger reservation by itself. Trust only returned `cleanupDisposition`
-  and `freshStartAllowed` for cleanup and fresh-attempt policy.
+  and `freshStartAllowed` for that old payment's cleanup and safe-replacement
+  disposition, not account-wide permission to make purchases.
 - `cleanup_pending`: the workflow is canceled but the exact operation release is
   not verified. Replay only the same cancellation as directed by
   `retry_cleanup_same_operation`.
@@ -71,13 +72,14 @@ the same word is not a universal workflow transition.
   failure code and stable idempotency key. A separately unresolved or possibly
   dispatched operation remains bound to the returned same-operation
   reconciliation action; failure alone does not release it or authorize a new
-  payment. Only the complete safe fresh-start disposition below plus a later
-  explicit user request creates new authority, with all-new identities.
+  payment. Distinguish safe replacement after release from a separately
+  authorized additional purchase below.
 
-## Terminal release and a later payment
+## Safe replacement after terminal release
 
-A later, separately user-authorized payment may start only after the owning
-workflow is durably closed and its current result explicitly returns all of:
+To establish that a replacement has no unresolved exposure from the old
+payment, require its workflow to be durably closed and its current result to
+return all of:
 
 - `cleanupDisposition`: `released_pre_submit` or `released_after_failure`;
 - `settlementStatus`: `failed` or `not_started`;
@@ -88,9 +90,30 @@ workflow is durably closed and its current result explicitly returns all of:
 hold was released. `released_after_failure` proves the exact submitted native
 operation is definitively failed and its own Ledger release consequence was
 recorded. Neither disposition makes the old attempt retryable or releases
-unrelated reservations. Missing or unresolved evidence forbids a fresh start.
-Use new workflow, request, approval, operation, reservation, run and idempotency
-identities; never reuse old authority.
+unrelated reservations. Missing or unresolved evidence forbids treating a
+replacement as safely released. These facts do not themselves authorize spending.
+
+## Separately authorized additional purchase
+
+`freshStartAllowed:false` concerns the old payment, not an account-wide lock.
+Unrelated purchases follow normal authorization. For another purchase of the
+same item or service while the first is unresolved, the user must explicitly
+authorize the additional spend, including the possibility that both purchases
+charge. Explain that possibility once; if the user already accepted it, do not
+ask again in chat. Missing output, elapsed time, cancellation, or a generic
+"continue" alone is not that authority.
+
+Use a new workflow, request, approval, operation, reservation, run and idempotency
+identity, including a new seller idempotency key where supported. Apply the new
+purchase's bounded debit ceiling and normal MagicPay approval/policy, available
+balance and spend limits. The old unresolved reservation still reduces available
+funds. Never reuse old authority or identities, release an unresolved hold,
+resubmit the old operation, or infer permission for repeated additional purchases.
+
+Keep the old workflow canceled when canceled, with its exact operation available
+for reconciliation. Do not make manual recovery of that old payment or continuous
+foreground polling a prerequisite for the authorized new purchase. This does not
+promise automatic background reconciliation or change either payment's status.
 
 Status, cancellation, and reconciliation reads remain silent supporting calls.
 An error, hard stop, separately pending reconciliation, or required user action does not
