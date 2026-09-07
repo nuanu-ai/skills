@@ -11,12 +11,18 @@ file names Codex commands; the canonical instructions stay host-neutral.
 
 ### Install
 
-- Development channel: `codex plugin marketplace add nuanu-ai/skills --ref staging`
-  registers marketplace `nuanu-skills-staging`, then
+- `codex plugin list` first: exactly one installed `magicpay@…` selector may
+  remain. Remove any other before installing.
+- Prefer the user's own plugin manager, **Plugins → MagicPay → Install**. Only
+  an install made inside the running app rebuilds that app's plugin runtime;
+  `codex plugin add` runs in a separate process and reaches only sessions
+  started after it.
+- Development channel, from a `codex` terminal session:
+  `codex plugin marketplace add nuanu-ai/skills --ref staging` registers
+  marketplace `nuanu-skills-staging`, then
   `codex plugin add magicpay@nuanu-skills-staging`.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
   stable ref and selector `magicpay@nuanu-skills`.
-- Keep exactly one installed `magicpay@…` selector.
 
 ### Connect
 
@@ -38,6 +44,12 @@ file names Codex commands; the canonical instructions stay host-neutral.
   MagicPay tool should you tell the user to click **New task** in the Codex
   sidebar. The new task reuses completed OAuth; it is a catalog fallback, not
   the action that opens OAuth.
+- When a new task still cannot discover the tools, this app never loaded the
+  plugin at all: the install happened in another process. Ask the user to quit
+  Codex completely and reopen it, then continue in a new task. Until a MagicPay
+  tool actually answers, report that remaining step and nothing more — an
+  installed plugin, a command that exited zero, or a browser window that opened
+  is not evidence of a connection.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface
