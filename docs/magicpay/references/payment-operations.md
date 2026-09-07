@@ -76,7 +76,9 @@ generic top-up wording and the usual request-only widget rule:
 
 | Recovery | Required action | Forbidden action |
 | --- | --- | --- |
-| funding_required from authoritative insufficient unified user balance | This is the automatic top-up presentation exception: call `show_topup` once, retain the same `runId`, request, approval, operation, and facts, then continue the same run with `wait_payment`. | Never call `create_topup_link` automatically, mint a new `clientRequestId`, start another payment, or resume before durable top-up settlement. |
+| Pending approval with `funding_gate.status: insufficient` | Open the existing approval's returned request URL; its funding stage shows the shortfall. Partial funding keeps it pending. After durable funding, the user explicitly approves that same request, then continue the same run. | Never resubmit approval automatically, create another payment session, or treat an unavailable gate as zero balance. |
+| funding_required with `resume_same_operation_after_funding` | Call `show_topup` once, retain the same `runId`, request, approval, operation, and facts, then continue the same run with `wait_payment` after durable funding. | Never call `create_topup_link` automatically, mint a new `clientRequestId`, or start another payment. |
+| funding_required with `fresh_approval_if_permitted` | The backend has safely closed this operation before submission. Explain that top-up is followed by a new approval under the user's still-valid payment authorization. | Never revive the terminal operation or create a replacement while cleanup is unresolved or `freshStartAllowed` is false. |
 | service_unavailable from card-pool insufficiency | Explain the temporary service issue and provide support guidance. User-facing shape: “MagicPay card payments are temporarily unavailable. No balance top-up is needed. Contact [MagicPay support](mailto:support@magiccard.ai) if you need help.” | Card-pool capacity is not a user-balance funding request. During failure handling, never call `show_topup`, `create_topup_link`, or any fresh payment tool; there is no automatic replacement operation. |
 | fresh approval required | Present the exact original request's approval recovery. | Never reuse an expired, revoked, identity-mismatched, or facts-mismatched approval and never substitute another operation. |
 | possible or known submission | Read or reconcile the same operation silently according to `action`. | Never top up as a guess, replay submission, or replace the operation. |
@@ -84,12 +86,15 @@ generic top-up wording and the usual request-only widget rule:
 
 Top-up monitoring is settlement-driven, not UI-driven. Opening `show_topup`,
 receiving a link, or seeing a provider success screen is not funding. The backend
-may resume the original operation only after durable top-up settlement, same-user
+may resume a card operation whose recovery explicitly allows it only after durable top-up settlement, same-user
 ownership, an unchanged immutable payment fingerprint and facts, a still-valid
 approval, and a definitely-not-submitted operation state all revalidate. The
 agent then waits on the same `runId` and same operation. If the balance remains
 insufficient, leave the recovery waiting for another durable top-up; do not scan
-other executing requests or create a replacement.
+other executing requests or create a replacement. Pending approvals require an
+explicit user decision even if they originally matched Auto-Approve. An unavailable
+funding check offers a read refresh; it cannot authorize payment. Existing request,
+approval, and seller deadlines still apply; top-up does not extend them.
 
 Payment-failure notification truth is independent from top-up and operation
 truth. A failure notification exists only after user approval or Auto-Approve.
@@ -307,8 +312,8 @@ preflight, and substituting another payment route:
 - `upgrade_magicpay`: install or refresh at least the returned
   `minimumPluginVersion`, then discover and call current capabilities in the
   same task. Follow [setup.md](setup.md) only if tools remain unavailable.
-- `fund_account`: apply funding_required; automatically call `show_topup`, then
-  wait for durable settlement and continue only the same run.
+- `fund_account`: apply the funding gate and recovery resumability rules above;
+  prefer the existing approval funding page when returned.
 - `wait_same_run`: call `wait_payment` on the returned `runId` and cursor.
 - `reconcile_same_operation`: reconcile only the returned `operationId`.
 - `retry_same_run`: replay the unchanged `clientRequestId` and facts.
@@ -317,9 +322,9 @@ preflight, and substituting another payment route:
 If `operationCreated` is true, both recovery and user reporting stay bound to
 the returned operation. If it is false, do not claim a payment operation exists.
 
-- `INSUFFICIENT_UNIFIED_BALANCE`: normalize to funding_required, use the
-  automatic top-up presentation exception, and resume only the same operation
-  after durable top-up settlement with unchanged facts and valid approval.
+- `INSUFFICIENT_UNIFIED_BALANCE`: follow the returned recovery resumability.
+  Pending approvals retain their identity; safely aborted crypto payments need
+  fresh approval. A raw error without verified closure never permits replacement.
 - `SPEND_LIMIT_EXCEEDED`: report the policy block and stop. Retry the same run
   only after the user changes the applicable limit or policy.
 - `IDEMPOTENCY_CONFLICT`: stop because the same key was reused with changed

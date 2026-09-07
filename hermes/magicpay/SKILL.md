@@ -108,7 +108,8 @@ Load only the focused reference needed:
 ## Direct views versus silent work
 
 Render an explicit view when the user asks to see it. Two automatic cases are
-authoritative unified-balance `funding_required` (call `show_topup` once) and a
+authoritative unified-balance `funding_required` (use the existing approval's
+funding page when `funding_gate` is present; otherwise call `show_topup` once) and a
 new `request_choice` result (its widget/link plus chat or a faithful native
 picker). The commands reference owns the presentation policy and view tools.
 
