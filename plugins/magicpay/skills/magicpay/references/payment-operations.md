@@ -41,6 +41,12 @@ Keep five funding intents distinct:
 A request for both a link and direct addresses may call both independent
 primitives. A link, opened widget, address, or QR code is never settlement.
 
+When no view opens on the current host, `show_topup` returns `hostedUrl` with
+`nextAction: open_topup_link`; present that returned link in normal
+conversation instead of describing an opened view. Any other `show_*` tool
+may return `hosted_url` or `app_url` the same way. Do not call
+`create_topup_link` as well; the link is already in hand.
+
 `list_funding_methods` returns the remote authority for every currently
 supported direct method; do not infer or cache a list of assets or networks
 locally.

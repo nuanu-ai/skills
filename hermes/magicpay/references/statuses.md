@@ -95,5 +95,9 @@ identities; never reuse old authority.
 Status, cancellation, and reconciliation reads remain silent supporting calls.
 An error, hard stop, separately pending reconciliation, or required user action does not
 request a widget; report it in normal conversation unless the user separately
-asks for the corresponding view. For automatic funding and new-choice
-presentation, follow [commands.md](commands.md).
+asks for the corresponding view. When a `show_*` tool says no view opens on
+this host, present its returned `hosted_url` or `app_url` in normal
+conversation; when a run or request returns `request_link_reason` instead of
+`request_url`, say that the approval link is unavailable and that the user can
+decide in the MagicPay app or Telegram, keeping the same run and request. For
+automatic funding and new-choice presentation, follow [commands.md](commands.md).
