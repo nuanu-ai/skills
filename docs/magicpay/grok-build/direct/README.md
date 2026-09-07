@@ -1,4 +1,4 @@
-# Install MagicPay for Claude Code
+# Install MagicPay for Grok Build
 
 Download the release archive and place the magicpay folder in a supported skill directory.
 
@@ -6,9 +6,9 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
-- Development channel: `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`, then `claude plugin install magicpay@nuanu-skills-staging`.
-- Production channel, after promotion: `claude plugin marketplace add nuanu-ai/skills`, then `claude plugin install magicpay@nuanu-skills`.
-- Connect with `/mcp` → `magicpay` → Authenticate, or `claude mcp login plugin:magicpay:magicpay` in a terminal. A session that was already open needs `/reload-plugins`.
+- Development channel: add a `[[marketplace.sources]]` entry to `~/.grok/config.toml` with `git = "https://github.com/nuanu-ai/skills.git"` and `branch = "staging"`, or run `grok plugin marketplace add https://github.com/nuanu-ai/skills.git`, then install `magicpay` from the `/plugins` Marketplace tab.
+- Production channel, after promotion: `grok plugin marketplace add nuanu-ai/skills`, then install `magicpay` from the `/plugins` Marketplace tab.
+- Connect through `/mcps` → `magicpay` → Authenticate; the host registers itself as `Grok` with a loopback redirect. Reopen `/mcps` if tools do not appear, then quit and reopen the app.
 
 ## Direct skill archive
 
@@ -18,8 +18,8 @@ The host plugin bundles this skill and the remote MCP declaration, so no archive
 
 Supported skill directories:
 
-- .claude/skills/
-- ~/.claude/skills/
+- skills/
+- ~/.grok/skills/
 
 ## Browser architecture
 

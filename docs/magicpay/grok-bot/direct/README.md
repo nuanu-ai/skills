@@ -1,4 +1,4 @@
-# Install MagicPay for Claude Code
+# Install MagicPay for Grok Bot
 
 Download the release archive and place the magicpay folder in a supported skill directory.
 
@@ -6,9 +6,8 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
-- Development channel: `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`, then `claude plugin install magicpay@nuanu-skills-staging`.
-- Production channel, after promotion: `claude plugin marketplace add nuanu-ai/skills`, then `claude plugin install magicpay@nuanu-skills`.
-- Connect with `/mcp` → `magicpay` → Authenticate, or `claude mcp login plugin:magicpay:magicpay` in a terminal. A session that was already open needs `/reload-plugins`.
+- Install MagicPay from **Settings → Plugins** once the Cursor Marketplace listing is live; until then add the remote MagicPay MCP as a custom remote server (shown as `user-magicpay`).
+- Connect through the plugin Connect action; MCP authentication is shared with the Cursor account and opens the same browser OAuth flow.
 
 ## Direct skill archive
 
@@ -18,8 +17,8 @@ The host plugin bundles this skill and the remote MCP declaration, so no archive
 
 Supported skill directories:
 
-- .claude/skills/
-- ~/.claude/skills/
+- skills/
+- ~/.cursor/plugins/local/magicpay/skills/
 
 ## Browser architecture
 

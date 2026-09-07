@@ -51,6 +51,15 @@ host-native connection action cannot be initiated, give only the immediate
 manual handoff named in the runtime setup reference and stop until it
 completes.
 
+Wait for that authorization yourself; never ask the user to confirm it in chat.
+Once the connection UI is open, poll `get_magicpay_capabilities` on a bounded
+interval until it answers or a reasonable deadline passes. The user finishing
+email and OTP in the secure window is the completion signal, so a chat reply
+such as "done" adds nothing and a user who simply closes the window would
+otherwise strand the setup. Say only that you are waiting, and continue the
+moment the capability call succeeds. Ask the user how it went solely when the
+deadline passes, the host cannot poll, or the connection UI reports failure.
+
 After OAuth completes, first probe the current task's callable catalog,
 including any host-native deferred or lazy tool discovery, for
 `get_magicpay_capabilities`. A tool omitted from the initial or eagerly shown

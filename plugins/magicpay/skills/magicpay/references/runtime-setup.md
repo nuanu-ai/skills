@@ -1,8 +1,8 @@
 # Runtime Setup: MagicPay host plugin
 
-This plugin serves Codex, Claude Code, and OpenClaw. Use only the section
-for the host you are running in; the canonical instructions in
-[setup.md](setup.md) never name a host.
+This plugin serves Codex, Claude Code, OpenClaw, Grok Build, and Grok Bot. Use
+only the section for the host you are running in; the canonical instructions
+in [setup.md](setup.md) never name a host.
 
 ## Runtime Setup: Codex
 
@@ -178,3 +178,173 @@ file names OpenClaw commands; the canonical instructions stay host-neutral.
   payment disabled unless the payer identity is private to the requester.
 - Disconnect through OpenClaw's MCP connection management; it is host-local
   and revokes nothing remotely.
+
+## Runtime Setup: Grok Build
+
+Host-specific actions for the universal flow in [setup.md](setup.md). Only this
+file names Grok Build commands; the canonical instructions stay host-neutral.
+
+### Install
+
+- Grok Build loads marketplace sources from `[[marketplace.sources]]` entries in
+  `~/.grok/config.toml` (fields `name`, `git`, optional `branch`, or `path`) and
+  from `extraKnownMarketplaces` in `~/.grok/settings.json`. Inspect those before
+  adding anything: exactly one `magicpay` plugin may remain installed, so remove
+  any other first.
+- Prefer the user's own `/plugins` modal inside the running app, Marketplace
+  tab. An install made there rebuilds that app's plugin runtime; editing the
+  configuration files underneath reaches only sessions started afterwards.
+- Development channel: add a source with
+  `git = "https://github.com/nuanu-ai/skills.git"` and `branch = "staging"`,
+  or run `grok plugin marketplace add https://github.com/nuanu-ai/skills.git`
+  and select the `staging` branch, then install `magicpay` from that source.
+- Production channel, after promotion: `grok plugin marketplace add
+  nuanu-ai/skills`, then install `magicpay` from the `/plugins` Marketplace tab.
+- The `/skills` and `/mcps` modals show what the app actually loaded. Treat them
+  as the source of truth over any file you edited.
+
+### Connect
+
+- Use the plugin's Connect action. Grok Build performs dynamic client
+  registration against the MagicPay OAuth server, registering itself as `Grok`
+  with the loopback redirect `http://127.0.0.1:{port}/callback`, and it parses
+  the RFC 9207 `iss` response parameter. No pre-issued client id is required.
+- Tokens are stored by the host in `~/.grok/mcp_credentials.json`. Never read,
+  copy, print, or pass that file's contents; connection management belongs to
+  the host.
+- Wait for the authorization to finish on its own and poll
+  `get_magicpay_capabilities` until it answers. Do not ask the user to confirm
+  the secure window in chat.
+- Manual handoff when no Connect action can be initiated: the `/mcps` modal,
+  `magicpay`, then its Authenticate action.
+
+### Catalog refresh
+
+- After OAuth, probe this task's callable catalog for
+  `get_magicpay_capabilities`, including any deferred or lazy tool discovery.
+  Continue setup and any retained request in the same task once the call
+  succeeds. A tool missing from the initially shown list is not evidence that it
+  is unavailable.
+- Only when an actual lookup cannot discover or call a required MagicPay tool
+  should you say the catalog is stale. Reopen the `/mcps` modal so the host
+  reuses the completed OAuth; that is a catalog fallback, not a reason to repeat
+  authorization.
+- When a reopened modal still cannot discover the tools, this app never loaded
+  the plugin: the install landed in a different process. Ask the user to quit
+  Grok Build completely and reopen it. Until a MagicPay tool actually answers,
+  report that remaining step and nothing more. An installed plugin, a command
+  that exited zero, or a browser window that opened is not evidence of a
+  connection.
+- Treat the catalog as choice-ready only when `begin_request_session`,
+  `request_choice`, `decide_request`, and `wait_request` are callable. Follow
+  [choices.md](choices.md): use a native choice interface when this host exposes
+  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
+  options link attached to the same request.
+
+### Payment rails on this host
+
+- Grok Build has no browser. The agent-direct browser checkout rail is
+  unavailable here, so never start `run_browser_payment`, never create a
+  checkout session expecting a live tab, and never ask the user to paste card
+  values as a substitute.
+- Use the x402 and crypto transfer rails, which need no browser. When a request
+  can only be completed in a browser, report that limitation and stop rather
+  than switching to another controller.
+
+### Verify and disconnect
+
+- The `/mcps` modal shows the `magicpay` connection and its authorization state.
+- Disconnect through that modal, and remove the plugin through `/plugins`. Both
+  are host-local and revoke nothing remotely.
+- A source build or plugin reinstall does not prove this task loaded the new
+  skill and tool descriptions. Verify catalog provenance after a refresh, and
+  reuse completed OAuth rather than repeating setup.
+
+## Runtime Setup: Grok Bot
+
+Host-specific actions for the universal flow in [setup.md](setup.md). Only this
+file names Grok Bot surfaces; the canonical instructions stay host-neutral.
+
+### Install
+
+- Grok Bot follows the Cursor account's plugin and MCP policy and discovers
+  plugins under **Settings → Plugins**. Exactly one `magicpay` plugin may remain
+  installed; remove any other first.
+- Preferred channel: install MagicPay from the Cursor Marketplace listing
+  through **Settings → Plugins**. The plugin bundles this skill, the remote
+  MagicPay MCP declaration, and its pre-registered public OAuth client, so the
+  host skips dynamic client registration.
+- Interim channel while the listing is pending: add the remote MagicPay MCP as
+  a custom remote server; the host shows it as `user-magicpay`. Do not install a
+  MagicPay CLI, a local server, or a second browser controller.
+- Team or enterprise accounts inherit the team's Cursor plugin policy; there are
+  no separate Grok Bot plugin controls. When the policy blocks the install,
+  report that blocker and stop.
+
+### Connect
+
+- Use the plugin's Connect action. MCP authentication is shared across the
+  Cursor account, so one MagicPay connection serves every Bot on that account;
+  never connect per Bot, and keep payment writes off for team or group use
+  until identity isolation is confirmed.
+- The Connect action opens the same secure browser OAuth flow: email and OTP
+  are entered in that window, never in chat. The host redirects to
+  `http://localhost:8787/callback` on desktop and to
+  `https://www.cursor.com/agents/mcp/oauth/callback` for web and cloud agents.
+- Wait for the authorization to finish on its own and poll
+  `get_magicpay_capabilities` until it answers. Do not ask the user to confirm
+  the secure window in chat.
+- Manual handoff when no Connect action can be initiated:
+  **Settings → Plugins → MagicPay → Connect**.
+
+### Catalog refresh
+
+- After OAuth, probe this task's callable catalog for
+  `get_magicpay_capabilities`, including any deferred or lazy tool discovery.
+  Continue setup and any retained request in the same task once the call
+  succeeds. A tool missing from the initially shown list is not evidence that it
+  is unavailable.
+- Only when an actual lookup cannot discover or call a required MagicPay tool
+  should you say the catalog is stale. Start a new Bot task so the host reuses
+  the completed OAuth; that is a catalog fallback, not a reason to repeat
+  authorization.
+- When a new task still cannot discover the tools, ask the user to restart the
+  Grok Bot app. Until a MagicPay tool actually answers, report that remaining
+  step and nothing more. An installed plugin, a Connect window that opened, or
+  a completed OAuth redirect is not evidence of a connection.
+- Treat the catalog as choice-ready only when `begin_request_session`,
+  `request_choice`, `decide_request`, and `wait_request` are callable. Follow
+  [choices.md](choices.md): use a native choice interface when this host exposes
+  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
+  options link attached to the same request.
+
+### Approvals and the shared browser
+
+- Grok Bot's browser is a persistent cloud computer shared by every Bot on the
+  account. Purchases stay behind the host's own **Require Approval** rule. The
+  Bot asks once, at the exact approved final click, after MagicPay approval and
+  card fill. Never tell the user to add an "Always Allow" rule for purchases.
+- The card returned after finalized MagicPay approval is MagicPay's single-use
+  credential for that exact approved checkout. Entering it is the approved
+  payment step, not a password, passkey, or two-factor code. Supply it only
+  through the host's typed sensitive-fill input for the approved tab, and keep
+  it out of chat, scripts, files, logs, and evidence.
+- Decline any browser or merchant prompt to save the card, because the
+  computer is shared.
+- If the host still demands a human takeover at card entry, stop: put nothing in
+  chat, record `click_uncertain` or `not_clicked` exactly as observed with
+  `record_browser_payment_result`, and let MagicPay reconcile. Bank and
+  merchant challenges are ordinary takeover steps; MagicPay's own approval OTP
+  keeps its existing chat path.
+- Never replay a click, never substitute another payment route, and never read
+  card values into a script or a shell argument.
+
+### Verify and disconnect
+
+- **Settings → Plugins → MagicPay** shows the connection and its authorization
+  state.
+- Disconnect and remove through that same panel. Both are host-local and revoke
+  nothing remotely.
+- A plugin reinstall does not prove this task loaded the new skill and tool
+  descriptions. Verify catalog provenance in a new task, and reuse completed
+  OAuth rather than repeating setup.
