@@ -8,11 +8,12 @@ in [setup.md](setup.md) never name a host.
 
 Host actions for the universal flow in [setup.md](setup.md). Codex's own
 plugin manager is not the retired MagicPay CLI. An existing supported `codex`
-command may inspect plugins and bootstrap development installation when native
-actions are unavailable and host policy permits it. Use the same local host and
+command may inspect plugins, bootstrap development installation, and start
+host-managed OAuth when native actions are unavailable and host policy permits it. Use the same local host and
 configuration scope as this app; do not change profiles, install or upgrade a
 CLI, hunt for an app-bundled binary, or launch a private App Server client.
-OAuth stays in native Connect; there is no shell-login fallback.
+The retired MagicPay CLI remains abandoned. The supported Codex OAuth command
+below opens the same secure MCP sign-in page; it does not collect credentials.
 
 ### Install
 
@@ -31,8 +32,8 @@ OAuth stays in native Connect; there is no shell-login fallback.
 - If neither inventory route can be read, installation and auth state remain unknown.
   Missing MagicPay tools or plugin-management tools do not prove absence.
   Hand off **Plugins → MagicPay** to inspect the existing plugin details:
-  choose **Connect** if installed and sign-in is needed, or **Install** only
-  if absent. Do not send an already-installed plugin through Install again.
+  install only if absence is confirmed. Report connection state as unknown
+  until it can be inspected; do not invent a Connect button.
 - Only when installation is needed, use an actually callable, eligible native
   install action when exposed, or the permitted development commands below.
   The agent runs supported commands; it does not merely print them for the user.
@@ -81,12 +82,22 @@ OAuth stays in native Connect; there is no shell-login fallback.
   retry capabilities and verify readiness here. Do not start a second OAuth
   flow or send the user to Plugins while the native prompt is pending.
 - If tools cannot load or the host does not show its prompt, use one eligible
-  native Connect action when callable. Manual handoff only when the primary
-  tool-triggered prompt and the native action are unavailable or have failed:
-  **Plugins → MagicPay → Connect**.
-  Report the observed loading or prompt failure. An absent Connect tool alone
-  is not grounds for this handoff. Say the prompt was shown only when observed;
-  a successful discovery or transport connection is not authentication.
+  native Connect action when callable. Otherwise, when the exact installed
+  connection requires sign-in, the agent runs the existing host's
+  `codex --version`, then `codex mcp login magicpay` once in the same host and
+  configuration scope. Require Codex 0.147.0 or newer: 0.146.1 drops the callback
+  issuer. If the version is older, unknown, or the command is unsupported, report
+  the host limitation; do not install/upgrade a CLI or hunt for another binary.
+  Missing tools alone do not establish that sign-in is required.
+- Let Codex open its host-issued authorization URL in the secure browser.
+  If browser handoff is needed, use that exact URL with the host browser without
+  echoing it into chat; do not reconstruct a callback, relay its parameters, or
+  handle email, OTP, codes, or tokens. Keep OAuth URLs out of transcript output.
+  Wait for this one host command to finish, then rediscover tools in this task.
+  The user runs no commands and does not visit Plugins to start this flow.
+  If neither supported connection action is available, report the observed limit;
+  do not invent a Connect tool or button. Say the screen appeared only when
+  observed. An open sign-in screen is not completed authentication.
 - Cancellation, denied approval, or a login failure stops this attempt; preserve
   the installed plugin and report the failed phase instead of repeating OAuth.
 
