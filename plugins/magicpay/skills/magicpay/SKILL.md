@@ -96,7 +96,7 @@ Render an explicit view when the user asks to see it. Two automatic cases are
 authoritative unified-balance `funding_required` (use the existing approval's
 funding page when `funding_gate` is present; otherwise call `show_topup` once) and a
 new `request_choice` result (its widget/link plus chat or a faithful native
-picker). The commands reference owns the presentation policy and view tools.
+picker). The commands reference owns the presentation policy and view tools. Pending funding: state the shortfall and approval deadline; keep the same link. After timeout/expiry, read the same run/request; time or balance never permits replacement. Follow the payment-operations recovery rules.
 
 Preflight, approval, waiting, operation reads, reconciliation, refreshes, and
 calls inside a broader task stay silent. A prior view request never carries

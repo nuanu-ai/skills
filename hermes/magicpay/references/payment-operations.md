@@ -84,7 +84,7 @@ purchase under [statuses.md](statuses.md#separately-authorized-additional-purcha
 
 | Recovery | Required action | Forbidden action |
 | --- | --- | --- |
-| Pending approval with `funding_gate.status: insufficient` | Open the existing approval's returned request URL; its funding stage shows the shortfall. Partial funding keeps it pending. After durable funding, the user explicitly approves that same request, then continue the same run. | Never resubmit approval automatically, create another payment session, or treat an unavailable gate as zero balance. |
+| Pending approval with `funding_gate.status: insufficient` | Explain the shortfall and returned approval deadline, then open the existing request URL for top-up and approval. Partial funding keeps it pending while valid. After durable funding, the user explicitly approves that same valid request, then continue the same run. | Never open another `show_topup` flow, resubmit approval automatically, create another payment session, or treat an unavailable gate as zero balance. |
 | funding_required with `resume_same_operation_after_funding` | Call `show_topup` once, retain the same `runId`, request, approval, operation, and facts, then continue the same run with `wait_payment` after durable funding. | Never call `create_topup_link` automatically, mint a new `clientRequestId`, or start another payment. |
 | funding_required with `fresh_approval_if_permitted` | The backend has safely closed this operation before submission. Explain that top-up is followed by a new approval under the user's still-valid payment authorization. | Never revive the terminal operation or create a replacement while cleanup is unresolved or `freshStartAllowed` is false. |
 | service_unavailable from card-pool insufficiency | Explain the temporary service issue and provide support guidance. User-facing shape: “MagicPay card payments are temporarily unavailable. No balance top-up is needed. Contact [MagicPay support](mailto:support@magiccard.ai) if you need help.” | Card-pool capacity is not a user-balance funding request. During failure handling, never call `show_topup`, `create_topup_link`, or any fresh payment tool; there is no automatic replacement operation. |
@@ -103,6 +103,34 @@ other executing requests or create a replacement. Pending approvals require an
 explicit user decision even if they originally matched Auto-Approve. An unavailable
 funding check offers a read refresh; it cannot authorize payment. Existing request,
 approval, and seller deadlines still apply; top-up does not extend them.
+
+For readable funding summaries, retain exact USD micros for comparisons.
+Round the displayed positive shortfall up to cents and available balance down
+(mathematical floor, including negatives), with exact values when the user
+needs detail. Show positive shortfalls below one cent exactly, never as zero;
+keep required amounts exact when cents lose precision. For example, required
+$23.09 and available $10.055 means an exact $13.035 shortfall: say "Add at least
+$13.04; available $10.05." This display does not add fees or promise an exchange
+withdrawal's net credit.
+
+Respect returned `waitAfterMs` and bound ordinary approval waiting by its
+`request.expires_at`. After timeout or expiry, make a final read of the same run/request
+even if the waiter elapsed; never report "still waiting for approval" from a
+stale response. The local clock cannot establish terminal failure or cleanup.
+An expired approval can coexist with a deposit still processing.
+
+`request.funding_expiry` is historical context, not a live balance check or replacement
+authority. When it says `fresh_approval_allowed: false` and
+`next_action: check_payment_status`, explain the expiry and check that same
+payment. Preserve the old operation's terminal `retry.allowed: false`.
+Only backend-confirmed fresh-approval eligibility, verified exact pre-submit
+closure and cleanup, still-valid user intent, and a supported recovery path
+that preserves manual confirmation can permit a fresh run with a new
+`clientRequestId`. Sufficient balance alone never does. Respect
+`freshStartAllowed: false`; uncertain submission or cleanup permits only
+same-operation status/reconciliation. If the deployed path cannot preserve
+manual confirmation, stop at status checking. Any balance polling stays
+bounded by the active request and uses backoff; never turn unavailable into zero.
 
 Payment-failure notification truth is independent from top-up and operation
 truth. A failure notification exists only after user approval or Auto-Approve.
