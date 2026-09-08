@@ -9,8 +9,8 @@ in [setup.md](setup.md) never name a host.
 Host actions for the universal flow in [setup.md](setup.md). Codex's own
 plugin manager is not the retired MagicPay CLI. An existing supported `codex`
 command may inspect plugins, bootstrap development installation, and start
-host-managed OAuth when native actions are unavailable and host policy permits it. Use the same local host and
-configuration scope as this app; do not change profiles, install or upgrade a
+host-managed OAuth when native actions are unavailable and host policy permits
+it. Use the same local host and configuration scope as this app; do not change profiles, install or upgrade a
 CLI, hunt for an app-bundled binary, or launch a private App Server client.
 The retired MagicPay CLI remains abandoned. The supported Codex OAuth command
 below opens the same secure MCP sign-in page; it does not collect credentials.
@@ -29,9 +29,11 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   that cleanup or channel change is requested.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall, recreate MCP configuration, or repeat OAuth.
-- If neither inventory route can be read, installation and auth state remain unknown.
-  Missing MagicPay tools or plugin-management tools do not prove absence.
-  Hand off **Plugins → MagicPay** to inspect the existing plugin details:
+- If neither inventory route can be read and state has not otherwise been
+  established, installation and auth state remain unknown. Missing MagicPay
+  tools or inventory access do not erase a confirmed installation or completed
+  OAuth. Reuse that evidence and proceed to Catalog refresh. For unknown state,
+  hand off **Plugins → MagicPay** to inspect the existing plugin details:
   install only if absence is confirmed. Report connection state as unknown
   until it can be inspected; do not invent a Connect button.
 - Only when installation is needed, use an actually callable, eligible native
@@ -116,17 +118,37 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   Do not build a private App Server client or launch another process as a
   substitute for reloading this app. Missing tools alone do not identify the
   cause; distinguish auth errors, service failures, and unavailable tools.
-- If tools remain unavailable, report the observed phase and host limitation without
-  looping through reinstall, sign-in, new tasks, or restart requests. If the
-  host explicitly requires manual activation, give that immediate action as a
-  blocked fallback, not single-prompt success. A native installation result proves
-  installation only; host OAuth completion proves authorization only. Readiness
-  requires successful capability and authenticated status calls.
-- A user-triggered reload is same-task recovery, not automatic single-prompt
-  completion. Record the app's reported state when diagnosing an activation limit.
-  If a fresh installation requires a new task under the host's documented
-  activation flow, explain that it loads the plugin; it does not open OAuth or
-  carry over the old task's request. Do not repeat this advice after tools work.
+- If the correct plugin is installed and enabled, OAuth completed, and tools
+  remain unavailable without a separate observed auth or service error, give
+  one new-chat handoff. Do not require an explicit host instruction to offer
+  this recovery. If installation or auth state is unknown, say so instead of
+  claiming the user is signed in. Pending, canceled, denied, or failed OAuth
+  follows Connect above; opening a new chat does not complete authentication.
+- For development, say:
+
+  > MagicPay Development is installed and signed in, but its tools aren't
+  > available in this chat. Open a new Codex chat and send:
+  >
+  > **Verify my MagicPay development connection. I already installed and signed
+  > in, then opened this new chat because the tools were missing.**
+  >
+  > Keep the existing installation and sign-in; no setup steps need repeating.
+
+  Use the requested environment in the message and prompt. Keep the recovery
+  cue so the next chat knows this step was already attempted. If that chat
+  still cannot load tools, report tool loading blocked without suggesting
+  another chat, reinstall, restart, or sign-in. Handle any actual new auth or
+  service error separately; missing tools alone do not justify repeating OAuth.
+- In the new chat, discover tools and verify capabilities, authenticated status,
+  and balance through [setup.md](setup.md), reusing the installation and saved
+  authorization. The handoff is activation recovery, not single-prompt success.
+  Readiness requires successful capability and authenticated status calls,
+  followed by the balance read; use the reference's unavailable-balance branch
+  if that read fails. An installed plugin or OAuth completion alone is not readiness.
+- A new chat does not inherit the old request or payment approvals. If useful,
+  include the original non-sensitive intent in the continuation prompt, keeping
+  the requested environment and recovery cue. Act only on the new chat's request;
+  do not copy credentials or imply permission to replay an existing operation.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface

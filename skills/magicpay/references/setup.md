@@ -35,10 +35,11 @@ connection through the runtime's supported inventory actions. Keep a correct
 installation and existing authorization; a repeated setup request is not a
 request to update, reinstall, or sign in again. Keep a supported installed
 version even when the marketplace advertises a newer release.
-Missing tools or an unavailable plugin inventory leave installation and auth
-state unknown; they do not mean the plugin is absent. If neither native nor
-permitted host-command inventory can be read, use the runtime's plugin-details
-handoff to establish that state. For an
+Missing tools or an unavailable plugin inventory do not erase a confirmed
+installation or completed OAuth. If state has not otherwise been established,
+it remains unknown; missing tools do not mean the plugin is absent. Only when
+that state is unknown and neither native nor permitted host-command inventory
+can be read, use the runtime's plugin-details handoff to establish it. For an
 installed plugin, continue through Connect when sign-in is needed; choose
 Install/Add only when absence is confirmed. If already connected, discover its
 tools and verify readiness. Do not send an installed plugin back through Install.
@@ -114,8 +115,10 @@ continue any request retained there.
 If an actual current-task catalog lookup cannot discover or call a required
 MagicPay tool, follow the runtime setup reference's bounded supported refresh.
 Use a native reload only when it is actually exposed to the model; otherwise
-give the documented same-conversation user action when available, or report the
-observed host limit. Missing tools alone do
+follow the runtime reference's documented activation recovery, which may use
+a fresh conversation after confirmed installation and authorization. Keep its
+recovery cue and reuse the installation and sign-in; if recovery was already
+attempted and tools remain unavailable, report the observed host limit. Missing tools alone do
 not diagnose stale state, failed authentication, or a particular host limitation.
 Keep installation, host-reported authorization, tool availability, and service
 readiness separate: report only the phases supported by evidence. Do not repeat
