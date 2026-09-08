@@ -6,8 +6,8 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
-- Install MagicPay from **Settings → Plugins** once the Cursor Marketplace listing is live; until then add the remote MagicPay MCP as a custom remote server (shown as `user-magicpay`).
-- Connect through the plugin Connect action; MCP authentication is shared with the Cursor account and opens the same browser OAuth flow.
+- Inspect **Settings → Plugins → MagicPay** first. If installed, preserve the connector and use Connect only when sign-in is needed. Use the native Add card only when absent; missing tools do not prove absence. If the requested channel is unavailable, report that limit without adding a duplicate connection.
+- Connect opens the secure email/OTP flow and uses the account-wide connection. If Connect reports unreachable before the window opens, inspect the connector error and record the attempt time; do not diagnose credentials or reset the Bot computer. After authorization, discover tools in the original chat and use the readiness sequence in `references/setup.md`.
 
 ## Direct skill archive
 
@@ -27,4 +27,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.17
+Release: magicpay-v0.4.18

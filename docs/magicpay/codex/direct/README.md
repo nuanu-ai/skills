@@ -6,7 +6,7 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
-- Inspect the native plugin inventory and bundled MCP first; preserve the requested installation and existing authorization. Use an actually callable, eligible native install action, otherwise hand off **Plugins → MagicPay → Install** and wait for it. Never automate Codex itself or bypass a refused approval.
+- Inspect the native plugin inventory and bundled MCP first; preserve the requested installation and existing authorization. If inventory is unavailable, state is unknown: hand off **Plugins → MagicPay** to inspect details, then Connect if installed and sign-in is needed, or Install only if absent. Missing tools do not prove absence. Only when installation is needed, use an actually callable, eligible native install action, otherwise hand off **Plugins → MagicPay → Install** and wait for it. Never automate Codex itself or bypass a refused approval.
 - Development channel: select `magicpay@nuanu-skills-staging` from `nuanu-ai/skills` at ref `staging` in the native plugin manager. If that source is unavailable, report the missing source.
 - Production channel, after promotion: select `magicpay@nuanu-skills` from the `nuanu-ai/skills` marketplace at its stable ref.
 - For a real channel change, use native Disconnect for the old exact connection before native Remove for its MagicPay plugin. Keep one plugin and bundled connection; preserve unrelated integrations and remote state.
@@ -31,4 +31,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.17
+Release: magicpay-v0.4.18

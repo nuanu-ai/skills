@@ -27,6 +27,12 @@ Inspect the installed plugin and its bundled connection first. Keep a correct
 installation and existing authorization; a repeated setup request is not a
 request to update, reinstall, or sign in again. Keep a supported installed
 version even when the marketplace advertises a newer release.
+Missing tools or an unavailable plugin inventory leave installation and auth
+state unknown; they do not mean the plugin is absent. If inventory cannot be
+read, use the runtime's plugin-details handoff to establish that state. For an
+installed plugin, continue through Connect when sign-in is needed; choose
+Install/Add only when absence is confirmed. If already connected, discover its
+tools and verify readiness. Do not send an installed plugin back through Install.
 Use an actually callable, eligible native installation action, or the
 host's supported commands when permitted, as listed in the runtime setup
 reference. The agent performs those commands. Do not
@@ -52,10 +58,15 @@ connection UI:
 > payments and request approvals while keeping sensitive payment details out of
 > chat.
 
-Then set the secure-input boundary:
+When you can initiate Connect, set the secure-input boundary:
 
 > I’ll open a secure MagicPay window. Enter your email and OTP there—not in
-> this chat. When it closes, I’ll verify the connection and continue.
+> this chat. After the host confirms authorization, I’ll verify the connection
+> and continue.
+
+If no connection action is callable, name the runtime's native Connect button
+instead of promising to open the window. Missing host-management tools do not
+establish a server outage or an authentication failure.
 
 Installing the plugin is not authentication. Inspect the exact installed
 `magicpay` connection: check readiness when already authorized, and start Connect

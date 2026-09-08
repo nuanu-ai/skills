@@ -19,7 +19,12 @@ installed locally; its presence does not enable a fallback.
   `magicpay` plugin and its bundled connection.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall, recreate MCP configuration, or repeat OAuth.
-- Use an actually callable, eligible native install action when exposed.
+- If inventory cannot be read, installation and auth state remain unknown.
+  Missing MagicPay tools or plugin-management tools do not prove absence.
+  Hand off **Plugins → MagicPay** to inspect the existing plugin details:
+  choose **Connect** if installed and sign-in is needed, or **Install** only
+  if absent. Do not send an already-installed plugin through Install again.
+- Only when installation is needed, use an actually callable, eligible native install action when exposed.
   Otherwise give the user the native Install action below and wait for it.
   Never automate Codex's own UI, invent a native action, or bypass a refused
   approval through another route.
@@ -32,7 +37,7 @@ installed locally; its presence does not enable a fallback.
   unrelated plugins, and remote state. Do not add a second MCP server.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
   stable ref and selector `magicpay@nuanu-skills`.
-- Manual handoff when no native install tool is callable:
+- Manual handoff when installation is needed and no native install tool is callable:
   **Plugins → MagicPay → Install**, choosing the requested channel.
   Setup is waiting for that action; installation alone is not readiness.
 
@@ -44,6 +49,10 @@ installed locally; its presence does not enable a fallback.
   keep email, OTP, codes, and tokens in the secure flow.
 - Manual handoff when no Connect action can be initiated:
   **Plugins → MagicPay → Connect**.
+  The user clicking this button and the agent invoking it are different host
+  capabilities. An unavailable agent action does not prove the button or
+  MagicPay's email/OTP page is broken. Say you will open the window only when
+  you can initiate the action.
 - Cancellation, denied approval, or a login failure stops this attempt; preserve
   the installed plugin and report the failed phase instead of repeating OAuth.
 
@@ -70,6 +79,9 @@ installed locally; its presence does not enable a fallback.
   requires successful capability and authenticated status calls.
 - A user-triggered reload is same-task recovery, not automatic single-prompt
   completion. Record the app's reported state when diagnosing an activation limit.
+  If a fresh installation requires a new task under the host's documented
+  activation flow, explain that it loads the plugin; it does not open OAuth or
+  carry over the old task's request. Do not repeat this advice after tools work.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface
@@ -305,7 +317,11 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 - Inspect the installed MagicPay connector and selected channel first; preserve
   a correct installation and valid authorization. Connectors are account-wide.
-- Use the native MagicPay **Add** card when available. Manual fallback:
+- If inventory is unavailable, open or hand off **Settings → Plugins → MagicPay**
+  to inspect the connector details. Missing tools do not prove absence. Use
+  **Connect** for an installed connector that needs sign-in; **Add** only when
+  absent. Reuse a connected connector and discover its tools in this chat.
+- When installation is needed, use the native MagicPay **Add** card when available. Manual fallback:
   **Settings → Plugins → MagicPay → Add**. Use the exact requested channel; a
   custom remote entry is an option only when the host supports it. Do not add a
   duplicate connection or install a MagicPay CLI or local server.
@@ -328,6 +344,20 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   is not connection evidence; do not require a "done" reply.
 - Manual handoff when no Connect action can be initiated:
   **Settings → Plugins → MagicPay → Connect**.
+  Promise to open the email/OTP window only when the action is actually callable.
+
+### Connection startup failure
+
+- If Connect reports `unreachable` before the window opens, report connection
+  startup failed and inspect the connector details. Do not diagnose email/OTP
+  or blame the host or service from that label alone.
+- For a developer handoff, collect the app version, UTC attempt time, requested
+  endpoint origin/path, and the host's HTTP status or DNS/TLS/timeout error and
+  request ID when available. A successful request from another machine does
+  not verify the Bot connector's route. Keep credentials, account identifiers,
+  and callback query values out of diagnostics.
+- Preserve the installed connector. Do not repeat Add, reset the Bot computer,
+  or restart OAuth automatically to work around an unexplained failure.
 
 ### Catalog refresh
 
