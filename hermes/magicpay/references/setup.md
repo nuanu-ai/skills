@@ -5,6 +5,10 @@ MCP that it declares. The plugin contains the skill and host metadata.
 No MagicPay package, CLI, library, or local service is installed for the
 browser flow.
 
+Any previously installed MagicPay CLI is an abandoned path. Ignore it for
+setup, login, verification, and recovery; its presence does not establish a
+connection. Do not execute or upgrade it. Use the native plugin and remote MCP.
+
 When authentication is missing, start one browser OAuth flow for both account
 verification and MCP authorization. The same connection page collects the email
 and OTP, grants MCP access, and redirects to the host. Do not ask the

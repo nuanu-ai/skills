@@ -6,41 +6,42 @@ in [setup.md](setup.md) never name a host.
 
 ## Runtime Setup: Codex
 
-Host-specific actions for the universal flow in [setup.md](setup.md). Only this
-file names Codex commands; the canonical instructions stay host-neutral.
+Native Codex app actions for the universal flow in [setup.md](setup.md).
+MagicPay setup has no external CLI dependency or terminal compatibility path.
+Do not find, install, upgrade, or invoke a CLI from PATH, an app bundle, or a
+private App Server client to manage this connection.
+The terminal setup path is abandoned even when a test user already has a CLI
+installed locally; its presence does not enable a fallback.
 
 ### Install
 
-- Inspect `codex plugin list`, `codex plugin marketplace list`, and
-  `codex mcp list`. Keep exactly one `magicpay` plugin and its bundled connection.
+- Inspect the native plugin inventory and bundled connection. Keep exactly one
+  `magicpay` plugin and its bundled connection.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall, recreate MCP configuration, or repeat OAuth.
 - Use an actually callable, eligible native install action when exposed.
-  Otherwise the agent runs supported Codex plugin commands when permitted.
+  Otherwise give the user the native Install action below and wait for it.
   Never automate Codex's own UI, invent a native action, or bypass a refused
   approval through another route.
-- When development installation is needed, register the trusted marketplace
-  only if absent with `codex plugin marketplace add nuanu-ai/skills --ref staging`;
-  otherwise verify its source and staging ref before refreshing it with
-  `codex plugin marketplace upgrade nuanu-skills-staging`.
-  Complete any channel change below, then run
-  `codex plugin add magicpay@nuanu-skills-staging`.
-- For an actual channel change, run `codex mcp logout magicpay` for the old
-  exact bundled connection before `codex plugin remove magicpay@<old-marketplace>`.
+- For development, select `magicpay@nuanu-skills-staging` from the trusted
+  `nuanu-ai/skills` marketplace at ref `staging`. If that source is unavailable
+  in the app, report the missing source instead of registering it from a shell.
+- For an actual channel change, use native Disconnect for the old exact bundled
+  connection before native Remove for its MagicPay plugin.
   Remove only the obsolete MagicPay selector; preserve marketplace registrations,
   unrelated plugins, and remote state. Do not add a second MCP server.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
   stable ref and selector `magicpay@nuanu-skills`.
-- Manual handoff only when no permitted install action is available:
-  **Plugins → MagicPay → Install**. This is a blocked single-prompt run, not ready.
+- Manual handoff when no native install tool is callable:
+  **Plugins → MagicPay → Install**, choosing the requested channel.
+  Setup is waiting for that action; installation alone is not readiness.
 
 ### Connect
 
 - Inspect the bundled server's auth status. Only when authentication is missing,
-  start one actually callable native Connect action, or run the permitted
-  `codex mcp login magicpay` when no such action is exposed. This is Codex
-  connection management, not a MagicPay CLI or a second account login. Wait for
-  host completion; keep email, OTP, codes, and tokens in the secure flow.
+  start one actually callable native Connect action. If none is exposed, use
+  the manual handoff below. Wait for host-reported authorization completion;
+  keep email, OTP, codes, and tokens in the secure flow.
 - Manual handoff when no Connect action can be initiated:
   **Plugins → MagicPay → Connect**.
 - Cancellation, denied approval, or a login failure stops this attempt; preserve
@@ -61,16 +62,14 @@ file names Codex commands; the canonical instructions stay host-neutral.
   Do not build a private App Server client or launch another process as a
   substitute for reloading this app. Missing tools alone do not identify the
   cause; distinguish auth errors, service failures, and unavailable tools.
-- A shell install may not activate in an already-running desktop app. If tools
-  remain unavailable, report the observed phase and host limitation without
+- If tools remain unavailable, report the observed phase and host limitation without
   looping through reinstall, sign-in, new tasks, or restart requests. If the
   host explicitly requires manual activation, give that immediate action as a
-  blocked fallback, not single-prompt success. An install exit code proves
+  blocked fallback, not single-prompt success. A native installation result proves
   installation only; host OAuth completion proves authorization only. Readiness
   requires successful capability and authenticated status calls.
 - A user-triggered reload is same-task recovery, not automatic single-prompt
-  completion. A PATH CLI version does not identify the running desktop version;
-  distinguish native and shell installation when reporting an activation limit.
+  completion. Record the app's reported state when diagnosing an activation limit.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface
@@ -89,10 +88,9 @@ file names Codex commands; the canonical instructions stay host-neutral.
   supported version; record observed build revisions without demanding equality
   between independently deployed services. Reuse completed OAuth.
 
-- `codex mcp list` shows the `magicpay` connection and its auth status.
-- Disconnect: `codex mcp logout magicpay`. Remove:
-  `codex plugin remove magicpay@<marketplace>`. Both are host-local and revoke
-  nothing remotely.
+- Inspect connection status through native plugin/MCP controls and authenticated
+  tools. Disconnect or remove MagicPay through its native plugin controls only
+  when requested; preserve unrelated integrations and all remote payment state.
 
 ## Runtime Setup: Claude Code
 
