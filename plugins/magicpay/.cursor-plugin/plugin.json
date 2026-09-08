@@ -1,6 +1,6 @@
 {
   "name": "magicpay",
-  "version": "0.4.21-dev.32b57a5d3d05",
+  "version": "0.4.21-dev.90c4f578e525",
   "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
   "logo": "https://raw.githubusercontent.com/nuanu-ai/skills/staging/plugins/magicpay/assets/magicpay.png?v=afb97a05c01d",
   "author": {
