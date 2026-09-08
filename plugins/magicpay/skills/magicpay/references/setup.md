@@ -103,6 +103,15 @@ The Connect action must open the same secure browser OAuth flow described
 above. Never request or handle its email, OTP, authorization code, or tokens in
 chat or shell arguments.
 
+Evaluate command eligibility using the runtime reference, current instructions,
+and observed host decisions. Missing native controls and historical notes do
+not establish a current policy restriction. If a policy blocks the supported
+fallback, identify its applicable source or observed denial without exposing
+private instructions. Respect actual restrictions; do not invent a session-policy
+prohibition or switch routes to bypass a denial.
+A restriction limited to agent commands may still permit the documented manual
+native handoff; a denied authentication attempt may not be retried by another route.
+
 Do not tell the user that a fresh task or session will open OAuth. Only when
 authentication is required and neither a supported native action nor its
 permitted command can initiate the connection,

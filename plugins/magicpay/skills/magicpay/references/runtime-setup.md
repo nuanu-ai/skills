@@ -86,7 +86,8 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
 - When tools cannot load, inspect the existing connection's supported host
   status. `status=failed` with `failureReason=reauthenticationRequired` is an
   authentication failure; follow this Connect recovery, not the new-chat
-  activation fallback. An installed/enabled plugin does not prove accepted
+  activation fallback. A current OAuth invalid_grant rejection for that exact
+  connection also requires authentication recovery. An installed/enabled plugin does not prove accepted
   authentication. The `o_auth` label is saved OAuth metadata, not proof of
   accepted authentication or readiness. Missing tools alone do not establish
   that sign-in is required. A service or network failure keeps its own recovery
@@ -104,10 +105,21 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   configuration scope. Require Codex 0.147.0 or newer: 0.146.1 drops the callback
   issuer. If the version is older, unknown, or the command is unsupported, report
   the host limitation; do not install/upgrade a CLI or hunt for another binary.
+  This supported Codex command launches host-managed OAuth. The bans on the
+  retired MagicPay CLI and raw shell MCP clients do not prohibit it.
+  Missing native controls do not establish a policy denial. Apply current
+  instructions and observed host decisions; historical notes do not establish
+  a current restriction. If a policy blocks the fallback, identify the applicable
+  source or observed denial without exposing private instructions; do not invent
+  a session-policy prohibition. Denial or cancellation of the current login
+  attempt stops that attempt; never switch routes to bypass it. A restriction limited to agent
+  commands may still permit the documented manual native handoff.
 - Let Codex open its host-issued authorization URL in the secure browser.
   If browser handoff is needed, use that exact URL with the host browser without
   echoing it into chat; do not reconstruct a callback, relay its parameters, or
   handle email, OTP, codes, or tokens. Keep OAuth URLs out of transcript output.
+  Capture command output without echoing it; report only sanitized completion
+  or error status.
   Wait for this one host command to finish, then rediscover tools in this task.
   The agent runs this permitted command; the user enters no commands.
 - Only when the exact installed connection requires sign-in and neither an
