@@ -33,8 +33,8 @@ preference changed.
 - Account readiness: use `account_status`; use `show_account_status` only when
   the user explicitly asks to see the account view.
 - Balance or funding: start with `get_payment_balance` or the exact funding
-  action requested. Generic "top up" opens `show_topup`; a link or direct
-  address request uses its distinct funding tool.
+  action requested. Generic "top up" uses `show_topup` and its returned view or
+  link; direct addresses may accompany it. See the funding reference for routing.
 - Crypto transfer: use `run_crypto_transfer` once the destination is resolved.
   For a named recipient such as "send $3 to Albert", check Memory first rather
   than immediately asking for an address: follow the named-recipient flow in

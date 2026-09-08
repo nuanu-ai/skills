@@ -28,7 +28,8 @@ do not persist a readiness cache or TTL.
 Keep five funding intents distinct:
 
 1. Generic “top up” or an explicit “show/open the top-up widget” request calls
-   `show_topup` once and opens the interactive funding view.
+   `show_topup` once. Follow its returned widget data or hosted link; do not
+   claim a view opened merely because the host advertised widget support.
 2. An explicit link request calls `create_topup_link` once and returns its fresh
    short-lived hosted URL in normal conversation. The link is a cross-channel
    fallback, not the default generic top-up action.
@@ -38,14 +39,19 @@ Keep five funding intents distinct:
 5. A request for one direct asset calls `request_topup_addresses` once with
    that exact asset and one stable logical `requestKey`.
 
-A request for both a link and direct addresses may call both independent
-primitives. A link, opened widget, address, or QR code is never settlement.
+A request for both a link and direct addresses may call both independent tools.
+A generic top-up may also call `request_topup_addresses` and show its live
+addresses alongside the link. Keep their exact asset/network labels. Addresses
+are an additional option, not a reason to hide a usable link. A link, opened
+widget, address, or QR code is never settlement.
 
-When no view opens on the current host, `show_topup` returns `hostedUrl` with
-`nextAction: open_topup_link`; present that returned link in normal
-conversation instead of describing an opened view. Any other `show_*` tool
-may return `hosted_url` or `app_url` the same way. Do not call
-`create_topup_link` as well; the link is already in hand.
+When `show_topup` returns `hostedUrl` with `nextAction: open_topup_link`, present
+that link immediately; do not call `create_topup_link` as well. If it returns
+widget data but the view is observably unusable or the user reports it missing,
+call `create_topup_link` once for a hosted handoff. Do not predict that a widget
+rendered. Report a link failure without an automatic retry loop. If one funding
+option succeeds and another fails, present the success and name the failure;
+neither hides or establishes the other.
 
 `list_funding_methods` returns the remote authority for every currently
 supported direct method; do not infer or cache a list of assets or networks
@@ -62,10 +68,10 @@ locally.
   it only when another authoritative flow already supplied the exact asset
   namespace, asset ID, and network tuple.
 
-On a partial or transport failure, replay that same aggregate request with the
-same `requestKey`, or the same lower-level request with the same key and tuple.
-Do not create a replacement operation, change networks, or substitute a hosted
-link. An address only identifies where to send funds; it is not proof that
+On an address partial or transport failure, retry only that same aggregate
+request with the same `requestKey`, or the same lower-level request with the
+same key and tuple. Do not create a replacement operation, change networks, or
+substitute a hosted link for an address-only request. An address only identifies where to send funds; it is not proof that
 funds arrived. Use `get_payment_balance` and the exact `get_payment_operation`
 state as the funding and settlement authority.
 
@@ -277,11 +283,14 @@ the request before the first merchant probe. A replay with the same key and
 unchanged request resumes that binding; it does not automatically probe the
 merchant again. A changed request conflicts, and an incomplete or ambiguous
 binding must remain on the same run for wait or reconciliation. When the
-composed run returns `waiting_for_user`, report its exact
-`request_url`, then immediately call `wait_payment` with the same `runId` and
+composed run returns `waiting_for_user` with a routable approval request and
+`request_url`, report that exact URL, then immediately call `wait_payment` with the same `runId` and
 cursor. That first call polls the same run every three seconds for up to 270
 seconds while the user approves. Respect the current host's own tool deadline
-and cancellation rather than assuming a universal timeout. When it returns the one-time approved/executing
+and cancellation rather than assuming a universal timeout. If the request or
+its link is missing, use the approval-setup/link-failure guidance in
+[statuses.md](statuses.md); an activity URL is not an approval substitute.
+When it returns the one-time approved/executing
 handoff as `running`, acknowledge that approval was received and immediately
 call `wait_payment` again with the same `runId` and returned cursor. The cursor
 prevents a repeated acknowledgement; continue only that already-approved

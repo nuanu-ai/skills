@@ -28,7 +28,9 @@ the same word is not a universal workflow transition.
   remain pending on the exact operation.
 - `awaiting_approval`: retain stable operation-owned `approval.requestId`, then
   continue the same remote session using the distinct routable UUID
-  `approval.runtimeRequestId`; do not create another approval.
+  `approval.runtimeRequestId`; do not create another approval. If the runtime
+  request is missing, approval setup is blocked: do not tell the user an
+  approval is available or invent its URL.
 - Payment-run `running`: carry the same `runId` and `nextProgressCursor` into
   `wait_payment`; it is neither failure nor permission to restart.
 - Payment-run `waiting_for_user`: report the exact returned request URL and,
@@ -118,9 +120,12 @@ promise automatic background reconciliation or change either payment's status.
 Status, cancellation, and reconciliation reads remain silent supporting calls.
 An error, hard stop, separately pending reconciliation, or required user action does not
 request a widget; report it in normal conversation unless the user separately
-asks for the corresponding view. When a `show_*` tool says no view opens on
-this host, present its returned `hosted_url` or `app_url` in normal
-conversation; when a run or request returns `request_link_reason` instead of
-`request_url`, say that the approval link is unavailable and that the user can
-decide in the MagicPay app or Telegram, keeping the same run and request. For
-automatic funding and new-choice presentation, follow [commands.md](commands.md).
+asks for the corresponding view. Present a returned `hostedUrl`, `hosted_url`,
+or `app_url` for its stated purpose. An activity/status link is not a direct
+approval link. When an exact runtime request exists but its `request_url`
+could not be created, report the link failure and retain the same request/run;
+do not claim Telegram delivery without evidence. A missing runtime request is
+an approval-setup failure, not a prompt to approve elsewhere. Valid approval
+links still use the immediate same-run wait above, with no chat reply required.
+For funding presentation, follow [payment-operations.md](payment-operations.md#funding);
+for new choices, follow [commands.md](commands.md).
