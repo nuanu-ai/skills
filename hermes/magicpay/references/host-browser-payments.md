@@ -91,9 +91,17 @@ dispatch. Correct merchant validation in the same run; refill only allowed
 fields that current evidence shows need correction, without unbounded loops.
 
 Fill returned values using host-supported browser input for the exact approved
-tab, including documented host REPL calls where applicable. Do not invent a
-generic sensitive-fill API or inject credentials with arbitrary page-evaluation
-code. Verify value presence and merchant validation without reading values back.
+tab, including documented host REPL calls where applicable. A clipboard or focus
+error from `.fill()` does not require repeating that same method. Re-observe the
+intended visible, enabled field, reacquire its current frame and control when
+needed, and use supported targeted native per-key input. Click the intended
+control only if needed. This applies to ordinary fields and authorized payment
+fields, including iframe fields. Replace partial input only when current
+evidence shows it needs correction. Verify ordinary field values normally;
+for payment credentials, verify presence and merchant validation without
+reading values back.
+Do not invent a generic sensitive-fill API, inject credentials with arbitrary
+page-evaluation code, or switch to raw browser-protocol control.
 Keep final dispatch separate from fill and navigation: invoke the identified
 payment control once in an isolated host action.
 
@@ -109,7 +117,10 @@ A tab binding can become stale without invalidating the Browser binding. When a
 fill/navigation call is definitely before the isolated final action, do not
 call `record_browser_payment_result`, fail, cancel, release, or create another
 run merely because of the interruption. Recover within the host's documented
-capabilities:
+capabilities. If only a field action failed, keep the live page and use the
+targeted input recovery above. Do not use `goto(currentUrl)` as a reload or
+input-recovery step: a checkout can depend on POST state that a new GET loses.
+If the tab binding is stale:
 
 1. discard only the stale tab binding;
 2. reacquire the exact live tab from the existing Browser binding, or reopen

@@ -199,6 +199,14 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   and MagicPay continuation identities; do not assume a generic sensitive-fill
   method exists. If the required native capability is unavailable, report it
   as blocked rather than switching to a MagicPay-owned browser.
+- For a pre-dispatch `.fill()` clipboard or focus error, follow the targeted
+  recovery in [host-browser-payments.md](host-browser-payments.md). When exposed
+  by the current host, a frame-scoped locator's `pressSequentially` provides
+  native per-key input after re-observing the intended field.
+  If observed partial text needs replacement, use that locator's documented
+  `press('ControlOrMeta+A')` before entering the replacement. Empty fields need
+  no clearing. `.type()` may share `.fill()`'s clipboard path; do not assume it
+  is an independent recovery method.
 - A source build or plugin reinstall does not prove this task loaded the new
   skill and tool descriptions. Verify the requested selector, endpoint, and
   supported version; record observed build revisions without demanding equality
