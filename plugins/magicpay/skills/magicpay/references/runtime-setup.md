@@ -55,7 +55,9 @@ file names Codex commands; the canonical instructions stay host-neutral.
   list is not evidence that it is unavailable. A successful MagicPay call must
   not be followed by a **New task** instruction.
 - If an actual current-task lookup cannot discover or call a required tool,
-  use one supported native reload only when actually exposed, then rediscover.
+  inspect the installed/enabled state and host auth/service result.
+  Use one supported native reload only when actually exposed, then rediscover
+  when the host applies it, including the next turn in this task when supported.
   Do not build a private App Server client or launch another process as a
   substitute for reloading this app. Missing tools alone do not identify the
   cause; distinguish auth errors, service failures, and unavailable tools.
@@ -66,6 +68,9 @@ file names Codex commands; the canonical instructions stay host-neutral.
   blocked fallback, not single-prompt success. An install exit code proves
   installation only; host OAuth completion proves authorization only. Readiness
   requires successful capability and authenticated status calls.
+- A user-triggered reload is same-task recovery, not automatic single-prompt
+  completion. A PATH CLI version does not identify the running desktop version;
+  distinguish native and shell installation when reporting an activation limit.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface
@@ -96,22 +101,33 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 
 ### Install
 
-- Development channel: `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`
+- Inspect `claude plugin list --json` and the bundled connection first. Preserve
+  an already-correct selector, endpoint, and authorization; repeated setup does
+  not request a reinstall or another login.
+- When development installation is needed, `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`
   registers marketplace `nuanu-skills-staging` (skip when it is already
   registered), then `claude plugin install magicpay@nuanu-skills-staging`.
 - Production channel, after promotion: `claude plugin marketplace add nuanu-ai/skills`,
   then `claude plugin install magicpay@nuanu-skills`.
 - Keep exactly one installed `magicpay@…` selector. `claude plugin list --json`
   shows the installed selector, version, and bundled MCP server.
+- Check the installation summary. If it reports the plugin is active, continue.
+  A shell install or a summary requesting activation needs the user to enter
+  `/reload-plugins` in this same conversation before `/mcp` can authenticate the
+  newly loaded server. This is a user command, not a shell or model reload API.
+- If reload stops with a prompt-cache warning, explain that the next request
+  may re-read the conversation. The user can accept that cost with
+  `/reload-plugins --force`; do not use `--force` without that warning.
 
 ### Connect
 
 - The bundled connection is named `plugin:magicpay:magicpay`.
-- Interactive session: the user runs `/mcp`, selects `magicpay`, and
-  authenticates; the secure browser OAuth window opens from there.
+- Reuse existing authorization. When sign-in is needed, the user runs `/mcp`,
+  selects `magicpay`, and authenticates; the secure browser OAuth window opens
+  from there.
 - Terminal: `claude mcp login plugin:magicpay:magicpay`. It requires an
   interactive terminal. An agent shell without one cannot start the login and
-  must hand off to the user instead of trying workarounds.
+  must hand off to the current session instead of creating a PTY workaround.
 - Manual handoff when no Connect action can be initiated:
   **/mcp → magicpay → Authenticate**.
 
@@ -119,8 +135,14 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 
 - After OAuth, discover and call `get_magicpay_capabilities` in this session
   first. If it succeeds, continue here. If the needed tools remain unavailable,
-  run `/reload-plugins` or start a new session. Neither repeats OAuth, and
-  neither is the action that opens OAuth.
+  have the user run `/reload-plugins` in the same conversation, following the
+  cache-warning rule above, then discover again. Preserve completed OAuth.
+- Reconnect through `/mcp` only for an observed connection failure. If reload
+  fails or tools remain unavailable, report the observed phase and error.
+  A user reload is same-chat recovery, not automatic single-prompt completion.
+  Do not launch a separate `claude -p` probe: another process cannot verify this
+  conversation's tool availability, and its account login does not diagnose
+  the plugin's OAuth connection.
 - Treat the refreshed catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Use them
   with the exact choice loop in [choices.md](choices.md).
@@ -283,33 +305,29 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 ### Install
 
-- Grok Bot follows the Cursor account's plugin and MCP policy and discovers
-  plugins under **Settings → Plugins**. Exactly one `magicpay` plugin may remain
-  installed; remove any other first.
-- Preferred channel: install MagicPay from the Cursor Marketplace listing
-  through **Settings → Plugins**. The plugin bundles this skill, the remote
-  MagicPay MCP declaration, and its pre-registered public OAuth client, so the
-  host skips dynamic client registration.
-- Interim channel while the listing is pending: add the remote MagicPay MCP as
-  a custom remote server; the host shows it as `user-magicpay`. Do not install a
-  MagicPay CLI, a local server, or a second browser controller.
-- Team or enterprise accounts inherit the team's Cursor plugin policy; there are
-  no separate Grok Bot plugin controls. When the policy blocks the install,
-  report that blocker and stop.
+- Inspect the installed MagicPay connector and selected channel first; preserve
+  a correct installation and valid authorization. Connectors are account-wide.
+- Use the native MagicPay **Add** card when available. Manual fallback:
+  **Settings → Plugins → MagicPay → Add**. Use the exact requested channel; a
+  custom remote entry is an option only when the host supports it. Do not add a
+  duplicate connection or install a MagicPay CLI or local server.
+- If the requested connector/channel is unavailable or policy blocks Add,
+  report that installation limit. The account's relationship with Cursor does
+  not prove which OAuth client metadata this connection uses; do not infer Bot
+  identity, client registration, or callback URLs from a generic Cursor label.
 
 ### Connect
 
-- Use the plugin's Connect action. MCP authentication is shared across the
-  Cursor account, so one MagicPay connection serves every Bot on that account;
-  never connect per Bot, and keep payment writes off for team or group use
-  until identity isolation is confirmed.
+- Use the native **Connect** action only when authentication is needed. Reuse
+  the existing account-wide connection; do not authenticate separately per Bot.
+  Keep payment writes off for team or group use until identity isolation is
+  confirmed.
 - The Connect action opens the same secure browser OAuth flow: email and OTP
-  are entered in that window, never in chat. The host redirects to
-  `http://localhost:8787/callback` on desktop and to
-  `https://www.cursor.com/agents/mcp/oauth/callback` for web and cloud agents.
-- Wait for the authorization to finish on its own and poll
-  `get_magicpay_capabilities` until it answers. Do not ask the user to confirm
-  the secure window in chat.
+  are entered in that window, never in chat. Let the host handle its registered
+  callback and return to the original chat after authorization.
+- Wait for host completion when observable, then discover
+  `get_magicpay_capabilities` in that chat. An opened or closed browser window
+  is not connection evidence; do not require a "done" reply.
 - Manual handoff when no Connect action can be initiated:
   **Settings → Plugins → MagicPay → Connect**.
 
@@ -320,14 +338,14 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   Continue setup and any retained request in the same task once the call
   succeeds. A tool missing from the initially shown list is not evidence that it
   is unavailable.
-- Only when an actual lookup cannot discover or call a required MagicPay tool
-  should you say the catalog is stale. Start a new Bot task so the host reuses
-  the completed OAuth; that is a catalog fallback, not a reason to repeat
-  authorization.
-- When a new task still cannot discover the tools, ask the user to restart the
-  Grok Bot app. Until a MagicPay tool actually answers, report that remaining
-  step and nothing more. An installed plugin, a Connect window that opened, or
-  a completed OAuth redirect is not evidence of a connection.
+- If the connected connector is not available to this chat, the user can type
+  `@` and attach MagicPay here, then retry discovery. Request this only when
+  attachment is needed; it is a manual same-chat fallback, not automatic setup.
+- For a reported connection failure, inspect the connector's detail page and
+  follow its authentication action only when required, then return to this chat.
+  Do not prescribe a new Bot task or an app restart for missing tools alone.
+  If tools remain unavailable, report the observed connection or tool-loading
+  limit. Installation and OAuth completion do not establish readiness.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
   [choices.md](choices.md): use a native choice interface when this host exposes
@@ -371,5 +389,5 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 - Disconnect and remove through that same panel. Both are host-local and revoke
   nothing remotely.
 - A plugin reinstall does not prove this task loaded the new skill and tool
-  descriptions. Verify catalog provenance in a new task, and reuse completed
-  OAuth rather than repeating setup.
+  descriptions. Verify the selected channel, endpoint, supported version, and
+  actual calls in this chat; keep build revisions diagnostic and reuse OAuth.

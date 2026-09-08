@@ -21,12 +21,20 @@ an MCP command for it.
 
 Inspect the installed plugin and its bundled connection first. Keep a correct
 installation and existing authorization; a repeated setup request is not a
-request to reinstall or sign in again. Use an actually callable, eligible native
-installation action, or the host's supported commands when permitted, as listed
-in the runtime setup reference. The agent performs those commands. Do not
+request to update, reinstall, or sign in again. Keep a supported installed
+version even when the marketplace advertises a newer release.
+Use an actually callable, eligible native installation action, or the
+host's supported commands when permitted, as listed in the runtime setup
+reference. The agent performs those commands. Do not
 automate the host's own settings UI or bypass a denied host action. During an
 actual channel change, log out the old exact connection before removing its
 plugin; preserve unrelated integrations and all remote account/payment state.
+
+Installation, activation in the current conversation, OAuth, and readiness are
+separate. Follow the host's activation result: a cold install may need activation
+before its Connect action exists. After authorization has completed, try
+current-conversation discovery before requesting a reload. A user-entered reload
+or connector attachment is same-conversation recovery, not automatic setup.
 
 ## Explain and connect
 
@@ -46,9 +54,10 @@ Then set the secure-input boundary:
 > this chat. When it closes, I’ll verify the connection and continue.
 
 Installing the plugin is not authentication. Inspect the exact installed
-`magicpay` connection: check readiness when already authorized, and start one
-host-native Connect action only when authentication is missing. The exact install, connect,
-login, manual-handoff, and catalog-refresh actions for this host are listed in
+`magicpay` connection: check readiness when already authorized, and start Connect
+only when authentication is missing. Activate a cold installation first when
+the host requires it. The install, activation, connect, and recovery actions for
+this host are listed in
 [references/runtime-setup.md](references/runtime-setup.md), which every runtime
 bundle provides for its own host; the canonical instructions never name a host.
 The Connect action must open the same secure browser OAuth flow described
@@ -77,7 +86,9 @@ continue any request retained there.
 
 If an actual current-task catalog lookup cannot discover or call a required
 MagicPay tool, follow the runtime setup reference's bounded supported refresh.
-Use a native reload only when it is actually exposed. Missing tools alone do
+Use a native reload only when it is actually exposed to the model; otherwise
+give the documented same-conversation user action when available, or report the
+observed host limit. Missing tools alone do
 not diagnose stale state, failed authentication, or a particular host limitation.
 Keep installation, host-reported authorization, tool availability, and service
 readiness separate: report only the phases supported by evidence. Do not repeat
@@ -100,9 +111,11 @@ x402 and crypto workflow contract is `magicpay.payment-run/v1` schema `1.1`;
 the browser contract is `magicpay.browser-payment/v1` schema `1.0`.
 Use each rail's advertised `minimumPluginVersion` as its compatibility floor;
 compare the installed base semantic version without a prerelease suffix. Do not
-replace that floor with the newest published version. Preserve the
-selected rail's `selectedAgentId`. A blocked result is a pre-payment stop; do
-not create a session or fall back to another browser-payment tool.
+replace that floor with the newest published version. Verify the exact endpoint
+and environment for the selected channel. Guide, plugin, and MCP revisions are
+diagnostics; independently deployed services do not need matching Git SHAs.
+Preserve the selected rail's `selectedAgentId`. A blocked result is a pre-payment
+stop; do not create a session or fall back to another browser-payment tool.
 
 After capability discovery succeeds, call `get_magicpay_status` to verify the
 authenticated agent identity and account health. Treat a bounded unavailable
