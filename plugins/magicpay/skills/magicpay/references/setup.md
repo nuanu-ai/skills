@@ -50,9 +50,11 @@ automate the host's own settings UI or bypass a denied host action. During an
 actual channel change, log out the old exact connection before removing its
 plugin; preserve unrelated integrations and all remote account/payment state.
 
-Installation, activation in the current conversation, OAuth, and readiness are
-separate. Follow the host's activation result: a cold install may need activation
-before its Connect action exists. After authorization has completed, try
+Installation, saved OAuth metadata, accepted authentication, activation in the
+current conversation, and readiness are separate. Saved OAuth metadata does
+not prove accepted authentication or readiness. Follow the host's activation
+result: a cold install may need activation before its Connect action exists.
+After authorization has completed, try
 current-conversation discovery before requesting a reload. A user-entered reload
 or connector attachment is same-conversation recovery, not automatic setup.
 
@@ -77,7 +79,13 @@ When you can initiate Connect, set the secure-input boundary:
 Use the runtime's tool-triggered native connection prompt as the primary path
 where supported. Calling `get_magicpay_capabilities` can request native OAuth
 without a separate Connect tool; discoverable tool definitions do not prove
-authentication. Follow the runtime reference before falling back to its supported
+authentication. A startup authentication failure can prevent any tool result
+from reaching that prompt. When tools cannot load, inspect supported host
+connection state: an explicit authentication-required result such as
+`reauthenticationRequired` follows Connect;
+tool absence alone does not justify another login. Keep service and network
+failures separate from authentication and activation failures.
+Follow the runtime reference before falling back to its supported
 connection action. Missing host-management tools do not establish a server outage
 or an authentication failure. Never promise an opened window without evidence.
 
@@ -88,15 +96,22 @@ the host requires it. The install, activation, connect, and recovery actions for
 this host are listed in
 [references/runtime-setup.md](references/runtime-setup.md), which every runtime
 bundle provides for its own host; the canonical instructions never name a host.
+Use an actually exposed native Authenticate/Connect action for that existing
+connection when authentication is required. Reuse a pending login; do not open
+another prompt or send the user to manual settings while it remains active.
 The Connect action must open the same secure browser OAuth flow described
 above. Never request or handle its email, OTP, authorization code, or tokens in
 chat or shell arguments.
 
-Do not tell the user that a fresh task or session will open OAuth. If neither a
-supported native action nor its permitted command can initiate the connection,
+Do not tell the user that a fresh task or session will open OAuth. Only when
+authentication is required and neither a supported native action nor its
+permitted command can initiate the connection,
 report the blocked phase and give only the immediate manual handoff named in
 the runtime setup reference. A manual fallback is not completed single-prompt
-setup. A canceled or denied action stops this attempt; do not retry through
+setup or proof of an agent-callable authentication control. Host integration
+documentation does not make an action callable; do not bridge missing controls
+with private RPC, settings UI automation, or a duplicate server.
+A canceled or denied action stops this attempt; do not retry through
 another route.
 
 Wait for host-reported authorization completion yourself when supported; do not
@@ -120,10 +135,14 @@ a fresh conversation after confirmed installation and authorization. Keep its
 recovery cue and reuse the installation and sign-in; if recovery was already
 attempted and tools remain unavailable, report the observed host limit. Missing tools alone do
 not diagnose stale state, failed authentication, or a particular host limitation.
+Use activation recovery only when no separate authentication or service error
+is observed. An explicit authentication requirement follows Connect even if a
+previous login succeeded; a new conversation does not complete authentication.
 Keep installation, host-reported authorization, tool availability, and service
 readiness separate: report only the phases supported by evidence. Do not repeat
-OAuth, install a MagicPay CLI, start a local MCP server, copy a token, or claim
-that a refreshed task retained an unfinished request from the old task.
+OAuth for missing tools alone, install a MagicPay CLI, start a local MCP server,
+copy a token, or claim that a refreshed task retained an unfinished request from
+the old task.
 
 Call `get_magicpay_capabilities`. Continue only when it reports
 `executionModes: ["client_browser"]`, `sessionAuthority: "remote_database"`, and
@@ -193,3 +212,6 @@ when the host retained that request in this same task. In a catalog-refresh
 fallback, act only on the request available after refresh without claiming that
 prior task context carried over. In later already-connected tasks, do not repeat
 setup onboarding; verify only the capabilities required by the requested action.
+Reauthentication is not payment approval. For an interrupted payment, read and
+continue the exact existing operation through its returned recovery path,
+preserving required approval; do not start a duplicate run or replacement purchase.

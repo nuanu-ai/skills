@@ -28,7 +28,8 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   plugin or connection. Report existing duplicates; do not remove them unless
   that cleanup or channel change is requested.
   If the requested selector and endpoint are correct, check readiness first;
-  do not reinstall, recreate MCP configuration, or repeat OAuth.
+  do not reinstall or recreate MCP configuration. Repeat OAuth only for an
+  observed authentication requirement, following Connect below.
 - If neither inventory route can be read and state has not otherwise been
   established, installation and auth state remain unknown. Missing MagicPay
   tools or inventory access do not erase a confirmed installation or completed
@@ -71,37 +72,59 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
 
 ### Connect
 
-- The primary path is the native MCP connection prompt triggered by calling
-  `get_magicpay_capabilities` once through the current task's MagicPay tool.
-  Tool definitions are discoverable before sign-in; that does not mean the
+- When a MagicPay tool is callable, the primary path is the native MCP connection
+  prompt triggered by calling `get_magicpay_capabilities` once through the
+  current task's MagicPay tool.
+  Tool definitions can be discoverable before sign-in; that does not mean the
   account is authenticated. A missing or expired authorization returns
   `mcp/www_authenticate`, which lets the app display its native Connect or
   Reconnect prompt. This is native OAuth and needs no separate Connect tool.
+  A failed startup can prevent tools from loading, so this prompt cannot repair
+  every connection before initialization.
   Never reproduce that tool call with curl, a shell MCP client, or private RPC:
   the result must pass through the current host's tool channel to trigger its UI.
-- Let the user approve the displayed native prompt and enter email and OTP in
-  the secure window. Wait for host-reported completion when available, then
-  retry capabilities and verify readiness here. Do not start a second OAuth
-  flow or send the user to Plugins while the native prompt is pending.
-- If tools cannot load or the host does not show its prompt, use one eligible
-  native Connect action when callable. Otherwise, when the exact installed
-  connection requires sign-in, the agent runs the existing host's
+- When tools cannot load, inspect the existing connection's supported host
+  status. `status=failed` with `failureReason=reauthenticationRequired` is an
+  authentication failure; follow this Connect recovery, not the new-chat
+  activation fallback. An installed/enabled plugin does not prove accepted
+  authentication. The `o_auth` label is saved OAuth metadata, not proof of
+  accepted authentication or readiness. Missing tools alone do not establish
+  that sign-in is required. A service or network failure keeps its own recovery
+  category; do not reset credentials or suggest a new task to fix it.
+- For an observed authentication requirement, use one eligible native
+  Authenticate/Connect action when callable for the exact installed `magicpay`
+  server in this host. Reuse an already pending login instead of opening a
+  second prompt or sending the user to Settings. Let the user approve the
+  displayed prompt and enter email and OTP in the secure window. Wait for
+  host-reported completion before rediscovering tools and verifying readiness
+  here; an open or closed window is not completion.
+- If no eligible native action is exposed, the exact installed connection
+  requires sign-in, and host policy permits the command, the agent runs the existing host's
   `codex --version`, then `codex mcp login magicpay` once in the same host and
   configuration scope. Require Codex 0.147.0 or newer: 0.146.1 drops the callback
   issuer. If the version is older, unknown, or the command is unsupported, report
   the host limitation; do not install/upgrade a CLI or hunt for another binary.
-  Missing tools alone do not establish that sign-in is required.
 - Let Codex open its host-issued authorization URL in the secure browser.
   If browser handoff is needed, use that exact URL with the host browser without
   echoing it into chat; do not reconstruct a callback, relay its parameters, or
   handle email, OTP, codes, or tokens. Keep OAuth URLs out of transcript output.
   Wait for this one host command to finish, then rediscover tools in this task.
-  The user runs no commands and does not visit Plugins to start this flow.
-  If neither supported connection action is available, report the observed limit;
-  do not invent a Connect tool or button. Say the screen appeared only when
-  observed. An open sign-in screen is not completed authentication.
+  The agent runs this permitted command; the user enters no commands.
+- Only when the exact installed connection requires sign-in and neither an
+  eligible native action nor the permitted command is available, report the observed host limitation and give one manual native handoff for
+  the existing `magicpay` server: **Settings → MCP servers → Authenticate**.
+  Preserve the installed plugin and selected environment. Say the screen
+  appeared only when observed; this handoff is waiting for the user's action,
+  not completed authentication or an agent-triggered native control.
+  Documented App Server methods such as `mcpServer/oauth/login` are host
+  integration interfaces, not callable model tools. Do not invent a Connect
+  tool, invoke private RPC, automate the host's settings, launch another App
+  Server process, or add a duplicate MCP server to bridge the missing control.
 - Cancellation, denied approval, or a login failure stops this attempt; preserve
   the installed plugin and report the failed phase instead of repeating OAuth.
+  Reauthentication does not approve a payment. After readiness succeeds,
+  continue the retained request or read and continue its exact existing payment
+  operation with its required approval; do not create a replacement purchase.
 
 ### Catalog refresh
 
@@ -118,6 +141,8 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   Do not build a private App Server client or launch another process as a
   substitute for reloading this app. Missing tools alone do not identify the
   cause; distinguish auth errors, service failures, and unavailable tools.
+  An observed `reauthenticationRequired` result returns to Connect; a supported
+  installed version or saved OAuth metadata does not override that failure.
 - If the correct plugin is installed and enabled, OAuth completed, and tools
   remain unavailable without a separate observed auth or service error, give
   one new-chat handoff. Do not require an explicit host instruction to offer
