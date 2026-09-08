@@ -5,9 +5,9 @@ MCP that it declares. The plugin contains the skill and host metadata.
 No MagicPay package, CLI, library, or local service is installed for the
 browser flow.
 
-Plugin activation starts one browser OAuth flow for both account verification
-and MCP authorization. The same connection page collects the email and OTP,
-grants MCP access, and redirects to the host. Do not ask the
+When authentication is missing, start one browser OAuth flow for both account
+verification and MCP authorization. The same connection page collects the email
+and OTP, grants MCP access, and redirects to the host. Do not ask the
 user to send an email or OTP in chat, and do not run a separate MagicPay account
 setup or login flow.
 
@@ -18,6 +18,15 @@ actions. Use the host's plugin or connection settings to remove the connection
 or revoke its authorization; there is no remote MagicPay removal or revocation
 tool. Keep that lifecycle separate from payment orchestration and do not invent
 an MCP command for it.
+
+Inspect the installed plugin and its bundled connection first. Keep a correct
+installation and existing authorization; a repeated setup request is not a
+request to reinstall or sign in again. Use an actually callable, eligible native
+installation action, or the host's supported commands when permitted, as listed
+in the runtime setup reference. The agent performs those commands. Do not
+automate the host's own settings UI or bypass a denied host action. During an
+actual channel change, log out the old exact connection before removing its
+plugin; preserve unrelated integrations and all remote account/payment state.
 
 ## Explain and connect
 
@@ -36,9 +45,9 @@ Then set the secure-input boundary:
 > I’ll open a secure MagicPay window. Enter your email and OTP there—not in
 > this chat. When it closes, I’ll verify the connection and continue.
 
-Installing the plugin is not authentication. Before considering a catalog
-refresh, inspect the exact installed `magicpay` connection and start its
-host-native Connect action when it is logged out. The exact install, connect,
+Installing the plugin is not authentication. Inspect the exact installed
+`magicpay` connection: check readiness when already authorized, and start one
+host-native Connect action only when authentication is missing. The exact install, connect,
 login, manual-handoff, and catalog-refresh actions for this host are listed in
 [references/runtime-setup.md](references/runtime-setup.md), which every runtime
 bundle provides for its own host; the canonical instructions never name a host.
@@ -46,19 +55,18 @@ The Connect action must open the same secure browser OAuth flow described
 above. Never request or handle its email, OTP, authorization code, or tokens in
 chat or shell arguments.
 
-Do not tell the user that a fresh task or session will open OAuth. If the
-host-native connection action cannot be initiated, give only the immediate
-manual handoff named in the runtime setup reference and stop until it
-completes.
+Do not tell the user that a fresh task or session will open OAuth. If neither a
+supported native action nor its permitted command can initiate the connection,
+report the blocked phase and give only the immediate manual handoff named in
+the runtime setup reference. A manual fallback is not completed single-prompt
+setup. A canceled or denied action stops this attempt; do not retry through
+another route.
 
-Wait for that authorization yourself; never ask the user to confirm it in chat.
-Once the connection UI is open, poll `get_magicpay_capabilities` on a bounded
-interval until it answers or a reasonable deadline passes. The user finishing
-email and OTP in the secure window is the completion signal, so a chat reply
-such as "done" adds nothing and a user who simply closes the window would
-otherwise strand the setup. Say only that you are waiting, and continue the
-moment the capability call succeeds. Ask the user how it went solely when the
-deadline passes, the host cannot poll, or the connection UI reports failure.
+Wait for host-reported authorization completion yourself when supported; do not
+require a "done" reply. Use a bounded wait or discovery interval and continue
+when it succeeds. An opened or closed browser window is not proof of OAuth
+completion. Report a cancellation, failure, or deadline at the phase it occurred,
+without reopening sign-in automatically.
 
 After OAuth completes, first probe the current task's callable catalog,
 including any host-native deferred or lazy tool discovery, for
@@ -67,12 +75,14 @@ list is not evidence that it is unavailable. If the capability tool is
 callable, stay in the current task, run the readiness sequence below, and
 continue any request retained there.
 
-Only when an actual current-task catalog lookup cannot discover or call a
-required MagicPay tool should you say that the tool catalog is stale and that
-this does not disprove the connection. Give the catalog-refresh action from the
-runtime setup reference so the host can reuse the completed connection. Do not
-repeat OAuth, install a MagicPay CLI, start a local MCP server, copy a token, or
-claim that a refreshed task retained an unfinished request from the old task.
+If an actual current-task catalog lookup cannot discover or call a required
+MagicPay tool, follow the runtime setup reference's bounded supported refresh.
+Use a native reload only when it is actually exposed. Missing tools alone do
+not diagnose stale state, failed authentication, or a particular host limitation.
+Keep installation, host-reported authorization, tool availability, and service
+readiness separate: report only the phases supported by evidence. Do not repeat
+OAuth, install a MagicPay CLI, start a local MCP server, copy a token, or claim
+that a refreshed task retained an unfinished request from the old task.
 
 Call `get_magicpay_capabilities`. Continue only when it reports
 `executionModes: ["client_browser"]`, `sessionAuthority: "remote_database"`, and
@@ -88,9 +98,9 @@ capability: `x402PaymentRun.status: "ready"` for x402,
 browser payment. The
 x402 and crypto workflow contract is `magicpay.payment-run/v1` schema `1.1`;
 the browser contract is `magicpay.browser-payment/v1` schema `1.0`.
-x402 requires minimum plugin version `0.2.0`.
-Crypto requires minimum plugin version `0.2.0`.
-Agent-direct browser payment requires `0.2.0`. Preserve the
+Use each rail's advertised `minimumPluginVersion` as its compatibility floor;
+compare the installed base semantic version without a prerelease suffix. Do not
+replace that floor with the newest published version. Preserve the
 selected rail's `selectedAgentId`. A blocked result is a pre-payment stop; do
 not create a session or fall back to another browser-payment tool.
 

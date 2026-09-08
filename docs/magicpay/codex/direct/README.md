@@ -6,9 +6,11 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
-- Development channel: `codex plugin marketplace add nuanu-ai/skills --ref staging`, then `codex plugin add magicpay@nuanu-skills-staging`.
+- Inspect the installed selector and bundled MCP first; preserve the requested installation and existing authorization. Use an actually callable, eligible native install action, otherwise the agent runs permitted Codex commands. Never automate Codex itself or bypass a refused approval.
+- When development installation is needed, register the trusted marketplace only if absent with `codex plugin marketplace add nuanu-ai/skills --ref staging`; otherwise verify its source and staging ref before refreshing it with `codex plugin marketplace upgrade nuanu-skills-staging`. Complete any channel change below, then run `codex plugin add magicpay@nuanu-skills-staging`.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its stable ref, then `codex plugin add magicpay@nuanu-skills`.
-- Connect through the plugin Connect action or `codex mcp login magicpay`, then probe the current task through deferred tool discovery and continue there when `get_magicpay_capabilities` is callable. Start a new task only if an actual lookup cannot find the required tools.
+- For a real channel change, log out the old exact connection before removing only its MagicPay selector. Keep one plugin and bundled connection; preserve unrelated integrations and remote state.
+- Only when authentication is missing, start one callable native Connect action or permitted `codex mcp login magicpay`, wait for host completion, then use current-task deferred discovery and the readiness sequence in `references/setup.md`. Use one supported native reload only when actually exposed. If still blocked, report the failed phase; manual activation is not single-prompt success. Do not loop through reinstall, OAuth, new tasks, or restarts.
 
 ## Direct skill archive
 
@@ -28,4 +30,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.10
+Release: magicpay-v0.4.13

@@ -15,6 +15,9 @@ the actual payment-dispatch surface without activating it, then observe the
 merchant/recipient, exact merchant amount and currency, recurrence, payment
 type, actual final-action meaning, and the ordinary semantic roles visible now.
 
+For recurring signup, use [subscriptions.md](subscriptions.md) to supply the
+recurring terms and optional dates/hints with this same checkout.
+
 ## Fixed USD price for non-USD checkouts
 
 For a USD checkout, pass the exact merchant money unchanged as both `amount`
@@ -50,7 +53,9 @@ Call `run_browser_payment` once with one stable `clientRequestId`. Do not wrap i
 in separate balance, capability, approval, or card-preparation calls. Approval
 creates checkout authority for the unchanged merchant and payment. Honor the
 returned expiry and host-required confirmations; MagicPay adds no redundant
-confirmation of the same approved facts.
+confirmation of the same approved facts, and neither do you. After MagicPay
+approval the only confirmation left is one the host itself requires for the
+final action; do not ask the user to approve the same payment again in chat.
 If email, name, phone, country, billing address, city, region, or postal code
 appears later, add it to the sorted unique role union and replay the same run.
 For receipt email precedence and an inbox that is not ready yet, follow

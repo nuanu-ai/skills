@@ -73,8 +73,7 @@ preference changed.
   `reconcile_payment_operation` only for that same operation when directed.
 - Invoice status or a receipt attachment: read the exact operation or use
   `attach_payment_invoice` for its PDF original or supported merchant receipt link. Prioritize
-  the original saved to that session; AI details are optional. Follow the invoice
-  reference without reopening payment.
+  the original saved to that session; AI details are optional. Follow the invoice reference without reopening payment.
 - Memory management: use the direct CRUD action matching the user's intent;
   CRUD remains value-free. To use Memory in a task, establish the exact session,
   call `get_memory_footprint`, select exact item revisions and field IDs, then
@@ -100,6 +99,7 @@ Load only the focused reference needed:
   [references/memory.md](references/memory.md)
 - agent-direct browser payment protocol: [references/host-browser-payments.md](references/host-browser-payments.md)
 - receipt email, original documents, and later invoice processing: [references/invoices.md](references/invoices.md)
+- subscriptions, agent-chosen dates and cancellation: [references/subscriptions.md](references/subscriptions.md)
 - compact workflow: [references/workflow.md](references/workflow.md)
 - statuses and recovery: [references/statuses.md](references/statuses.md)
 - development-only terminal session review: [references/development-session-review.md](references/development-session-review.md)
@@ -127,8 +127,10 @@ work because output was lost.
 
 A complete payment instruction starts the exact operation after asking only for
 required facts that are actually missing. Its consequential decision belongs to
-the operation-owned MagicPay approval system: never ask “please confirm” in
-chat, create a generic substitute, or treat chat “confirm” as payment approval.
+the operation-owned MagicPay approval system, the only payment approval: never
+ask “please confirm” in chat before or after it, create a generic substitute,
+re-present a given approval, or treat chat “confirm” or a host permission prompt
+as payment approval.
 
 For Memory, follow the focused reference: discover exact metadata, resolve the
 whole batch, continue any returned request, then re-run the unchanged resolver
@@ -147,7 +149,7 @@ Respect the host's actual APIs, permissions, and required confirmations. If it
 cannot perform the required input, report that limitation; do not invent a
 secret sink or silently switch browser controllers.
 
-V1 materialized Memory and one-time card values are visible to the model and
+V1 materialized Memory and payment-scoped card values are visible to the model and
 host. Use them only for the authorized task through host-supported input
 arguments, including a host REPL wrapper when that is its documented interface.
 This is not transcript isolation. Do not quote values in replies or deliberately

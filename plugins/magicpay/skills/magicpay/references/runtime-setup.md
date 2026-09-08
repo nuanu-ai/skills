@@ -11,45 +11,61 @@ file names Codex commands; the canonical instructions stay host-neutral.
 
 ### Install
 
-- `codex plugin list` first: exactly one installed `magicpay@…` selector may
-  remain. Remove any other before installing.
-- Prefer the user's own plugin manager, **Plugins → MagicPay → Install**. Only
-  an install made inside the running app rebuilds that app's plugin runtime;
-  `codex plugin add` runs in a separate process and reaches only sessions
-  started after it.
-- Development channel, from a `codex` terminal session:
-  `codex plugin marketplace add nuanu-ai/skills --ref staging` registers
-  marketplace `nuanu-skills-staging`, then
+- Inspect `codex plugin list`, `codex plugin marketplace list`, and
+  `codex mcp list`. Keep exactly one `magicpay` plugin and its bundled connection.
+  If the requested selector and endpoint are correct, check readiness first;
+  do not reinstall, recreate MCP configuration, or repeat OAuth.
+- Use an actually callable, eligible native install action when exposed.
+  Otherwise the agent runs supported Codex plugin commands when permitted.
+  Never automate Codex's own UI, invent a native action, or bypass a refused
+  approval through another route.
+- When development installation is needed, register the trusted marketplace
+  only if absent with `codex plugin marketplace add nuanu-ai/skills --ref staging`;
+  otherwise verify its source and staging ref before refreshing it with
+  `codex plugin marketplace upgrade nuanu-skills-staging`.
+  Complete any channel change below, then run
   `codex plugin add magicpay@nuanu-skills-staging`.
+- For an actual channel change, run `codex mcp logout magicpay` for the old
+  exact bundled connection before `codex plugin remove magicpay@<old-marketplace>`.
+  Remove only the obsolete MagicPay selector; preserve marketplace registrations,
+  unrelated plugins, and remote state. Do not add a second MCP server.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
   stable ref and selector `magicpay@nuanu-skills`.
+- Manual handoff only when no permitted install action is available:
+  **Plugins → MagicPay → Install**. This is a blocked single-prompt run, not ready.
 
 ### Connect
 
-- Use the plugin's Connect action. If no model-visible Connect action is
-  available but the bundled `magicpay` MCP registration exists, run the host's
-  built-in `codex mcp login magicpay`. This is Codex connection management, not
-  a MagicPay CLI or a second account login.
+- Inspect the bundled server's auth status. Only when authentication is missing,
+  start one actually callable native Connect action, or run the permitted
+  `codex mcp login magicpay` when no such action is exposed. This is Codex
+  connection management, not a MagicPay CLI or a second account login. Wait for
+  host completion; keep email, OTP, codes, and tokens in the secure flow.
 - Manual handoff when no Connect action can be initiated:
   **Plugins → MagicPay → Connect**.
+- Cancellation, denied approval, or a login failure stops this attempt; preserve
+  the installed plugin and report the failed phase instead of repeating OAuth.
 
 ### Catalog refresh
 
-- After OAuth, first use Codex's current-task deferred tool discovery to find
-  and call `get_magicpay_capabilities`. Continue setup and any retained request
+- After existing or newly completed authorization, use Codex's
+  current-task deferred tool discovery to find and call
+  `get_magicpay_capabilities`. Continue setup and any retained request
   in this task when the call succeeds. A tool omitted from the initial visible
-  list is not evidence that it is unavailable, and a successful MagicPay call
-  must not be followed by a **New task** instruction.
-- Only when an actual current-task lookup cannot discover or call a required
-  MagicPay tool should you tell the user to click **New task** in the Codex
-  sidebar. The new task reuses completed OAuth; it is a catalog fallback, not
-  the action that opens OAuth.
-- When a new task still cannot discover the tools, this app never loaded the
-  plugin at all: the install happened in another process. Ask the user to quit
-  Codex completely and reopen it, then continue in a new task. Until a MagicPay
-  tool actually answers, report that remaining step and nothing more — an
-  installed plugin, a command that exited zero, or a browser window that opened
-  is not evidence of a connection.
+  list is not evidence that it is unavailable. A successful MagicPay call must
+  not be followed by a **New task** instruction.
+- If an actual current-task lookup cannot discover or call a required tool,
+  use one supported native reload only when actually exposed, then rediscover.
+  Do not build a private App Server client or launch another process as a
+  substitute for reloading this app. Missing tools alone do not identify the
+  cause; distinguish auth errors, service failures, and unavailable tools.
+- A shell install may not activate in an already-running desktop app. If tools
+  remain unavailable, report the observed phase and host limitation without
+  looping through reinstall, sign-in, new tasks, or restart requests. If the
+  host explicitly requires manual activation, give that immediate action as a
+  blocked fallback, not single-prompt success. An install exit code proves
+  installation only; host OAuth completion proves authorization only. Readiness
+  requires successful capability and authenticated status calls.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): use a native choice interface
@@ -64,9 +80,9 @@ file names Codex commands; the canonical instructions stay host-neutral.
   method exists. If the required native capability is unavailable, report it
   as blocked rather than switching to a MagicPay-owned browser.
 - A source build or plugin reinstall does not prove this task loaded the new
-  skill and tool descriptions. Verify catalog/build provenance after refresh;
-  use a fresh task for clean installed-guidance acceptance when needed. Reuse
-  completed OAuth rather than repeating setup.
+  skill and tool descriptions. Verify the requested selector, endpoint, and
+  supported version; record observed build revisions without demanding equality
+  between independently deployed services. Reuse completed OAuth.
 
 - `codex mcp list` shows the `magicpay` connection and its auth status.
 - Disconnect: `codex mcp logout magicpay`. Remove:
@@ -320,10 +336,19 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 ### Approvals and the shared browser
 
+- MagicPay's own approval (its approval page, Telegram, or the narrow OTP path)
+  is the payment approval, and it is the only one. Never add another: do not
+  ask in chat whether to proceed before starting the payment run, do not ask
+  again after MagicPay records the approval, and do not re-present an approval
+  the user already gave. The "connected service" card that Grok Bot's Auto
+  Review shows for a MagicPay tool call is the host reviewing that tool call,
+  not a payment decision: let the user answer it and continue without adding a
+  chat confirmation before or after it.
 - Grok Bot's browser is a persistent cloud computer shared by every Bot on the
-  account. Purchases stay behind the host's own **Require Approval** rule. The
-  Bot asks once, at the exact approved final click, after MagicPay approval and
-  card fill. Never tell the user to add an "Always Allow" rule for purchases.
+  account. Purchases stay behind the host's own **Require Approval** rule; that
+  single host prompt at the exact approved final click, after MagicPay approval
+  and card fill, is the only confirmation left in the flow. Never tell the user
+  to add an "Always Allow" rule for purchases.
 - The card returned after finalized MagicPay approval is MagicPay's single-use
   credential for that exact approved checkout. Entering it is the approved
   payment step, not a password, passkey, or two-factor code. Supply it only
