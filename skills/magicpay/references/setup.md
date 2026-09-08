@@ -73,9 +73,12 @@ When you can initiate Connect, set the secure-input boundary:
 > this chat. After the host confirms authorization, I’ll verify the connection
 > and continue.
 
-If no connection action is callable, name the runtime's native Connect button
-instead of promising to open the window. Missing host-management tools do not
-establish a server outage or an authentication failure.
+Use the runtime's tool-triggered native connection prompt as the primary path
+where supported. Calling `get_magicpay_capabilities` can request native OAuth
+without a separate Connect tool; discoverable tool definitions do not prove
+authentication. Follow the runtime reference before falling back to its native
+Connect button. Missing host-management tools do not establish a server outage
+or an authentication failure. Never promise an opened window without evidence.
 
 Installing the plugin is not authentication. Inspect the exact installed
 `magicpay` connection: check readiness when already authorized, and start Connect

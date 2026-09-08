@@ -68,16 +68,25 @@ OAuth stays in native Connect; there is no shell-login fallback.
 
 ### Connect
 
-- Inspect the bundled server's auth status. Only when authentication is missing,
-  start one actually callable native Connect action. If none is exposed, use
-  the manual handoff below. Wait for host-reported authorization completion;
-  keep email, OTP, codes, and tokens in the secure flow.
-- Manual handoff when no Connect action can be initiated:
+- The primary path is the native MCP connection prompt triggered by calling
+  `get_magicpay_capabilities` once through the current task's MagicPay tool.
+  Tool definitions are discoverable before sign-in; that does not mean the
+  account is authenticated. A missing or expired authorization returns
+  `mcp/www_authenticate`, which lets the app display its native Connect or
+  Reconnect prompt. This is native OAuth and needs no separate Connect tool.
+  Never reproduce that tool call with curl, a shell MCP client, or private RPC:
+  the result must pass through the current host's tool channel to trigger its UI.
+- Let the user approve the displayed native prompt and enter email and OTP in
+  the secure window. Wait for host-reported completion when available, then
+  retry capabilities and verify readiness here. Do not start a second OAuth
+  flow or send the user to Plugins while the native prompt is pending.
+- If tools cannot load or the host does not show its prompt, use one eligible
+  native Connect action when callable. Manual handoff only when the primary
+  tool-triggered prompt and the native action are unavailable or have failed:
   **Plugins → MagicPay → Connect**.
-  The user clicking this button and the agent invoking it are different host
-  capabilities. An unavailable agent action does not prove the button or
-  MagicPay's email/OTP page is broken. Say you will open the window only when
-  you can initiate the action.
+  Report the observed loading or prompt failure. An absent Connect tool alone
+  is not grounds for this handoff. Say the prompt was shown only when observed;
+  a successful discovery or transport connection is not authentication.
 - Cancellation, denied approval, or a login failure stops this attempt; preserve
   the installed plugin and report the failed phase instead of repeating OAuth.
 
