@@ -23,6 +23,9 @@ Use opaque IDs exactly as returned.
 | Existing payment status | `get_payment_operation` |
 | Invoice or original-document status | `get_payment_operation` for the exact operation; see [invoices.md](invoices.md) |
 | Attach a PDF original or supported HTML receipt link | `attach_payment_invoice` with the exact operation and supported host file input; see [invoices.md](invoices.md) |
+| Read agent correspondence | `list_agent_email_threads`, `read_agent_email_thread` for the exact owned agent |
+| Prepare and send agent email | `prepare_agent_email`, normal `wait_request` / supported decision flow, then `send_agent_email` when directed; see [email.md](email.md) |
+| Recover an uncertain email send | `get_agent_email_send` with the same send and agent IDs |
 | Manage saved Memory | Use the direct value-free CRUD action matching the intent |
 | Use Memory in an active session | `get_memory_footprint`, then exact `materialize_memory_items` or v3 `resolve_browser_form_values` |
 | Existing request, session, or operation | For payment execution, use only its returned `nextAction`; authorized read-only diagnosis remains available |
@@ -47,7 +50,7 @@ explicit request to see that exact surface:
 - `show_sessions`
 - `show_subscriptions`
 
-There are two automatic presentation cases:
+Automatic presentation cases:
 
 - Authoritative unified balance returns `funding_required`: call `show_topup`
   once. Service, policy, approval, card-pool, and ambiguous-submission errors
@@ -56,6 +59,9 @@ There are two automatic presentation cases:
   `request_url` and one chat presentation, either unchanged `chatMessage` or a
   faithful host-native picker. Do not invoke another view tool or repeat the
   prompt for a terminal replay. See [choices.md](choices.md).
+- A `prepare_agent_email` result needs approval: show its existing full-draft
+  request widget or `request_url` before a decision. Keep the same send and
+  request; see [email.md](email.md).
 
 ## Exact continuations
 

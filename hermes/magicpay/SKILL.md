@@ -1,7 +1,8 @@
 ---
 name: magicpay
-description: Use for MagicPay payments, funding, Memory, account readiness,
-  optional choices and human input, or payment recovery through remote MCP.
+description: Use for MagicPay payments, funding, Memory, agent email, account
+  readiness, optional choices and human input, or payment recovery through
+  remote MCP.
 author: Mercuryo
 license: MIT
 metadata:
@@ -20,8 +21,7 @@ metadata:
 
 # MagicPay
 
-MagicPay is the remote payment, approval, optional-choice, Memory, and
-reconciliation layer. MagicCard is MagicPay's omnipayment tool. The host agent
+MagicPay is the remote payment, approval, optional-choice, Memory, and reconciliation layer. MagicCard is MagicPay's omnipayment tool. The host agent
 remains the orchestrator. MagicCard has one unified balance across its supported
 payment methods.
 Approval, reservation, form fill, final action, provider submission, and
@@ -74,6 +74,7 @@ preference changed.
 - Invoice status or a receipt attachment: read the exact operation or use
   `attach_payment_invoice` for its PDF original or supported merchant receipt link. Prioritize
   the original saved to that session; AI details are optional. Follow the invoice reference without reopening payment.
+- Agent email: use `list_agent_email_threads` / `read_agent_email_thread` for the exact agent. Start outgoing mail with `prepare_agent_email`; follow the email reference for exact approval and sending.
 - Memory management: use the direct CRUD action matching the user's intent;
   CRUD remains value-free. To use Memory in a task, establish the exact session,
   call `get_memory_footprint`, select exact item revisions and field IDs, then
@@ -99,6 +100,7 @@ Load only the focused reference needed:
   [references/memory.md](references/memory.md)
 - agent-direct browser payment protocol: [references/host-browser-payments.md](references/host-browser-payments.md)
 - receipt email, original documents, and later invoice processing: [references/invoices.md](references/invoices.md)
+- agent email history, exact draft approval, sending and conversations: [references/email.md](references/email.md)
 - subscriptions, agent-chosen dates and cancellation: [references/subscriptions.md](references/subscriptions.md)
 - compact workflow: [references/workflow.md](references/workflow.md)
 - statuses and recovery: [references/statuses.md](references/statuses.md)
@@ -107,11 +109,10 @@ Load only the focused reference needed:
 
 ## Direct views versus silent work
 
-Render an explicit view when the user asks to see it. Two automatic cases are
-authoritative unified-balance `funding_required` (use the existing approval's
-funding page when `funding_gate` is present; otherwise call `show_topup` once) and a
-new `request_choice` result (its widget/link plus chat or a faithful native
-picker). The commands reference owns the presentation policy and view tools. Pending funding: state the shortfall and approval deadline; keep the same link. After timeout/expiry, read the same run/request; time or balance never permits replacement. Follow the payment-operations recovery rules.
+Render an explicit view when the user asks to see it. Automatic cases are:
+unified-balance `funding_required` (the existing approval's funding page when `funding_gate` exists; otherwise `show_topup` once),
+a new `request_choice` (widget/link plus chat or a faithful native picker), and `prepare_agent_email` needing exact draft approval (normal request widget/link).
+The commands reference owns presentation policy. Pending funding: state the shortfall and approval deadline; keep the same link. After timeout/expiry, read the same run/request; time or balance never permits replacement. Follow the payment-operations recovery rules.
 
 Preflight, approval, waiting, operation reads, reconciliation, refreshes, and
 calls inside a broader task stay silent. A prior view request never carries

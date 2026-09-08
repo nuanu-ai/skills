@@ -13,19 +13,18 @@ For a visible ordinary receipt/contact email field, precedence is:
 
 1. the merchant account's fixed identity;
 2. an explicit user-approved checkout address;
-3. the connected agent's ready AgentMail address supplied by MagicPay; and
+3. the connected agent's ready managed email address supplied by MagicPay; and
 4. the existing ordinary-field resolution when an address is required.
 
 Do not replace a merchant account identity, use a receipt address for login or
 OTP, or invent an inbox from the agent's name. Keep an already-known authorized
 address; ask for a missing value only when the visible merchant form requires it.
 
-Inbox provisioning is asynchronous. An inbox that is pending, unavailable, or
-not returned is not a checkout prerequisite: do not poll, sleep, retry a payment,
-or make separate provider calls to wait for it. Continue the same checkout with
-the permitted ordinary-field fallback. A ready inbox on a later request may be
-used before an address is committed, but must never replace an address already
-submitted to the merchant.
+Managed email receiving may be unavailable. That is not a checkout prerequisite:
+do not poll, sleep, retry a payment, or make separate provider calls to wait for
+it. Continue the same checkout with the permitted ordinary-field fallback. A
+ready address may be used before an address is committed, but must never replace
+an address already submitted to the merchant.
 
 Pass the address actually submitted only in `checkoutEmail` when recording the
 browser result. Never put it in `valueFreeEvidence` or infer it from an inbox
@@ -41,7 +40,7 @@ An invoice never changes that distinction.
 `invoiceFollowUp` describes receipt routing, not proof that the merchant sent a
 document:
 
-- `automatic_agentmail`: capture can run automatically. End normally; do not
+- `automatic_email`: capture can run automatically. End normally; do not
   claim a document was received or processed until the exact operation says so.
 - `external_email`: give the returned guidance once. Any invoice goes to the
   checkout address, and the user may send the original later to attach it. Do not
