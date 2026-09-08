@@ -136,23 +136,49 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 
 ### Install
 
-- Inspect `claude plugin list --json` and the bundled connection first. Preserve
-  an already-correct selector, endpoint, and authorization; repeated setup does
-  not request a reinstall or another login.
-- When development installation is needed, `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`
-  registers marketplace `nuanu-skills-staging` (skip when it is already
-  registered), then `claude plugin install magicpay@nuanu-skills-staging`.
-- Production channel, after promotion: `claude plugin marketplace add nuanu-ai/skills`,
-  then `claude plugin install magicpay@nuanu-skills`.
-- Keep exactly one installed `magicpay@…` selector. `claude plugin list --json`
-  shows the installed selector, version, and bundled MCP server.
-- Check the installation summary. If it reports the plugin is active, continue.
+- First discover current-task MagicPay tools, including deferred tools. When
+  `get_magicpay_capabilities` is callable, verify the requested environment and
+  authenticated readiness through [setup.md](setup.md), without requiring
+  separate inventory. An auth challenge goes to Connect; a service failure is
+  not proof of absence. Neither calls for reinstalling.
+- Otherwise inspect `claude plugin list --json` and
+  `claude plugin marketplace list --json` in the same host and configuration
+  scope. Use plugin details or `/mcp` to inspect the bundled connection.
+  Preserve an already-correct selector, endpoint, supported installed version,
+  and authorization; repeated setup does not request a reinstall or another login.
+- If inventory is unavailable, state is unknown: hand off `/plugin` to inspect
+  details. Install only if absent; Authenticate only when needed. Use existing
+  supported host commands; if unavailable, use the native control instead of
+  installing another CLI. A denied host action stops the attempt; do not switch
+  routes to bypass it. Report existing duplicates; do not remove them
+  automatically or create another connection.
+- When development installation is needed, verify any existing
+  `nuanu-skills-staging` source is `nuanu-ai/skills` at ref `staging`. Stop on a
+  source/channel mismatch. Register only a missing source with
+  `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging`,
+  then install only the absent plugin with
+  `claude plugin install magicpay@nuanu-skills-staging`.
+  Public-directory listing is not required.
+- Production channel, after promotion: verify the existing `nuanu-skills`
+  source is the stable `nuanu-ai/skills` marketplace. Register only a missing
+  source with `claude plugin marketplace add nuanu-ai/skills`, then install
+  only the absent plugin with `claude plugin install magicpay@nuanu-skills`.
+  Stop on a source/channel mismatch.
+- For explicitly requested repo-local installation, verify the repository root
+  and its `agentpay-local` marketplace. Register only a missing source with
+  `claude plugin marketplace add <repository root>`, substituting the actual
+  verified path as one quoted argument; never run the placeholder literally.
+  Install only the absent plugin with `claude plugin install magicpay@agentpay-local`.
+  Stop on a source/channel mismatch.
+- Check the interactive in-session installation summary. If it reports the
+  plugin is active, continue.
   A shell install or a summary requesting activation needs the user to enter
   `/reload-plugins` in this same conversation before `/mcp` can authenticate the
   newly loaded server. This is a user command, not a shell or model reload API.
 - If reload stops with a prompt-cache warning, explain that the next request
   may re-read the conversation. The user can accept that cost with
   `/reload-plugins --force`; do not use `--force` without that warning.
+- Install success is not authentication or same-session readiness.
 
 ### Connect
 
