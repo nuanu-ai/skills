@@ -23,13 +23,22 @@ or revoke its authorization; there is no remote MagicPay removal or revocation
 tool. Keep that lifecycle separate from payment orchestration and do not invent
 an MCP command for it.
 
-Inspect the installed plugin and its bundled connection first. Keep a correct
+First discover current-conversation MagicPay tools, including deferred tools.
+If `get_magicpay_capabilities` is callable, run the readiness sequence below and
+verify the requested environment; a missing plugin-inventory action must not
+block an already usable connection. An authentication challenge goes to the
+host's Connect flow, and a service failure is not proof that installation is
+missing. Do not reinstall in response to either error.
+
+When tools are unavailable, inspect the installed plugin and its bundled
+connection through the runtime's supported inventory actions. Keep a correct
 installation and existing authorization; a repeated setup request is not a
 request to update, reinstall, or sign in again. Keep a supported installed
 version even when the marketplace advertises a newer release.
 Missing tools or an unavailable plugin inventory leave installation and auth
-state unknown; they do not mean the plugin is absent. If inventory cannot be
-read, use the runtime's plugin-details handoff to establish that state. For an
+state unknown; they do not mean the plugin is absent. If neither native nor
+permitted host-command inventory can be read, use the runtime's plugin-details
+handoff to establish that state. For an
 installed plugin, continue through Connect when sign-in is needed; choose
 Install/Add only when absence is confirmed. If already connected, discover its
 tools and verify readiness. Do not send an installed plugin back through Install.

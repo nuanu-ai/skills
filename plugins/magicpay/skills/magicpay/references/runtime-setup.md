@@ -6,40 +6,65 @@ in [setup.md](setup.md) never name a host.
 
 ## Runtime Setup: Codex
 
-Native Codex app actions for the universal flow in [setup.md](setup.md).
-MagicPay setup has no external CLI dependency or terminal compatibility path.
-Do not find, install, upgrade, or invoke a CLI from PATH, an app bundle, or a
-private App Server client to manage this connection.
-The terminal setup path is abandoned even when a test user already has a CLI
-installed locally; its presence does not enable a fallback.
+Host actions for the universal flow in [setup.md](setup.md). Codex's own
+plugin manager is not the retired MagicPay CLI. An existing supported `codex`
+command may inspect plugins and bootstrap development installation when native
+actions are unavailable and host policy permits it. Use the same local host and
+configuration scope as this app; do not change profiles, install or upgrade a
+CLI, hunt for an app-bundled binary, or launch a private App Server client.
+OAuth stays in native Connect; there is no shell-login fallback.
 
 ### Install
 
-- Inspect the native plugin inventory and bundled connection. Keep exactly one
-  `magicpay` plugin and its bundled connection.
+- First discover current-task MagicPay tools, including deferred discovery.
+  When `get_magicpay_capabilities` is callable, verify the requested environment
+  and authenticated readiness through [setup.md](setup.md); do not require a
+  separate inventory action or reinstall a working connection. An auth challenge
+  goes to Connect; a service failure is not evidence that the plugin is absent.
+- When tools are unavailable, inspect native plugin inventory or, when that
+  action is unavailable, use the existing host's `codex plugin list --json` and
+  `codex plugin marketplace list --json`. Do not create a duplicate `magicpay`
+  plugin or connection. Report existing duplicates; do not remove them unless
+  that cleanup or channel change is requested.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall, recreate MCP configuration, or repeat OAuth.
-- If inventory cannot be read, installation and auth state remain unknown.
+- If neither inventory route can be read, installation and auth state remain unknown.
   Missing MagicPay tools or plugin-management tools do not prove absence.
   Hand off **Plugins → MagicPay** to inspect the existing plugin details:
   choose **Connect** if installed and sign-in is needed, or **Install** only
   if absent. Do not send an already-installed plugin through Install again.
-- Only when installation is needed, use an actually callable, eligible native install action when exposed.
-  Otherwise give the user the native Install action below and wait for it.
+- Only when installation is needed, use an actually callable, eligible native
+  install action when exposed, or the permitted development commands below.
+  The agent runs supported commands; it does not merely print them for the user.
   Never automate Codex's own UI, invent a native action, or bypass a refused
   approval through another route.
-- For development, select `magicpay@nuanu-skills-staging` from the trusted
-  `nuanu-ai/skills` marketplace at ref `staging`. If that source is unavailable
-  in the app, report the missing source instead of registering it from a shell.
+- For development, the trusted source is `nuanu-ai/skills` at ref `staging`;
+  public-directory listing is not required. When installation is needed, add a
+  missing source with `codex plugin marketplace add nuanu-ai/skills --ref staging`.
+  If already registered, verify its source and development channel; refresh only
+  that source when needed with `codex plugin marketplace upgrade nuanu-skills-staging`.
+  Install the confirmed absent plugin with `codex plugin add magicpay@nuanu-skills-staging`.
+  Do not refresh or reinstall a correct existing plugin merely because a newer
+  release is available. Stop on a source/channel mismatch instead of replacing it.
+- For an explicitly requested repo-local development install, verify the repository
+  root and its marketplace first. Register it only if absent using
+  `codex plugin marketplace add <verified repository root>`, then install the
+  absent `magicpay@agentpay-local` with `codex plugin add magicpay@agentpay-local`.
+  Substitute the actual verified path; do not run the placeholder literally.
 - For an actual channel change, use native Disconnect for the old exact bundled
   connection before native Remove for its MagicPay plugin.
   Remove only the obsolete MagicPay selector; preserve marketplace registrations,
   unrelated plugins, and remote state. Do not add a second MCP server.
 - Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
   stable ref and selector `magicpay@nuanu-skills`.
-- Manual handoff when installation is needed and no native install tool is callable:
+- If the existing command is missing, unsupported, or targets another host/profile,
+  report that limit without installing a different executable. A policy or approval
+  denial stops the attempt; never switch routes to bypass it.
+- Manual handoff when installation is needed and neither permitted route is available:
   **Plugins → MagicPay → Install**, choosing the requested channel.
   Setup is waiting for that action; installation alone is not readiness.
+  A successful plugin command proves only its reported local installation,
+  not activation in this running app, authentication, or usable tools.
 
 ### Connect
 
