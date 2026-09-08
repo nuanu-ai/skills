@@ -38,8 +38,8 @@ preference changed.
   For a named recipient such as "send $3 to Albert", check Memory first rather
   than immediately asking for an address: follow the named-recipient flow in
   the Memory reference, then the transfer reference.
-- Known raw x402 resource: use `run_x402_payment` only with the exact generic
-  HTTP envelope or documented legacy request the user already supplied.
+- Known x402 resource: build its exact HTTP request from current official provider documentation
+  and the user's instruction, then use `run_x402_payment` within the authorized maximum debit.
 - Known checkout URL: use `create_checkout_session`, then the direct-browser
   sequence below.
 - Product or provider discovery: use `search_provider_methods` when the
@@ -49,8 +49,8 @@ preference changed.
   payment authority. Build the current provider request from current
   documentation, and obtain a debit ceiling from the user's authority or
   MagicPay policy rather than from registry prose or examples.
-- Existing request, run, session, or operation: continue only the exact tool
-  named by its current state or `nextAction`.
+- Existing request, run, session, or operation: use its returned `nextAction`
+  for payment execution; read-only status and authorized diagnosis remain available.
 - A few closed-world items with a material user preference: use an existing
   session or `begin_request_session`, then `request_choice` once. Follow the
   normalization and omnichannel loop in the choice reference.
@@ -172,4 +172,4 @@ authority or identities.
   never replayed. Timeout or missing output permits only same-operation status
   and reconciliation.
 - For fresh x402, use only the eligible composed run; `fallbackAllowed: false`
-  forbids creating a checkout session or substituting another payment route.
+  forbids replacement or route switching for that refused payment; read-only diagnosis remains available.

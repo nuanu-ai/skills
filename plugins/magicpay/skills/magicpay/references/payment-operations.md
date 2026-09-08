@@ -225,8 +225,12 @@ payment state and follow only its safe `nextAction`.
 
 For a known resource URL, skip MagicSearch and call `run_x402_payment` with the
 exact HTTP request, maximum debit, and one caller-generated stable
-`clientRequestId`. `maximumDebit` is the atomic integer string for the unified
-USD scale (for example, `"7000"` is `$0.007`). For a new call, use `httpRequest`
+`clientRequestId`. Construct the request from current official provider
+documentation and the user's instruction; the user need not supply a serialized
+HTTP envelope. Obtain the maximum debit from current user authority or MagicPay
+policy, never from seller or registry prose or examples. `maximumDebit` is the
+atomic integer string for the unified USD scale (for example, `"7000"` is
+`$0.007`). For a new call, use `httpRequest`
 with every field present: `requestVersion: 1`, the exact HTTPS `url`, an
 uppercase `method`, a `headers` object, and `body`. Use `body: null` when the
 request has no body. A present body is `{ "encoding": "base64", "content":
@@ -275,9 +279,12 @@ The composed call creates or reuses the exact workflow session, checks policy,
 unified balance, previous operation binding, and approval eligibility, then
 executes and waits up to its bounded timeout. Do not preflight
 `get_payment_balance` or create a separate session first.
+Preserve the user's Auto-Approve setting; never enable it to bypass manual
+approval.
 Preserve the seller request contract exactly, including the distinction between
-an absent, empty, and non-empty body. Do not change method, reorder or
-reconstruct a signed body, add fields, or turn a direct URL into discovery.
+an absent, empty, and non-empty body. Never reorder or reconstruct a signed
+body. Once bound to a run, do not change the URL, method, headers, or body. Do not
+turn a direct URL into discovery.
 
 For an unknown target, call `search_provider_methods`. Choose only a relevant
 entry, read its official documentation when available, and execute using an
@@ -348,8 +355,12 @@ the resource again; a separately authorized additional purchase follows
 
 Branch on `code`, `action`, `operationCreated`, `runId`, `operationId`,
 `fallbackAllowed`, and `nextAction`; do not infer failure from elapsed time or
-replace the run. `fallbackAllowed: false` forbids session creation, balance
-preflight, and substituting another payment route:
+replace the run. `fallbackAllowed: false` forbids creating a replacement
+session, using a balance preflight to bypass the refusal, or substituting
+another payment route for that refused payment. It does not block authorized
+read-only diagnosis or a separately authorized additional purchase under
+[statuses.md](statuses.md#separately-authorized-additional-purchase). A refusal
+does not itself authorize another purchase.
 
 - If the connector returns `kind: invalid_payment_run_failure`, the upstream
   error did not satisfy the payment-run contract. Treat durable state as
@@ -367,10 +378,15 @@ preflight, and substituting another payment route:
 - `wait_same_run`: call `wait_payment` on the returned `runId` and cursor.
 - `reconcile_same_operation`: reconcile only the returned `operationId`.
 - `retry_same_run`: replay the unchanged `clientRequestId` and facts.
-- `none`: stop. Do not invent a recovery.
+- `none`: stop payment execution and recovery side effects for that attempt.
+  Authorized read-only diagnosis may inspect current documentation, saved
+  run/session/operation status, and logs through existing permitted access.
+  Do not re-probe the seller, retry payment, create a run or session, or switch
+  routes as part of that diagnosis.
 
 If `operationCreated` is true, both recovery and user reporting stay bound to
 the returned operation. If it is false, do not claim a payment operation exists.
+That fact alone does not authorize retry or replacement.
 
 - `INSUFFICIENT_UNIFIED_BALANCE`: follow the returned recovery resumability.
   Pending approvals retain their identity; safely aborted crypto payments need

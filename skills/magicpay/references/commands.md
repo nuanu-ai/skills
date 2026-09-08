@@ -25,7 +25,7 @@ Use opaque IDs exactly as returned.
 | Attach a PDF original or supported HTML receipt link | `attach_payment_invoice` with the exact operation and supported host file input; see [invoices.md](invoices.md) |
 | Manage saved Memory | Use the direct value-free CRUD action matching the intent |
 | Use Memory in an active session | `get_memory_footprint`, then exact `materialize_memory_items` or v3 `resolve_browser_form_values` |
-| Existing request, session, or operation | Use only its returned `nextAction` |
+| Existing request, session, or operation | For payment execution, use only its returned `nextAction`; authorized read-only diagnosis remains available |
 
 A request that already names a merchant, recipient, or site does not require
 provider discovery: find its official destination in the host browser, then
