@@ -29,7 +29,7 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   that cleanup or channel change is requested.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall or recreate MCP configuration. Repeat OAuth only for an
-  observed authentication requirement, following Connect below.
+  explicit sign-in request or an observed authentication requirement, following Connect below.
 - If neither inventory route can be read and state has not otherwise been
   established, installation and auth state remain unknown. Missing MagicPay
   tools or inventory access do not erase a confirmed installation or completed
@@ -80,19 +80,32 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
 
 ### Connect
 
-- Initial sign-in: if tools are unavailable after discovery and you just installed the exact plugin during this authorized
-  setup and have no evidence of saved or completed authorization, start one
-  host-managed OAuth attempt in this installation chat using the eligible native
-  action or supported Codex command below. Do not wait for missing tools to
-  request authentication. The inventory value `unknown` means undetermined, not an
-  authentication rejection; it does not block this first sign-in or require a
-  Settings/new-chat handoff. A plugin install does not itself complete OAuth.
-  Check for a pending login first and wait for that same attempt; a canceled,
-  denied, or failed login must not be restarted. Preserve saved or completed
-  authorization and use authenticated tools or catalog recovery; unknown or
-  missing tools alone never justify repeating OAuth. A reported network/service
-  failure keeps its own recovery path. Keep the one login process attached until
-  host-reported completion or failure, then discover tools and verify readiness here.
+- Requested sign-in: when the user explicitly asks to open the MagicPay login
+  window, sign in again, or reconnect, start one host-managed OAuth attempt for
+  the exact installed MagicPay connection in this same chat, even when inventory
+  reports `o_auth`. This explicit request supplies the sign-in requirement for
+  the native action or supported Codex command below; do not require a failed
+  tool call first or send the user to Settings while that route is available.
+  Reuse an already pending login; do not open a second flow. A repeated setup
+  prompt alone is not an explicit sign-in request: preserve working authorization.
+  A canceled or denied action stops the current attempt; never restart it
+  automatically. Apply each host policy to its exact host and connection scope;
+  an unrelated connector restriction does not prohibit MagicPay login.
+- Initial sign-in: if tools are unavailable after discovery and you just installed the
+  exact plugin during this authorized setup and have no evidence of a completed sign-in
+  or a working authenticated connection, start one host-managed OAuth attempt in this
+  installation chat using the eligible native action or supported Codex command below.
+  Do not wait for missing tools to request authentication. The inventory value `unknown`
+  means undetermined, not an authentication rejection; it does not block this first
+  sign-in or require a Settings/new-chat handoff. A cached `o_auth` inventory label
+  alone does not establish either and must not skip initial login after confirmed plugin
+  absence. A plugin install does not itself complete OAuth. Check for a pending login
+  first and wait for that same attempt; a canceled, denied, or failed login must not be
+  restarted. Preserve completed authorization confirmed by the user or host and use
+  authenticated tools or catalog recovery; unknown or missing tools alone never justify
+  repeating OAuth. A reported network/service failure keeps its own recovery path. Keep
+  the one login process attached until host-reported completion or failure, then
+  discover tools and verify readiness here.
 - When a MagicPay tool is callable, the primary path is the native MCP connection
   prompt triggered by calling `get_magicpay_capabilities` once through the
   current task's MagicPay tool.
