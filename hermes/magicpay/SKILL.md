@@ -21,9 +21,9 @@ metadata:
 
 # MagicPay
 
-MagicPay is the remote payment, approval, optional-choice, Memory, and reconciliation layer. MagicCard is MagicPay's omnipayment tool. The host agent
-remains the orchestrator. MagicCard has one unified balance across its supported
-payment methods.
+MagicPay is the remote payment, approval, optional-choice, Memory, and reconciliation layer. The host agent remains the orchestrator.
+MagicCard is MagicPay's omnipayment tool, with one unified balance across supported payment methods.
+Use the exact names **MagicPay** and **MagicCard** in replies, confirmation labels, and top-up guidance; never shorten or respell them.
 Approval, reservation, form fill, final action, provider submission, and
 merchant confirmation are not settlement. Only a durable completed payment
 operation proves settlement.

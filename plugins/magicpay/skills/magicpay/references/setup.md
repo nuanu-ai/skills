@@ -60,6 +60,14 @@ or connector attachment is same-conversation recovery, not automatic setup.
 
 ## Explain and connect
 
+During routine setup, describe the next user action and the verified result.
+Keep environment checks, staging/development references, plugin/catalog IDs,
+version numbers, and build revisions out of user-facing narration. Use those
+details internally to select and verify the requested connection. Preserve any
+exact endpoint required by the host's native confirmation. If setup is blocked,
+explain the problem and next action in plain language; include technical
+identifiers only when the user explicitly asks for troubleshooting details.
+
 For a first-time setup request, explain the product before opening the
 connection UI:
 
