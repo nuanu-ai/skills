@@ -8,7 +8,7 @@ in [setup.md](setup.md) never name a host.
 
 Host actions for the universal flow in [setup.md](setup.md). Codex's own
 plugin manager is not the retired MagicPay CLI. An existing supported `codex`
-command may inspect plugins, bootstrap development installation, and start
+command may inspect plugins, bootstrap the requested channel's installation, and start
 host-managed OAuth when native actions are unavailable and host policy permits
 it. Use the same local host and configuration scope as this app; do not change profiles, install or upgrade a
 CLI, hunt for an app-bundled binary, or launch a private App Server client.
@@ -38,7 +38,7 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   install only if absence is confirmed. Report connection state as unknown
   until it can be inspected; do not invent a Connect button.
 - Only when installation is needed, use an actually callable, eligible native
-  install action when exposed, or the permitted development commands below.
+  install action when exposed, or the permitted commands for the requested channel below.
   The agent runs supported commands; it does not merely print them for the user.
   Never automate Codex's own UI, invent a native action, or bypass a refused
   approval through another route.
@@ -50,6 +50,16 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   Install the confirmed absent plugin with `codex plugin add magicpay@nuanu-skills-staging`.
   Do not refresh or reinstall a correct existing plugin merely because a newer
   release is available. Stop on a source/channel mismatch instead of replacing it.
+- For production after promotion, the trusted source is `nuanu-ai/skills` at ref
+  `main`. When installation is needed, register a missing source with
+  `codex plugin marketplace add nuanu-ai/skills --ref main`. If already registered,
+  verify `nuanu-skills` has that source and ref before refreshing only that source
+  when needed with `codex plugin marketplace upgrade nuanu-skills`. Install only
+  the absent plugin with `codex plugin add magicpay@nuanu-skills`.
+  Public-directory listing is not required. Preserve a correct installed version
+  even if a newer release exists; stop on a source/channel mismatch. Production
+  setup does not authorize switching or duplicating an existing development
+  installation; preserve it and report the channel mismatch.
 - For an explicitly requested repo-local development install, verify the repository
   root and its marketplace first. Register it only if absent using
   `codex plugin marketplace add <verified repository root>`, then install the
@@ -59,8 +69,6 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   connection before native Remove for its MagicPay plugin.
   Remove only the obsolete MagicPay selector; preserve marketplace registrations,
   unrelated plugins, and remote state. Do not add a second MCP server.
-- Production channel, after promotion: the `nuanu-ai/skills` marketplace at its
-  stable ref and selector `magicpay@nuanu-skills`.
 - If the existing command is missing, unsupported, or targets another host/profile,
   report that limit without installing a different executable. A policy or approval
   denial stops the attempt; never switch routes to bypass it.
