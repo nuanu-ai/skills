@@ -1,7 +1,7 @@
 {
   "id": "magicpay",
   "name": "MagicPay",
-  "version": "0.4.35",
+  "version": "0.4.36",
   "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
   "configSchema": {
     "type": "object",
@@ -14,7 +14,7 @@
   "mcpServers": {
     "magicpay": {
       "transport": "streamable-http",
-      "url": "https://mercuryo-agent-pay-chatgpt-app-prod.onrender.com/mcp",
+      "url": "https://mcp.magiccard.ai/mcp",
       "auth": "oauth"
     }
   }

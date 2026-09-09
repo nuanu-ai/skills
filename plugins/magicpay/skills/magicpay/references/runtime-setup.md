@@ -30,6 +30,25 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   If the requested selector and endpoint are correct, check readiness first;
   do not reinstall or recreate MCP configuration. Repeat OAuth only for an
   explicit sign-in request or an observed authentication requirement, following Connect below.
+- Missing marketplace snapshot: if inventory reports that a configured marketplace root does
+  not contain a supported manifest, repair the catalog before the unknown-state handoff. This
+  error does not prove plugin absence. Read only the reported marketplace entries and their
+  source_type, source, and ref fields in the current host configuration; do not dump
+  configuration or read credentials. For `nuanu-skills`, require the Git source
+  `https://github.com/nuanu-ai/skills.git` at ref `main`; for `nuanu-skills-staging`, require
+  that same source at ref `staging`. When the reported root directory is absent and its source
+  matches, restore that snapshot once with `codex plugin marketplace add nuanu-ai/skills --ref
+  main` or `codex plugin marketplace add nuanu-ai/skills --ref staging`, respectively. Restore
+  only the verified missing snapshots named in the error. The staging snapshot can block
+  production inventory too: the marketplace filter does not bypass other broken snapshots.
+  Restoring its existing source is catalog repair, not a channel switch or plugin installation.
+  Use same-source add for this absent-directory repair; marketplace upgrade can refresh
+  installed plugin versions. Do not remove sources, clear caches, edit configuration, or repeat
+  OAuth. If a root exists but is invalid, a source differs, or repair fails or is denied,
+  report that specific blocker without trying another repair route. After successful repair,
+  rerun both inventories once, preserve any installed plugin and completed sign-in, and install
+  only if absence is then confirmed. Continue the requested channel setup and its same-chat
+  initial sign-in rule; catalog repair alone is not setup completion.
 - If neither inventory route can be read and state has not otherwise been
   established, installation and auth state remain unknown. Missing MagicPay
   tools or inventory access do not erase a confirmed installation or completed

@@ -2,8 +2,8 @@
   "mcpServers": {
     "magicpay": {
       "type": "http",
-      "url": "https://mercuryo-agent-pay-chatgpt-app-prod.onrender.com/mcp",
-      "oauth_resource": "https://mercuryo-agent-pay-chatgpt-app-prod.onrender.com/mcp"
+      "url": "https://mcp.magiccard.ai/mcp",
+      "oauth_resource": "https://mcp.magiccard.ai/mcp"
     }
   }
 }

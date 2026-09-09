@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "magicpay": {
-      "url": "https://mercuryo-agent-pay-chatgpt-app-prod.onrender.com/mcp",
+      "url": "https://mcp.magiccard.ai/mcp",
       "auth": {
         "CLIENT_ID": "magicpay-cursor"
       }
