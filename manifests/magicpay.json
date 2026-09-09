@@ -1,57 +1,21 @@
 {
   "skill": "magicpay",
   "displayName": "MagicPay",
-  "description": "MagicPay handles first-time setup, exact balance checks, crypto transfers and reconciliation, plus approved login, identity, checkout, donation, subscription, and payment workflows. It applies when a task needs protected Memory, payment operations, or approval; an open-ended purchase or booking without a checkout URL routes through MagicSearch before browser navigation or generic web search.",
+  "description": "Use for MagicPay payments, funding, Memory, agent email, account readiness, optional choices and human input, or payment recovery through remote MCP.",
   "boundary": "sensitive-page",
-  "releaseVersion": "0.1.49",
-  "releaseTag": "magicpay-v0.1.49",
-  "ownerPackage": "@nuanu-ai/magicpay-cli",
-  "ownerBin": "magicpay",
-  "installPackage": "@nuanu-ai/magicpay-cli",
-  "npmPackages": [
-    {
-      "name": "@nuanu-ai/magicbrowse",
-      "version": "0.0.22",
-      "manifestPath": "packages/magicbrowse/package.json"
-    },
-    {
-      "name": "@nuanu-ai/magicsearch",
-      "version": "0.2.3",
-      "manifestPath": "packages/magicsearch/package.json"
-    },
-    {
-      "name": "@nuanu-ai/captcha-solver",
-      "version": "0.1.8",
-      "manifestPath": "packages/captcha-solver/package.json"
-    },
-    {
-      "name": "@nuanu-ai/magicpay-sdk",
-      "version": "0.3.2",
-      "manifestPath": "packages/magicpay-sdk/package.json"
-    },
-    {
-      "name": "@nuanu-ai/magicpay-home",
-      "version": "0.1.22",
-      "manifestPath": "packages/magicpay-home/package.json"
-    },
-    {
-      "name": "@nuanu-ai/magicsearch-cli",
-      "version": "0.1.8",
-      "manifestPath": "packages/magicsearch-cli/package.json"
-    },
-    {
-      "name": "@nuanu-ai/magicpay-cli",
-      "version": "0.1.35",
-      "manifestPath": "packages/magicpay-cli/package.json"
-    }
-  ],
+  "releaseVersion": "0.4.31",
+  "releaseTag": "magicpay-v0.4.31",
+  "pluginName": "magicpay",
+  "installMode": "host-native-plugin",
+  "mcpTransport": "remote-streamable-http",
+  "npmPackages": [],
   "portableDir": "portable/magicpay",
   "runtimes": [
     {
       "runtime": "claude",
       "runtimeDisplayName": "Claude Code",
       "directBundleDir": "direct/claude-skill/magicpay",
-      "directReleaseArchive": "magicpay-claude-code-v0.1.49.zip",
+      "directReleaseArchive": "magicpay-claude-code-v0.4.31.zip",
       "marketplacePayloadDir": null,
       "marketplaceKind": "github-marketplace",
       "marketplaceEnabled": false,
@@ -63,7 +27,7 @@
       "runtime": "codex",
       "runtimeDisplayName": "Codex",
       "directBundleDir": "direct/codex-skill/magicpay",
-      "directReleaseArchive": "magicpay-codex-v0.1.49.zip",
+      "directReleaseArchive": "magicpay-codex-v0.4.31.zip",
       "marketplacePayloadDir": null,
       "marketplaceKind": "repo-marketplace",
       "marketplaceEnabled": false,
@@ -72,10 +36,34 @@
       "marketplaceDocPath": null
     },
     {
+      "runtime": "grok-bot",
+      "runtimeDisplayName": "Grok Bot",
+      "directBundleDir": "direct/grok-bot-skill/magicpay",
+      "directReleaseArchive": "magicpay-grok-bot-v0.4.31.zip",
+      "marketplacePayloadDir": null,
+      "marketplaceKind": "cursor-marketplace",
+      "marketplaceEnabled": false,
+      "marketplaceInstallDocGenerated": false,
+      "directDocPath": "docs/magicpay/grok-bot/direct/README.md",
+      "marketplaceDocPath": null
+    },
+    {
+      "runtime": "grok-build",
+      "runtimeDisplayName": "Grok Build",
+      "directBundleDir": "direct/grok-build-skill/magicpay",
+      "directReleaseArchive": "magicpay-grok-build-v0.4.31.zip",
+      "marketplacePayloadDir": null,
+      "marketplaceKind": "repo-marketplace",
+      "marketplaceEnabled": false,
+      "marketplaceInstallDocGenerated": false,
+      "directDocPath": "docs/magicpay/grok-build/direct/README.md",
+      "marketplaceDocPath": null
+    },
+    {
       "runtime": "hermes",
       "runtimeDisplayName": "Hermes",
       "directBundleDir": "direct/hermes-skill/magicpay",
-      "directReleaseArchive": "magicpay-hermes-v0.1.49.zip",
+      "directReleaseArchive": "magicpay-hermes-v0.4.31.zip",
       "marketplacePayloadDir": "marketplace/hermes-github-hub/magicpay",
       "marketplaceKind": "hermes-github-hub",
       "marketplaceEnabled": true,
@@ -87,7 +75,7 @@
       "runtime": "openclaw",
       "runtimeDisplayName": "OpenClaw",
       "directBundleDir": "direct/openclaw-skill/magicpay",
-      "directReleaseArchive": "magicpay-openclaw-v0.1.49.zip",
+      "directReleaseArchive": "magicpay-openclaw-v0.4.31.zip",
       "marketplacePayloadDir": "marketplace/openclaw-clawhub/magicpay",
       "marketplaceKind": "clawhub",
       "marketplaceEnabled": true,
@@ -99,7 +87,7 @@
       "runtime": "skills-sh",
       "runtimeDisplayName": "General Agent",
       "directBundleDir": "direct/general-agent-skill/magicpay",
-      "directReleaseArchive": "magicpay-general-agent-v0.1.49.zip",
+      "directReleaseArchive": "magicpay-general-agent-v0.4.31.zip",
       "marketplacePayloadDir": "marketplace/skills-sh/magicpay",
       "marketplaceKind": "skills-sh",
       "marketplaceEnabled": true,

@@ -1,196 +1,226 @@
-# MagicPay Setup
+# Connection Setup
 
-<!-- magicpay-continuation-contract:v1 -->
+Install the host-native MagicPay plugin and authenticate the remote MagicPay
+MCP that it declares. The plugin contains the skill and host metadata.
+No MagicPay package, CLI, library, or local service is installed for the
+browser flow.
 
-## Contents
+Any previously installed MagicPay CLI is an abandoned path. Ignore it for
+setup, login, verification, and recovery; its presence does not establish a
+connection. Do not execute or upgrade it. Use the native plugin and remote MCP.
 
-- [Setup Instructions](#setup-instructions)
-- [First-Time Landing Setup](#first-time-landing-setup)
-- [UI Connect Setup](#ui-connect-setup)
+When authentication is missing, start one browser OAuth flow for both account
+verification and MCP authorization. The same connection page collects the email
+and OTP, grants MCP access, and redirects to the host. Do not ask the
+user to send an email or OTP in chat, and do not run a separate MagicPay account
+setup or login flow.
 
-## Setup Instructions
+## Plugin lifecycle
 
-Most MagicPay work is normal operating mode: the user has already connected
-MagicPay locally, and the agent uses this skill for approved login, identity,
-checkout, donation, subscription, payment, Memory fill, CAPTCHA recovery, and
-browser-bound workflows.
+Connecting, removing, and revoking MagicPay are host connection-management
+actions. Use the host's plugin or connection settings to remove the connection
+or revoke its authorization; there is no remote MagicPay removal or revocation
+tool. Keep that lifecycle separate from payment orchestration and do not invent
+an MCP command for it.
 
-There are two setup exceptions. Treat them as mutually exclusive.
+First discover current-conversation MagicPay tools, including deferred tools.
+If `get_magicpay_capabilities` is callable, run the readiness sequence below and
+verify the requested environment; a missing plugin-inventory action must not
+block an already usable connection. An authentication challenge goes to the
+host's Connect flow, and a service failure is not proof that installation is
+missing. Do not reinstall in response to either error.
 
-If the current user prompt says to read/install `skill.md`, comes from the
-MagicPay landing bootstrap flow, or asks to continue setup after installation,
-that prompt is a setup request. Installing the skill and CLI is not completion.
-After `magicpay --help` includes `setup next`, continue in the same task by
-running `magicpay setup next`, then follow its returned `instructions` until
-setup needs user input, completes, or returns a real blocker. A skill-manager
-recommendation to start a fresh agent session affects only future skill-catalog
-activation; it does not block the installed CLI and is not a reason to stop at
-an installation report or ask the user to repeat the setup prompt. Ask for an
-email, OTP, API key, or other setup input only when the returned instructions
-request it. The only exception is an authenticated MagicPay UI prompt that
-includes a setup token; that path uses UI Connect Setup.
+When tools are unavailable, inspect the installed plugin and its bundled
+connection through the runtime's supported inventory actions. Keep a correct
+installation and existing authorization; a repeated setup request is not a
+request to update, reinstall, or sign in again. Keep a supported installed
+version even when the marketplace advertises a newer release.
+Missing tools or an unavailable plugin inventory do not erase a confirmed
+installation or completed OAuth. If state has not otherwise been established,
+it remains unknown; missing tools do not mean the plugin is absent. Only when
+that state is unknown and neither native nor permitted host-command inventory
+can be read, use the runtime's plugin-details handoff to establish it. For an
+installed plugin, continue through Connect when sign-in is needed; choose
+Install/Add only when absence is confirmed. If already connected, discover its
+tools and verify readiness. Do not send an installed plugin back through Install.
+Use an actually callable, eligible native installation action, or the
+host's supported commands when permitted, as listed in the runtime setup
+reference. The agent performs those commands. Do not
+automate the host's own settings UI or bypass a denied host action. During an
+actual channel change, log out the old exact connection before removing its
+plugin; preserve unrelated integrations and all remote account/payment state.
 
-For read-only balance questions, do not ask for an email first. Run
-`magicpay status`. If status is healthy, answer with `magicpay payment-balance`
-without asset flags and use only its authoritative unified `available`. If status
-shows missing or invalid local setup, run `magicpay setup next` and follow its
-returned `instructions`. Ask for the user's email only when those instructions
-ask for it.
+Installation, saved OAuth metadata, accepted authentication, activation in the
+current conversation, and readiness are separate. Saved OAuth metadata does
+not prove accepted authentication or readiness. Follow the host's activation
+result: a cold install may need activation before its Connect action exists.
+After authorization has completed, try
+current-conversation discovery before requesting a reload. A user-entered reload
+or connector attachment is same-conversation recovery, not automatic setup.
 
-### First-Time Landing Setup
+## Explain and connect
 
-Use this mode only when the user asks to set up MagicPay, log in to MagicPay,
-connect MagicPay, or top up MagicPay after installing this skill. Also use
-this mode when the current prompt explicitly says it came from the MagicPay
-landing bootstrap flow or asks you to follow the setup instructions in this
-skill.
+For a first-time setup request, explain the product before opening the
+connection UI:
 
-1. Make sure the MagicPay CLI is available and has the setup command this
-   skill needs:
+> MagicPay is the broader payment platform redesigned for AI agents. MagicCard
+> is MagicPay's omnipayment tool: it has one unified balance, can be topped up
+> through supported funding rails, and can pay through supported credit-card,
+> crypto, and agentic payment methods. It gives me a secure way to prepare
+> payments and request approvals while keeping sensitive payment details out of
+> chat.
 
-   ```bash
-   magicpay --version
-   magicpay --help
-   ```
+When you can initiate Connect, set the secure-input boundary:
 
-   The help output must include `setup next`. If the `magicpay` command is
-   missing or `setup next` is missing, install or repair the CLI before
-   continuing. Do not stop after only reporting that `magicpay` is not on
-   `PATH`.
+> I’ll open a secure MagicPay window. Enter your email and OTP there—not in
+> this chat. After the host confirms authorization, I’ll verify the connection
+> and continue.
 
-   If the current setup request installed this skill from
-   `http://localhost:4321`, `http://localhost:4321/skill.md`, or an AgentPay
-   local generated dist path (`./packages/agent-skills/dist/...`), prefer the
-   local CLI tarballs so the CLI and skill capabilities match:
+Use the runtime's tool-triggered native connection prompt as the primary path
+where supported. Calling `get_magicpay_capabilities` can request native OAuth
+without a separate Connect tool; discoverable tool definitions do not prove
+authentication. A startup authentication failure can prevent any tool result
+from reaching that prompt. When tools cannot load, inspect supported host
+connection state: an explicit authentication-required result such as
+`reauthenticationRequired` follows Connect;
+tool absence alone does not justify another login. Keep service and network
+failures separate from authentication and activation failures.
+Follow the runtime reference before falling back to its supported
+connection action. Missing host-management tools do not establish a server outage
+or an authentication failure. Never promise an opened window without evidence.
 
-   ```bash
-   npm i -g http://localhost:4321/dev-packages/magicbrowse-local.tgz http://localhost:4321/dev-packages/magicbrowse-cli-local.tgz http://localhost:4321/dev-packages/captcha-solver-local.tgz http://localhost:4321/dev-packages/magicsearch-local.tgz http://localhost:4321/dev-packages/magicpay-sdk-local.tgz http://localhost:4321/dev-packages/magicpay-home-local.tgz http://localhost:4321/dev-packages/magicsearch-cli-local.tgz http://localhost:4321/dev-packages/magicpay-cli-local.tgz
-   magicpay --version
-   magicpay --help
-   magicsearch --help
-   magicbrowse --help
-   ```
+Installing the plugin is not authentication. Inspect the exact installed
+`magicpay` connection: check readiness when already authorized, and start Connect
+only when authentication is missing. Activate a cold installation first when
+the host requires it. The install, activation, connect, and recovery actions for
+this host are listed in
+[references/runtime-setup.md](references/runtime-setup.md), which every runtime
+bundle provides for its own host; the canonical instructions never name a host.
+Use an actually exposed native Authenticate/Connect action for that existing
+connection when authentication is required. Reuse a pending login; do not open
+another prompt or send the user to manual settings while it remains active.
+The Connect action must open the same secure browser OAuth flow described
+above. Never request or handle its email, OTP, authorization code, or tokens in
+chat or shell arguments.
 
-   If the localhost tarballs are unavailable but the AgentPay checkout is
-   available, use the local files:
+Evaluate command eligibility using the runtime reference, current instructions,
+and observed host decisions. Missing native controls and historical notes do
+not establish a current policy restriction. If a policy blocks the supported
+fallback, identify its applicable source or observed denial without exposing
+private instructions. Respect actual restrictions; do not invent a session-policy
+prohibition or switch routes to bypass a denial.
+A restriction limited to agent commands may still permit the documented manual
+native handoff; a denied authentication attempt may not be retried by another route.
 
-   ```bash
-   npm i -g ./apps/landing/public/dev-packages/.lifecycle/magicbrowse-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicbrowse-cli-local.tgz ./apps/landing/public/dev-packages/.lifecycle/captcha-solver-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicsearch-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicpay-sdk-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicpay-home-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicsearch-cli-local.tgz ./apps/landing/public/dev-packages/.lifecycle/magicpay-cli-local.tgz
-   magicpay --version
-   magicpay --help
-   magicsearch --help
-   magicbrowse --help
-   ```
+Do not tell the user that a fresh task or session will open OAuth. Only when
+authentication is required and neither a supported native action nor its
+permitted command can initiate the connection,
+report the blocked phase and give only the immediate manual handoff named in
+the runtime setup reference. A manual fallback is not completed single-prompt
+setup or proof of an agent-callable authentication control. Host integration
+documentation does not make an action callable; do not bridge missing controls
+with private RPC, settings UI automation, or a duplicate server.
+A canceled or denied action stops this attempt; do not retry through
+another route.
 
-   If the local tarballs are missing, run this from the AgentPay repo root and
-   then retry one of the local install commands above:
+Wait for host-reported authorization completion yourself when supported; do not
+require a "done" reply. Use a bounded wait or discovery interval and continue
+when it succeeds. An opened or closed browser window is not proof of OAuth
+completion. Report a cancellation, failure, or deadline at the phase it occurred,
+without reopening sign-in automatically.
 
-   ```bash
-   pnpm --filter @agentpay/landing prepare:local-packages
-   ```
+After OAuth completes, first probe the current task's callable catalog,
+including any host-native deferred or lazy tool discovery, for
+`get_magicpay_capabilities`. A tool omitted from the initial or eagerly shown
+list is not evidence that it is unavailable. If the capability tool is
+callable, stay in the current task, run the readiness sequence below, and
+continue any request retained there.
 
-   In production or when the prompt did not use a local AgentPay skill source,
-   install the public CLI and verify again:
+If an actual current-task catalog lookup cannot discover or call a required
+MagicPay tool, follow the runtime setup reference's bounded supported refresh.
+Use a native reload only when it is actually exposed to the model; otherwise
+follow the runtime reference's documented activation recovery, which may use
+a fresh conversation after confirmed installation and authorization. Keep its
+recovery cue and reuse the installation and sign-in; if recovery was already
+attempted and tools remain unavailable, report the observed host limit. Missing tools alone do
+not diagnose stale state, failed authentication, or a particular host limitation.
+Use activation recovery only when no separate authentication or service error
+is observed. An explicit authentication requirement follows Connect even if a
+previous login succeeded; a new conversation does not complete authentication.
+Keep installation, host-reported authorization, tool availability, and service
+readiness separate: report only the phases supported by evidence. Do not repeat
+OAuth for missing tools alone, install a MagicPay CLI, start a local MCP server,
+copy a token, or claim that a refreshed task retained an unfinished request from
+the old task.
 
-   ```bash
-   npm i -g @nuanu-ai/magicbrowse-cli@latest @nuanu-ai/magicsearch-cli@latest @nuanu-ai/magicpay-cli@latest
-   magicpay --version
-   magicpay --help
-   magicsearch --help
-   magicbrowse --help
-   ```
+Call `get_magicpay_capabilities`. Continue only when it reports
+`executionModes: ["client_browser"]`, `sessionAuthority: "remote_database"`, and
+`browserPaymentRun.executionMode: "agent_direct"`. Treat its `setupState`, `nextAction`, and
+`instructions` as the authoritative setup continuation. Authentication recovery
+belongs to the host's MCP connection UI; the protected server cannot truthfully
+return a pre-authentication account state before the host completes OAuth.
 
-   If `setup next` is still missing after repair, stop and report the CLI
-   version and install source instead of guessing an alternate command.
+Before a fresh payment in a newly connected task, require the rail-specific
+capability: `x402PaymentRun.status: "ready"` for x402,
+`cryptoPaymentRun.status: "ready"` for crypto, or
+`browserPaymentRun.status: "ready"` with `executionMode: "agent_direct"` before
+browser payment. The
+x402 and crypto workflow contract is `magicpay.payment-run/v1` schema `1.1`;
+the browser contract is `magicpay.browser-payment/v1` schema `1.0`.
+Use each rail's advertised `minimumPluginVersion` as its compatibility floor;
+compare the installed base semantic version without a prerelease suffix. Do not
+replace that floor with the newest published version. Verify the exact endpoint
+and environment for the selected channel. Guide, plugin, and MCP revisions are
+diagnostics; independently deployed services do not need matching Git SHAs.
+Preserve the selected rail's `selectedAgentId`. A blocked result is a pre-payment
+stop; do not create a session or fall back to another browser-payment tool.
 
-2. Ask `magicpay setup next` what to do next. For production setup, always bind
-   the command to the production profile and API explicitly so a previously
-   active local or development profile cannot redirect the flow:
+After capability discovery succeeds, call `get_magicpay_status` to verify the
+authenticated agent identity and account health. Treat a bounded unavailable
+status as an authentication or service-recovery stop; do not infer readiness
+from capability discovery alone.
 
-   ```bash
-   magicpay setup next --intent landing --platform <runtime> --agent-name "<runtime> Agent" --api-url https://durcottggsiesxxqzvbb.supabase.co/functions/v1/api --env production
-   ```
+When capabilities and authenticated status are ready, silently call
+`get_payment_balance` without an asset selector. Do not call
+`show_payment_balance`, a retired card-balance tool, or any presentation tool
+for this setup read. Use the response's exact atomic `available` value,
+`presentation.scale`, and `presentation.assetId`; the tool's human-readable
+content is produced by the shared money formatter. Never use floating point or
+invent a currency.
 
-   If the current setup prompt or served `skill.md` supplies a complete local
-   or development profile, use that complete command instead. Do not omit
-   `--env`, invent, reuse, or hardcode a preview branch URL:
+For an explicit setup request, present exactly one of these completion
+branches:
 
-   ```bash
-   magicpay setup next --intent landing --platform <runtime> --agent-name "<runtime> Agent" --api-url <branch-api-url> --env local
-   ```
+- **Funded balance.** If all three payment rails are ready, say:
 
-3. Read the returned JSON and follow the `instructions` text exactly. Treat the
-   `instructions` field as the agent-facing setup plan. Its English copy is a
-   semantic and formatting recommendation: render the user-facing message
-   naturally in the language the user is currently using. In mixed-language
-   conversations, follow the latest clear user request; fall back to English
-   only when no preference can be inferred. Do not ask the user to choose a
-   language. Keep `MagicPay`, `x402`, `USDT`, `USDC`, amounts, currencies, and
-   URLs unchanged. Do not maintain your own mapping from `state` or
-   `nextAction` to user prompts.
-4. If the instructions ask for an email, ask the user for the email, run the
-   provided `magicpay setup start ...` command, then ask for the one-time code.
-   <!-- magicpay-continuation:v1 id=setup-run-next-command action=run-exact-returned field=nextCommand -->
-   Run exactly the returned `nextCommand`.
-   <!-- /magicpay-continuation:v1 -->
-   Supply the OTP requested by that setup command. If setup verify succeeds,
-   continue with the common balance-driven completion flow in the remaining
-   `instructions` text. Do not guess, invent, repeat, log, or summarize OTP
-   digits.
-5. If the instructions say an existing connection was found, ask whether to
-   reuse it or set up MagicPay with another email. Reuse only after the user
-   chooses reuse.
-6. Use one common completion flow after OTP verification or approved reuse,
-   regardless of whether setup reports `account.status: "created"`,
-   `account.status: "existing"`, or the backwards-compatible `unknown` status:
-   run `magicpay payment-balance` without asset flags first and follow the exact
-   integer-string branches in the returned setup instructions. Accept only the
-   `magicpay.total-balance/v1` contract with `authority:
-   "authoritative_unified"` and `outcome: "available"`. A positive `available`
-   gets the funded handoff without a top-up link. An `available` value exactly
-   equal to `"0"` gets one `magicpay top-up-link` call and the exact returned
-   hosted URL. A failed, unavailable, derived, or malformed balance is not
-   proof of zero and must not create a top-up link.
-   If the confirmed balance is zero but link creation fails, report only that
-   the link is temporarily unavailable; never expose the raw failure.
-7. For a successful install or setup handoff, return only the concise localized
-   user-facing message recommended by the instructions. Do not add package
-   versions, installer response fields, gateway health, agent status,
-   settled/held breakdowns, config paths, browser or curl fallback details,
-   commands, or an internal verification checklist. For the zero-balance branch,
-   say: “Top up your MagicPay balance through this link: {exact hosted top-up
-   URL}. Crypto top-ups can take a few minutes to arrive. MagicPay will notify
-   you when the funds are available.” Localize naturally, render the returned
-   URL as the link target, and do not append a payment approval reminder.
+  > **MagicPay is ready.**
+  >
+  > Your available balance is **{formatted balance}**.
+  >
+  > Your payment credentials stay protected and out of chat, and spending
+  > stays subject to your MagicPay approval rules.
+  >
+  > Give it a try—send USDT or USDC, pay with x402, or ask me to buy something
+  > online.
 
-Do not start this flow merely because the MagicPay skill exists in the runtime
-during unrelated work. Do start it when the current user prompt asked to
-read/install MagicPay `skill.md`, asks for MagicPay setup/top-up, or a read-only
-MagicPay account command discovers missing local setup. If the prompt came from
-the MagicPay UI and includes a setup token, use UI Connect Setup instead.
+  If only some rails are ready, keep the first three paragraphs unchanged and
+  offer only the actions whose rail-specific capabilities report `ready`.
+- **Exact zero balance.** Keep the same heading, exact formatted balance, and
+  credential/approval reassurance, then say: "Add funds to start using
+  MagicPay, or ask me to top up your MagicCard." Do not create a top-up link or
+  open a widget unless the user asks or the authoritative workflow returns
+  `funding_required`.
+- **Unavailable or malformed balance.** Say: "**MagicPay is ready.** I couldn't
+  read your available balance right now. Your payment credentials stay
+  protected and out of chat, and spending stays subject to your MagicPay
+  approval rules." Do not infer zero, manufacture an amount or currency, or
+  claim that the balance call succeeded.
 
-### UI Connect Setup
-
-Use this mode when the current prompt came from the authenticated MagicPay UI
-after the user clicked Create agent or Copy prompt. In that path, MagicPay has
-already created the account, the external agent, and a setup token for this
-agent.
-
-1. Do not ask for the user's email.
-2. Do not run `magicpay setup start` or `magicpay setup verify`.
-3. Do not ask for an OTP.
-4. Ensure the MagicPay skill and owner CLI are installed for the current
-   runtime. If they are already installed, skip reinstallation unless the
-   prompt asks for an update or the runtime cannot see the skill.
-5. Initialize the local gateway config with the setup token from the UI prompt:
-
-   ```bash
-   magicpay init "<setup-token>"
-   ```
-
-6. Run `magicpay status`.
-7. Report that the agent is connected and ready for normal MagicPay workflows.
-
-If `magicpay status` fails after `init`, run `magicpay doctor` and report the
-safe error. Do not fall back to the First-Time Landing Setup unless the user
-explicitly says this is not a UI-created agent.
+Then continue the user's original request without asking them to repeat it only
+when the host retained that request in this same task. In a catalog-refresh
+fallback, act only on the request available after refresh without claiming that
+prior task context carried over. In later already-connected tasks, do not repeat
+setup onboarding; verify only the capabilities required by the requested action.
+Reauthentication is not payment approval. For an interrupted payment, read and
+continue the exact existing operation through its returned recovery path,
+preserving required approval; do not start a duplicate run or replacement purchase.

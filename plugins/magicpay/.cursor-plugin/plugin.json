@@ -1,0 +1,15 @@
+{
+  "name": "magicpay",
+  "version": "0.4.31",
+  "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
+  "logo": "https://raw.githubusercontent.com/nuanu-ai/skills/main/plugins/magicpay/assets/magicpay.png?v=afb97a05c01d",
+  "author": {
+    "name": "Nuanu"
+  },
+  "homepage": "https://magiccard.ai",
+  "repository": "https://github.com/nuanu-ai/mercuryo-agent-pay",
+  "license": "MIT",
+  "keywords": ["magicpay", "payments", "mcp", "browser"],
+  "skills": "./skills/",
+  "mcpServers": "./mcp.json"
+}

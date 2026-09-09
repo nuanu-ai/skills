@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "magicpay",
+  "version": "0.4.31",
+  "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
+  "author": {
+    "name": "Nuanu",
+    "url": "https://magiccard.ai"
+  },
+  "repository": "https://github.com/nuanu-ai/mercuryo-agent-pay",
+  "homepage": "https://magiccard.ai",
+  "license": "MIT",
+  "keywords": [
+    "magicpay",
+    "payments",
+    "mcp",
+    "browser"
+  ]
+}

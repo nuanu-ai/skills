@@ -1,0 +1,23 @@
+{
+  "name": "nuanu-skills",
+  "description": "MagicPay host plugin releases by Nuanu.",
+  "owner": {
+    "name": "Nuanu"
+  },
+  "plugins": [
+    {
+      "name": "magicpay",
+      "source": "./plugins/magicpay",
+      "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
+      "version": "0.4.31",
+      "author": {
+        "name": "Nuanu"
+      },
+      "homepage": "https://magiccard.ai",
+      "repository": "https://github.com/nuanu-ai/mercuryo-agent-pay",
+      "license": "MIT",
+      "keywords": ["magicpay", "payments", "mcp", "browser"],
+      "category": "Finance"
+    }
+  ]
+}

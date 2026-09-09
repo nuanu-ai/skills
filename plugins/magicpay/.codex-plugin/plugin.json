@@ -1,0 +1,40 @@
+{
+  "name": "magicpay",
+  "version": "0.4.31",
+  "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
+  "author": {
+    "name": "Nuanu",
+    "url": "https://magiccard.ai"
+  },
+  "homepage": "https://magiccard.ai",
+  "repository": "https://github.com/nuanu-ai/mercuryo-agent-pay",
+  "license": "MIT",
+  "keywords": [
+    "magicpay",
+    "payments",
+    "mcp",
+    "browser"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "MagicPay",
+    "shortDescription": "Remote payments with a direct host-browser flow",
+    "longDescription": "MagicPay connects Codex to remote payment sessions, approvals, direct browser execution, and reconciliation. Codex Browser owns the complete live page flow.",
+    "developerName": "Nuanu",
+    "category": "Finance",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://magiccard.ai",
+    "privacyPolicyURL": "https://magiccard.ai/privacy",
+    "termsOfServiceURL": "https://magiccard.ai/terms",
+    "defaultPrompt": [
+      "Set up MagicPay and verify its remote MCP capabilities",
+      "Use MagicPay to complete this checkout in the built-in browser"
+    ],
+    "brandColor": "#6D5EF5",
+    "screenshots": []
+  }
+}

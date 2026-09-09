@@ -1,0 +1,4 @@
+interface:
+  display_name: "MagicPay"
+  short_description: "Payments, Memory, and optional choices through MCP"
+  default_prompt: "Use $magicpay for this payment, Memory, or optional choice request through the connected remote MCP."
