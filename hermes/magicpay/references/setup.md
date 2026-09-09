@@ -91,10 +91,12 @@ or an authentication failure. Never promise an opened window without evidence.
 
 Installing the plugin is not authentication. Inspect the exact installed
 `magicpay` connection: check readiness when already authorized, and start Connect
-for initial sign-in or an observed authentication requirement. When the plugin
-was just installed for this setup and no saved/completed or pending authorization
-is known, follow the runtime's initial sign-in action in this conversation;
-an undetermined inventory status is not itself a reason to stop or move chats.
+for initial sign-in, an explicit request to open login, or an observed authentication
+requirement. When the plugin was just installed for this setup and no completed
+sign-in, working authenticated connection, or pending login is known, follow the
+runtime's initial sign-in action in this conversation. Cached OAuth metadata alone
+must not skip that initial action after confirmed plugin absence; an undetermined
+inventory status is not itself a reason to stop or move chats.
 Preserve any completed authorization or pending login. Activate a cold installation first when
 the host requires it. The install, activation, connect, and recovery actions for
 this host are listed in
