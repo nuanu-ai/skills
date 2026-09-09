@@ -476,15 +476,21 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 ### Install
 
-- Verify the actual MCP URL in the selected catalog entry, existing connector,
-  or native Add request against this guide's endpoint before authentication.
-  A matching name, logo, or tool count does not establish the channel; a
-  production setup prompt does not turn an existing development connector into
-  production. For a supported custom entry, supply the exact endpoint from the requested guide or bundled MCP declaration.
-  If the URL is wrong or cannot be established, report the channel mismatch or
-  unverified channel; do not authenticate that connector as the requested
-  environment. Preserve an existing other-channel connection until a channel
-  change is requested.
+- Verify the actual MCP URL in the selected catalog entry, existing connector, or native
+  Add request against this guide's endpoint before authentication. A matching name,
+  logo, or tool count does not establish the channel; a production setup prompt does not
+  turn an existing development connector into production. If the catalog URL is wrong or
+  unavailable, do not install or authenticate that unverified channel. For a fresh setup
+  with confirmed connector absence, use the host's supported native custom remote MCP
+  Add action with the exact endpoint from the requested guide. The setup prompt already
+  selects production or development: initiate that native Add/Connect flow without a
+  separate how-to-connect choice. Keep the host's required confirmation, including a
+  question widget when required, and secure OAuth steps; confirm the exact action rather
+  than offering an unverified listing anyway. If custom remote Add is unavailable,
+  report that specific host limitation instead of inventing an action or asking the user
+  to choose an unknown channel. An ordinary setup prompt does not request switching or
+  duplicating an existing connection; preserve it until the user explicitly requests a
+  channel change.
 - Inspect the installed MagicPay connector and selected channel first; preserve
   a correct installation and valid authorization. Connectors are account-wide.
 - If inventory is unavailable, open or hand off **Settings → Plugins → MagicPay**
