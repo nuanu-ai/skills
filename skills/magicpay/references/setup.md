@@ -42,7 +42,9 @@ that state is unknown and neither native nor permitted host-command inventory
 can be read, use the runtime's plugin-details handoff to establish it. For an
 installed plugin, continue through Connect when sign-in is needed; choose
 Install/Add only when absence is confirmed. If already connected, discover its
-tools and verify readiness. Do not send an installed plugin back through Install.
+tools and verify readiness. Do not send a correct, loadable plugin back through
+Install. If the host reports missing or corrupt installed files, follow only
+the runtime reference's documented bundle-repair path; preserve completed sign-in.
 Use an actually callable, eligible native installation action, or the
 host's supported commands when permitted, as listed in the runtime setup
 reference. The agent performs those commands. Do not
@@ -155,8 +157,9 @@ MagicPay tool, follow the runtime setup reference's bounded supported refresh.
 Use a native reload only when it is actually exposed to the model; otherwise
 follow the runtime reference's documented activation recovery, which may use
 a fresh conversation after confirmed installation and authorization. Keep its
-recovery cue and reuse the installation and sign-in; if recovery was already
-attempted and tools remain unavailable, report the observed host limit. Missing tools alone do
+recovery cue and reuse the installation and sign-in. Do not repeat an already
+attempted recovery step; use a further step only when its documented evidence
+requirements are met, otherwise report the observed host limit. Missing tools alone do
 not diagnose stale state, failed authentication, or a particular host limitation.
 Use activation recovery only when no separate authentication or service error
 is observed. An explicit authentication requirement follows Connect even if a
