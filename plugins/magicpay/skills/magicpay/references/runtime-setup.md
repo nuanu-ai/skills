@@ -80,6 +80,19 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
 
 ### Connect
 
+- Initial sign-in: if tools are unavailable after discovery and you just installed the exact plugin during this authorized
+  setup and have no evidence of saved or completed authorization, start one
+  host-managed OAuth attempt in this installation chat using the eligible native
+  action or supported Codex command below. Do not wait for missing tools to
+  request authentication. The inventory value `unknown` means undetermined, not an
+  authentication rejection; it does not block this first sign-in or require a
+  Settings/new-chat handoff. A plugin install does not itself complete OAuth.
+  Check for a pending login first and wait for that same attempt; a canceled,
+  denied, or failed login must not be restarted. Preserve saved or completed
+  authorization and use authenticated tools or catalog recovery; unknown or
+  missing tools alone never justify repeating OAuth. A reported network/service
+  failure keeps its own recovery path. Keep the one login process attached until
+  host-reported completion or failure, then discover tools and verify readiness here.
 - When a MagicPay tool is callable, the primary path is the native MCP connection
   prompt triggered by calling `get_magicpay_capabilities` once through the
   current task's MagicPay tool.
@@ -100,15 +113,17 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   accepted authentication or readiness. Missing tools alone do not establish
   that sign-in is required. A service or network failure keeps its own recovery
   category; do not reset credentials or suggest a new task to fix it.
-- For an observed authentication requirement, use one eligible native
+- For initial sign-in or when the exact installed connection requires sign-in,
+  use one eligible native
   Authenticate/Connect action when callable for the exact installed `magicpay`
   server in this host. Reuse an already pending login instead of opening a
   second prompt or sending the user to Settings. Let the user approve the
   displayed prompt and enter email and OTP in the secure window. Wait for
   host-reported completion before rediscovering tools and verifying readiness
   here; an open or closed window is not completion.
-- If no eligible native action is exposed, the exact installed connection
-  requires sign-in, and host policy permits the command, the agent runs the existing host's
+- If no eligible native action is exposed, initial sign-in or an observed
+  authentication requirement applies, and host policy permits the command,
+  the agent runs the existing host's
   `codex --version`, then `codex mcp login magicpay` once in the same host and
   configuration scope. Require Codex 0.147.0 or newer: 0.146.1 drops the callback
   issuer. If the version is older, unknown, or the command is unsupported, report
@@ -130,7 +145,7 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   or error status.
   Wait for this one host command to finish, then rediscover tools in this task.
   The agent runs this permitted command; the user enters no commands.
-- Only when the exact installed connection requires sign-in and neither an
+- When either initial sign-in or an observed authentication requirement applies, and neither an
   eligible native action nor the permitted command is available, report the observed host limitation and give one manual native handoff for
   the existing `magicpay` server: **Settings → MCP servers → Authenticate**.
   Preserve the installed plugin and selected environment. Say the screen
