@@ -27,9 +27,26 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   `codex plugin marketplace list --json`. Do not create a duplicate `magicpay`
   plugin or connection. Report existing duplicates; do not remove them unless
   that cleanup or channel change is requested.
-  If the requested selector and endpoint are correct, check readiness first;
+  If the requested selector and endpoint are correct and the bundle is loadable,
+  check readiness first;
   do not reinstall or recreate MCP configuration. Repeat OAuth only for an
   explicit sign-in request or an observed authentication requirement, following Connect below.
+- Installation integrity: installed means the selected bundle is present and loadable, not
+  merely a configuration entry or an installed/enabled label. When tools are unavailable, check
+  the exact plugin for host-reported load errors. If needed, inspect only its host-reported
+  installed root, plugin manifest, declared skill path, and bundled MCP declaration; a
+  marketplace source directory is not the installed bundle. Do not read credentials or scan
+  unrelated caches. A current missing-cache or invalid-bundle error, or verified missing or
+  corrupt bundle files, overrides an earlier installation-success report. After verifying the
+  same selector, marketplace source, and channel, restore that missing or broken bundle once
+  through an eligible native Install action or the same supported install command below.
+  These install commands also apply to this verified repair case. Do not uninstall,
+  disconnect, clear caches, or edit host configuration to repair it. Preserve completed
+  sign-in; restoring plugin files does not require another OAuth flow. Recheck the reported
+  installed root and load result, then continue catalog recovery. If repair is denied, fails,
+  or leaves the bundle unloadable, report that blocker without another repair route. Unknown
+  installation state, missing tools alone, or a newer available version does not justify
+  repair.
 - Missing marketplace snapshot: if inventory reports that a configured marketplace root does
   not contain a supported manifest, repair the catalog before the unknown-state handoff. This
   error does not prove plugin absence. Read only the reported marketplace entries and their
@@ -201,6 +218,17 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   in this task when the call succeeds. A tool omitted from the initial visible
   list is not evidence that it is unavailable. A successful MagicPay call must
   not be followed by a **New task** instruction.
+- Pending startup: only when the exact host connection reports loading or initializing, or an
+  omitted pending optional MCP server, and no authentication or service failure is present,
+  give that existing startup one bounded opportunity to finish before rediscovering tools once.
+  Use a supported host completion/status wait within its startup deadline, or the next sampling
+  turn when that is the available refresh boundary; do not invent a wait API, add blind sleeps,
+  or poll indefinitely. If the host supports explicit plugin selection, select the existing
+  MagicPay plugin; when this needs user action, ask them to attach MagicPay with `@` in this
+  chat. Selection can make the host wait for its startup, but is not installation or
+  authentication. Do not change startup timeouts or required-server settings. If startup
+  remains pending, report loading as pending; if it fails, handle that specific failure.
+  Missing tools alone do not establish pending startup and never justify repeated OAuth.
 - If an actual current-task lookup cannot discover or call a required tool,
   inspect the installed/enabled state and host auth/service result.
   Use one supported native reload only when actually exposed, then rediscover
@@ -210,8 +238,8 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   cause; distinguish auth errors, service failures, and unavailable tools.
   An observed `reauthenticationRequired` result returns to Connect; a supported
   installed version or saved OAuth metadata does not override that failure.
-- If the correct plugin is installed and enabled, OAuth completed, and tools
-  remain unavailable without a separate observed auth or service error, give
+- If the correct plugin is loadable and enabled, OAuth completed, startup is no
+  longer pending, and tools remain unavailable without an auth or service error, give
   one new-chat handoff. Do not require an explicit host instruction to offer
   this recovery. If installation or auth state is unknown, say so instead of
   claiming the user is signed in. Pending, canceled, denied, or failed OAuth
@@ -228,9 +256,19 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
 
   Use the requested environment in the message and prompt. Keep the recovery
   cue so the next chat knows this step was already attempted. If that chat
-  still cannot load tools, report tool loading blocked without suggesting
-  another chat, reinstall, restart, or sign-in. Handle any actual new auth or
+  still cannot load tools, recheck the exact failure and use Stale activation below
+  only when its evidence requirements are met. Handle any actual new auth or
   service error separately; missing tools alone do not justify repeating OAuth.
+- Stale activation: a full app restart is a conditional last step, not a requirement for every
+  install. Only after the exact bundle is loadable and enabled, sign-in completed, available
+  native reload and one new-chat recovery have been attempted, and the host still reports an
+  old missing-bundle error for verified repaired files or explicitly requests a restart, ask
+  the user to quit and reopen Codex once. Preserve the installation and sign-in, carry the
+  recovery cue that a restart was already attempted, and verify capabilities, authenticated
+  status, and balance afterward. Never quit the app through automation or repeat this restart.
+  An authentication rejection, service failure, startup still pending, or unexplained tool
+  absence does not qualify. Without that stale-host evidence, report tool loading blocked
+  without suggesting another chat, reinstall, restart, or sign-in.
 - In the new chat, discover tools and verify capabilities, authenticated status,
   and balance through [setup.md](setup.md), reusing the installation and saved
   authorization. The handoff is activation recovery, not single-prompt success.
