@@ -6,8 +6,9 @@ Download the release archive and place the magicpay folder in a supported skill 
 
 The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
 
+- Verify the actual MCP URL in the selected catalog entry, existing connector, or native Add request against this guide's endpoint before authentication. A matching name, logo, or tool count does not establish the channel; a production setup prompt does not turn an existing development connector into production. For a supported custom entry, supply the exact endpoint from the requested guide or bundled MCP declaration. If the URL is wrong or cannot be established, report the channel mismatch or unverified channel; do not authenticate that connector as the requested environment. Preserve an existing other-channel connection until a channel change is requested.
 - Inspect **Settings → Plugins → MagicPay** first. If installed, preserve the connector and use Connect only when sign-in is needed. Use the native Add card only when absent; missing tools do not prove absence. If the requested channel is unavailable, report that limit without adding a duplicate connection.
-- Connect opens the secure email/OTP flow and uses the account-wide connection. If Connect reports unreachable before the window opens, inspect the connector error and record the attempt time; do not diagnose credentials or reset the Bot computer. After authorization, discover tools in the original chat and use the readiness sequence in `references/setup.md`.
+- Connect opens the secure email/OTP flow and uses the account-wide connection. If Connect shows Retry, reports unreachable, or returns a registration/authentication error before the window opens, inspect the connector error and record the attempt time; do not call a failed card a pending email/OTP prompt; do not diagnose credentials or reset the Bot computer. After authorization, discover tools in the original chat and use the readiness sequence in `references/setup.md`.
 
 ## Direct skill archive
 
@@ -27,4 +28,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.32
+Release: magicpay-v0.4.33

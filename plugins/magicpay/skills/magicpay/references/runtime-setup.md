@@ -476,6 +476,15 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 ### Install
 
+- Verify the actual MCP URL in the selected catalog entry, existing connector,
+  or native Add request against this guide's endpoint before authentication.
+  A matching name, logo, or tool count does not establish the channel; a
+  production setup prompt does not turn an existing development connector into
+  production. For a supported custom entry, supply the exact endpoint from the requested guide or bundled MCP declaration.
+  If the URL is wrong or cannot be established, report the channel mismatch or
+  unverified channel; do not authenticate that connector as the requested
+  environment. Preserve an existing other-channel connection until a channel
+  change is requested.
 - Inspect the installed MagicPay connector and selected channel first; preserve
   a correct installation and valid authorization. Connectors are account-wide.
 - If inventory is unavailable, open or hand off **Settings → Plugins → MagicPay**
@@ -509,9 +518,11 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
 
 ### Connection startup failure
 
-- If Connect reports `unreachable` before the window opens, report connection
+- If Connect shows `Retry`, reports `unreachable`, or returns a registration or
+  authentication error before the window opens, report connection
   startup failed and inspect the connector details. Do not diagnose email/OTP
-  or blame the host or service from that label alone.
+  or blame the host or service from that label alone. Do not describe a failed
+  card as a pending email/OTP prompt.
 - For a developer handoff, collect the app version, UTC attempt time, requested
   endpoint origin/path, and the host's HTTP status or DNS/TLS/timeout error and
   request ID when available. A successful request from another machine does
