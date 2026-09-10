@@ -9,6 +9,7 @@ Choose the focused contract; this map does not add a second protocol.
 | Known checkout URL | `create_checkout_session` → host inspects actual checkout → `run_browser_payment` → same run → host fill and one authorized final action → bounded observation → `record_browser_payment_result`. See [host-browser-payments.md](host-browser-payments.md). |
 | Exact crypto or x402 request | Corresponding composed payment run → `wait_payment` on the same run → settlement/recovery. See [payment-operations.md](payment-operations.md). |
 | Unknown provider | `search_provider_methods` → verify current official docs → exact request under user authority; discovery grants no payment authority. |
+| Candidate sellers | `check_merchant` for every candidate → skip `avoid`, surface `caution`, continue on `proceed` or `unknown`; verdicts are advisory. |
 | Material shortlist | One normalized choice request → exact durable selection → selected branch only. See [choices.md](choices.md). |
 
 The host owns browsing. MagicPay owns authorization, materialization, and durable

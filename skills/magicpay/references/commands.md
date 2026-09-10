@@ -19,6 +19,7 @@ Use opaque IDs exactly as returned.
 | Known raw x402 resource | `run_x402_payment` with the exact `httpRequest` envelope |
 | Known checkout destination | `create_checkout_session` |
 | Unknown product or provider method | `search_provider_methods` |
+| Seller trust before paying | `check_merchant` with up to ten documented seller requests |
 | Optional choice without an existing session | `begin_request_session`, then `request_choice` |
 | Existing payment status | `get_payment_operation` |
 | Invoice or original-document status | `get_payment_operation` for the exact operation; see [invoices.md](invoices.md) |

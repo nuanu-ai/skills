@@ -281,9 +281,11 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   do not copy credentials or imply permission to replay an existing operation.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
-  are callable. Follow [choices.md](choices.md): use a native choice interface
-  when the current Codex host exposes one, otherwise relay `chatMessage`; also
-  keep the returned MagicPay widget or options link attached to the same request.
+  are callable. Follow [choices.md](choices.md): when the current Codex host
+  exposes a native single-select choice interface, use it with the exact stored
+  titles instead of `chatMessage`; otherwise relay `chatMessage` unchanged;
+  never both. Keep the returned MagicPay widget or options link attached to
+  the same request.
 
 ### Verify and disconnect
 
@@ -363,21 +365,27 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 ### Connect
 
 - The bundled connection is named `plugin:magicpay:magicpay`.
-- Reuse existing authorization. When sign-in is needed, the user runs `/mcp`,
-  selects `magicpay`, and authenticates; the secure browser OAuth window opens
-  from there.
-- Terminal: `claude mcp login plugin:magicpay:magicpay`. It requires an
-  interactive terminal. An agent shell without one cannot start the login and
-  must hand off to the current session instead of creating a PTY workaround.
+- This host has no model-triggered sign-in: no tool, hook, or agent shell can
+  open the MagicPay window. `claude mcp login plugin:magicpay:magicpay` needs a
+  real interactive terminal, so an agent shell cannot start it; do not create a
+  PTY workaround, and do not send the user to a terminal.
+- Reuse existing authorization. When sign-in is needed, give the user exactly
+  one action and nothing else: run `/mcp`, select `magicpay`, and choose
+  Authenticate; the secure browser OAuth window opens from there, and email and
+  code belong only in that window. Say you will verify readiness right after.
+  Do not list alternative commands, reloads, or troubleshooting unless that
+  sign-in fails.
 - Manual handoff when no Connect action can be initiated:
   **/mcp → magicpay → Authenticate**.
 
 ### Catalog refresh
 
-- After OAuth, discover and call `get_magicpay_capabilities` in this session
-  first. If it succeeds, continue here. If the needed tools remain unavailable,
-  have the user run `/reload-plugins` in the same conversation, following the
-  cache-warning rule above, then discover again. Preserve completed OAuth.
+- Sign-in needs no reload: the server's tools are available on the next
+  request after host-reported authorization. After OAuth, discover and call
+  `get_magicpay_capabilities` in this session first. If it succeeds, continue
+  here. Only if the needed tools remain unavailable after that, have the user
+  run `/reload-plugins` in the same conversation, following the cache-warning
+  rule above, then discover again. Preserve completed OAuth.
 - Reconnect through `/mcp` only for an observed connection failure. If reload
   fails or tools remain unavailable, report the observed phase and error.
   A user reload is same-chat recovery, not automatic single-prompt completion.
@@ -516,9 +524,10 @@ file names Grok Build commands; the canonical instructions stay host-neutral.
   connection.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
-  [choices.md](choices.md): use a native choice interface when this host exposes
-  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
-  options link attached to the same request.
+  [choices.md](choices.md): when this host exposes a native single-select
+  choice interface, use it with the exact stored titles instead of
+  `chatMessage`; otherwise relay `chatMessage` unchanged; never both. Keep the
+  returned MagicPay widget or options link attached to the same request.
 
 ### Payment rails on this host
 
@@ -624,9 +633,31 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   limit. Installation and OAuth completion do not establish readiness.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
-  [choices.md](choices.md): use a native choice interface when this host exposes
-  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
-  options link attached to the same request.
+  [choices.md](choices.md) and the native choice presentation below.
+
+### Native choice presentation
+
+- For a new `waiting_user` `request_choice` result with two to eight stored
+  options, present the options once through the Bot's native question control
+  instead of pasting `structuredContent.chatMessage`. Use the exact returned
+  `request.spec.prompt` as the question, the stored option order, and the
+  exact stored titles as option labels; never shorten, translate, or
+  paraphrase a title, and never build labels from the caller-local input. If a
+  stored title cannot be shown unchanged, paste `chatMessage` instead. Never
+  show both.
+- Keep the returned widget or `request_url` in the same message as the
+  question. It is the rich MagicPay surface, not a second chat presentation.
+- The control is presentation only. Keep an exact label-to-ID map. An answered
+  question submits `decide_request` with `decision: confirmed` and that
+  option's stored ID on the same `sessionId` and `requestId`, then
+  `wait_request` on those IDs. An explicit cancel or "none of these" submits
+  `decision: denied`, then `wait_request`. A skipped or dismissed question is
+  not a decision: present the same stored options once more through the same
+  control, do not switch to `chatMessage`, and do not create a sibling
+  request.
+- Do not use the question control for MagicPay approval, Memory candidate
+  conflicts, OTP, or payment confirmation; those keep their own MagicPay
+  surfaces.
 
 ### Approvals and the shared browser
 
