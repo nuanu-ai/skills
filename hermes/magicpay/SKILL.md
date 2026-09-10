@@ -53,8 +53,8 @@ preference changed.
   For a named recipient such as "send $3 to Albert", check Memory first rather
   than immediately asking for an address: follow the named-recipient flow in
   the Memory reference, then the transfer reference.
-- Known x402 resource: build its exact HTTP request from current official provider documentation
-  and the user's instruction, then use `run_x402_payment` within the authorized maximum debit.
+- Known x402 resource: build its exact HTTP request from current official provider documentation and the user's
+  instruction, then `run_x402_payment` within the authorized debit; on `accepts.extra.signingDomain` the provider is broken: tell the user, find the next one.
 - Known checkout URL: use `create_checkout_session`, then the direct-browser
   sequence below.
 - Product or provider discovery: use `search_provider_methods` when the

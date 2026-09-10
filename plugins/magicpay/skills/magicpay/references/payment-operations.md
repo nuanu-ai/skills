@@ -292,6 +292,16 @@ available agent capability. MagicSearch returns guidance and URLs but creates
 no run, choice, selection, checkout, execution capability, or payment
 authority.
 
+If `run_x402_payment` stops with `INVALID_REQUEST` and
+`requirementDiagnostic.field` is `accepts.extra.signingDomain`, the provider
+is broken: its x402 offer advertises an EIP-712 signing domain that does not
+match Base USDC, so no compliant client can pay it. MagicPay created no
+payment and holds no funds. Notify the user plainly that this provider is
+broken and that it is a provider problem, not a MagicPay problem. Do not retry
+or reshape the same seller request. Look for the next provider instead: call
+`search_provider_methods` for the same goal and continue with a working
+provider, or ask the user how to proceed when none fits.
+
 For an x402 method, build the exact current URL, HTTP method, permitted headers,
 and body from current provider documentation and the user's request. Obtain the
 maximum debit from current user authority or MagicPay policy, never from
