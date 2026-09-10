@@ -281,9 +281,11 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   do not copy credentials or imply permission to replay an existing operation.
 - Treat the current or refreshed catalog as choice-ready only when
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
-  are callable. Follow [choices.md](choices.md): use a native choice interface
-  when the current Codex host exposes one, otherwise relay `chatMessage`; also
-  keep the returned MagicPay widget or options link attached to the same request.
+  are callable. Follow [choices.md](choices.md): when the current Codex host
+  exposes a native single-select choice interface, use it with the exact stored
+  titles instead of `chatMessage`; otherwise relay `chatMessage` unchanged;
+  never both. Keep the returned MagicPay widget or options link attached to
+  the same request.
 
 ### Verify and disconnect
 
@@ -522,9 +524,10 @@ file names Grok Build commands; the canonical instructions stay host-neutral.
   connection.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
-  [choices.md](choices.md): use a native choice interface when this host exposes
-  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
-  options link attached to the same request.
+  [choices.md](choices.md): when this host exposes a native single-select
+  choice interface, use it with the exact stored titles instead of
+  `chatMessage`; otherwise relay `chatMessage` unchanged; never both. Keep the
+  returned MagicPay widget or options link attached to the same request.
 
 ### Payment rails on this host
 
@@ -630,9 +633,31 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   limit. Installation and OAuth completion do not establish readiness.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
-  [choices.md](choices.md): use a native choice interface when this host exposes
-  one, otherwise relay `chatMessage` and keep the returned MagicPay widget or
-  options link attached to the same request.
+  [choices.md](choices.md) and the native choice presentation below.
+
+### Native choice presentation
+
+- For a new `waiting_user` `request_choice` result with two to eight stored
+  options, present the options once through the Bot's native question control
+  instead of pasting `structuredContent.chatMessage`. Use the exact returned
+  `request.spec.prompt` as the question, the stored option order, and the
+  exact stored titles as option labels; never shorten, translate, or
+  paraphrase a title, and never build labels from the caller-local input. If a
+  stored title cannot be shown unchanged, paste `chatMessage` instead. Never
+  show both.
+- Keep the returned widget or `request_url` in the same message as the
+  question. It is the rich MagicPay surface, not a second chat presentation.
+- The control is presentation only. Keep an exact label-to-ID map. An answered
+  question submits `decide_request` with `decision: confirmed` and that
+  option's stored ID on the same `sessionId` and `requestId`, then
+  `wait_request` on those IDs. An explicit cancel or "none of these" submits
+  `decision: denied`, then `wait_request`. A skipped or dismissed question is
+  not a decision: present the same stored options once more through the same
+  control, do not switch to `chatMessage`, and do not create a sibling
+  request.
+- Do not use the question control for MagicPay approval, Memory candidate
+  conflicts, OTP, or payment confirmation; those keep their own MagicPay
+  surfaces.
 
 ### Approvals and the shared browser
 

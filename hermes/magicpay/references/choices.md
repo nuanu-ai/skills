@@ -37,12 +37,15 @@ once with a plain description, then use its exact `sessionId`. Call
 
 For a new `waiting_user` result:
 
-1. Present the options in this conversation. Echo
+1. Present the options exactly once in this conversation. Echo
    `structuredContent.chatMessage` unchanged, or use one faithful host-native
-   single-select control when available. Do not show both chat variants.
-2. Also let MagicPay present the same durable request across enabled channels.
-   The MCP app widget may render automatically; otherwise include the returned
-   `request_url`. This rich surface is complementary to the chat presentation.
+   single-select control with the exact stored titles instead of the echo.
+   Do not show both chat variants. Prefer the native control when it can show
+   every stored title unchanged; otherwise echo `chatMessage`.
+2. Separately, let MagicPay present the same durable request across enabled
+   channels: the MCP app widget when it renders, otherwise the returned
+   `request_url`. This rich surface is complementary to the chat presentation,
+   not a second chat presentation.
 3. Preserve `sessionId`, `requestId`, stored option order, and opaque IDs. Never
    create a sibling request because another channel is open.
 
@@ -50,7 +53,11 @@ The user may answer in chat, the widget, web, mobile, or Telegram. Submit a chat
 answer only when it maps unambiguously to an in-range ordinal, exact stored
 title, or exact ID. Call `decide_request` with `decision: confirmed` and the
 exact `selectedChoiceId`, then `wait_request` on the same IDs. A native picker
-is presentation only and follows the same decide/wait path.
+is presentation only and follows the same decide/wait path: an answered option
+submits `confirmed` with its stored ID; an explicit cancel or "none of these"
+submits `denied`; a skipped or dismissed control is not a decision, so present
+the same stored options once more through the same control and never create a
+sibling request.
 
 All open views converge on the first durable decision. If submission is late,
 ambiguous, or loses a race, read/wait on the exact request and use its recorded
@@ -113,7 +120,7 @@ In a real call, use the returned session ID and observed source facts:
 | Observation | Next action |
 | --- | --- |
 | One factual answer, no material tradeoff | Answer directly; do not create a choice. |
-| Two useful plans differ in price or service | Create one choice, relay chat/native options and the returned widget/link. |
+| Two useful plans differ in price or service | Create one choice, present it once (native picker or chat), plus the returned widget/link. |
 | Reply could mean two options | Ask which stored option the user means; do not decide or create a sibling. |
 | Another channel selected a different option | Read/wait on the same request; use its recorded winner. |
 | Request expired or was denied/canceled | Report that outcome; no fabricated selection or repeated pending prompt. |
