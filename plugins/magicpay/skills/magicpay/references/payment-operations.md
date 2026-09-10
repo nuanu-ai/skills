@@ -292,6 +292,21 @@ available agent capability. MagicSearch returns guidance and URLs but creates
 no run, choice, selection, checkout, execution capability, or payment
 authority.
 
+Before paying a seller not already checked in this task, call `check_merchant`
+with up to ten documented requests. It answers one advisory verdict per URL
+from the MagicPay merchant trust layer: `proceed`, `caution`, `avoid`, or
+`unknown`, with a score, the number of settled payments behind it, the last
+unpaid probe result, and matching registry entries. An unknown seller is
+probed with one unsigned request that obtains its x402 requirements; nothing
+is paid. Skip `avoid` sellers and move to the next candidate. Surface
+`caution` to the user and continue only if they choose that seller or no
+alternative exists. Treat `unknown` with `check.state` `unavailable` as no
+trust data right now and proceed under the normal rules; never treat it as a
+rejection and do not retry in a loop. `running` means a probe is in flight:
+call once more after a few seconds if the verdict matters. A `defective`
+probe is the signing-domain case below, reported before any run exists.
+Trust verdicts are advisory: they never create, block, or authorize a payment.
+
 If `run_x402_payment` stops with `INVALID_REQUEST` and
 `requirementDiagnostic.field` is `accepts.extra.signingDomain`, the provider
 is broken: its x402 offer advertises an EIP-712 signing domain that does not
