@@ -363,21 +363,27 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 ### Connect
 
 - The bundled connection is named `plugin:magicpay:magicpay`.
-- Reuse existing authorization. When sign-in is needed, the user runs `/mcp`,
-  selects `magicpay`, and authenticates; the secure browser OAuth window opens
-  from there.
-- Terminal: `claude mcp login plugin:magicpay:magicpay`. It requires an
-  interactive terminal. An agent shell without one cannot start the login and
-  must hand off to the current session instead of creating a PTY workaround.
+- This host has no model-triggered sign-in: no tool, hook, or agent shell can
+  open the MagicPay window. `claude mcp login plugin:magicpay:magicpay` needs a
+  real interactive terminal, so an agent shell cannot start it; do not create a
+  PTY workaround, and do not send the user to a terminal.
+- Reuse existing authorization. When sign-in is needed, give the user exactly
+  one action and nothing else: run `/mcp`, select `magicpay`, and choose
+  Authenticate; the secure browser OAuth window opens from there, and email and
+  code belong only in that window. Say you will verify readiness right after.
+  Do not list alternative commands, reloads, or troubleshooting unless that
+  sign-in fails.
 - Manual handoff when no Connect action can be initiated:
   **/mcp → magicpay → Authenticate**.
 
 ### Catalog refresh
 
-- After OAuth, discover and call `get_magicpay_capabilities` in this session
-  first. If it succeeds, continue here. If the needed tools remain unavailable,
-  have the user run `/reload-plugins` in the same conversation, following the
-  cache-warning rule above, then discover again. Preserve completed OAuth.
+- Sign-in needs no reload: the server's tools are available on the next
+  request after host-reported authorization. After OAuth, discover and call
+  `get_magicpay_capabilities` in this session first. If it succeeds, continue
+  here. Only if the needed tools remain unavailable after that, have the user
+  run `/reload-plugins` in the same conversation, following the cache-warning
+  rule above, then discover again. Preserve completed OAuth.
 - Reconnect through `/mcp` only for an observed connection failure. If reload
   fails or tools remain unavailable, report the observed phase and error.
   A user reload is same-chat recovery, not automatic single-prompt completion.
