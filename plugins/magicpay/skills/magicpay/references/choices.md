@@ -35,6 +35,13 @@ descriptions when needed to distinguish otherwise identical names. For a
 multi-item option, identify each item and the fields requested from it. Never
 put saved field values in choice metadata.
 
+Memory resolver choices have their own decision contract in [memory.md](memory.md).
+Keep a declared **Provide different details** alternative, including on a
+single-item approval, and submit its exact stored ID with `choose_candidate`.
+It is not the generic “none of these” denial described below. Never synthesize
+this option or hide it to fit a native control; use a faithful fallback when
+needed. Do not create `request_choice` to replace an existing Memory request.
+
 ## One durable request, one conversation control
 
 If no relevant MagicPay session already exists, call `begin_request_session`

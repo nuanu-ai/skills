@@ -71,9 +71,9 @@ preference changed.
   normalization and omnichannel loop in the choice reference.
 - Payment status or ambiguity: use `get_payment_operation`, or
   `reconcile_payment_operation` only for that same operation when directed.
-- Invoice status or a receipt attachment: read the exact operation or use
-  `attach_payment_invoice` for its PDF original or supported merchant receipt link. Prioritize
-  the original saved to that session; AI details are optional. Follow the invoice reference without reopening payment.
+- Invoice status or attachment: read the exact operation; follow the invoice reference and use
+  `attach_payment_invoice` for its original PDF or supported receipt link. For personal email,
+  prefer an existing connector, then native computer use, then ask for the original; never reopen payment.
 - Agent email: use `list_agent_email_threads` / `read_agent_email_thread` for the exact agent. Start outgoing mail with `prepare_agent_email`; follow the email reference for exact approval and sending.
 - Memory management: use the direct CRUD action matching the user's intent;
   CRUD remains value-free. To use Memory in a task, establish the exact session,
@@ -96,7 +96,7 @@ Load only the focused reference needed:
   [references/payment-operations.md](references/payment-operations.md)
 - generic request/reply/OTP waiting: [references/requests.md](references/requests.md); normalized optional choices across chat and MagicPay channels:
   [references/choices.md](references/choices.md); also load the adapter-owned setup above
-- Memory CRUD, ordinary/protected materialization, and hosted collection:
+- Memory CRUD, ordinary/protected materialization, and chat or hosted collection with optional Save:
   [references/memory.md](references/memory.md)
 - agent-direct browser payment protocol: [references/host-browser-payments.md](references/host-browser-payments.md)
 - receipt email, original documents, and later invoice processing: [references/invoices.md](references/invoices.md)
@@ -133,12 +133,12 @@ ask “please confirm” in chat before or after it, create a generic substitute
 re-present a given approval, or treat chat “confirm” or a host permission prompt
 as payment approval.
 
-For Memory, follow the focused reference: discover exact metadata, resolve the
-whole batch, continue any returned request, then re-run the unchanged resolver
-input. Missing protected values belong in the returned hosted collection, not
-chat. Generic request reads never release protected Memory values. OAuth and third-party OTPs,
-private keys, and seeds stay outside this flow. The narrow MagicPay approval
-OTP exception is defined in the request reference.
+For Memory, follow the focused reference for exact recall, missing-only chat,
+optional Save, and server-issued different-details choices. Continue the whole
+batch and replay its unchanged resolver. Incomplete saved items are valid.
+Missing protected values use the returned hosted collection; request reads never
+release them. OAuth and third-party OTPs, private keys, and seeds stay outside
+this flow. The MagicPay approval OTP exception is in the request reference.
 
 ## Browser checkout
 

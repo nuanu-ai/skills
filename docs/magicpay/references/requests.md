@@ -83,14 +83,16 @@ artifacts, not settlement and not proof that the requested external action ran.
 - Submit `provided` values only for ordinary fields the user safely supplied in
   chat. Passwords, protected payment fields, private keys, seeds, and other
   protected values must use the secure request surface, not `values`.
-- For a typed Memory collection, saving stays off unless the user's reply to
-  that exact request includes **Save** and describes what the values are and
-  when to reuse them. Submit `save: true` with one typed `saveGroups` entry per
-  group, including its exact `groupRef`, template version, field mappings,
-  `templateKey`, `displayLabel`, and semantic `description`. Omit `entity` to
-  use the default Me entity; include an exact existing or explicit new entity
-  only when the user identified it. Report persistence only from the returned
-  `saveOutcome`, and never repeat submitted values.
+- For a typed Memory collection, follow [memory.md](memory.md). Saving stays off
+  unless the user's reply to that exact request explicitly chooses **Save**.
+  The reply may accept the one clearly offered reuse description or provide its
+  own; a complete values-only answer means Use once, without another confirmation.
+  Submit `save: true` with one typed `saveGroups` entry per explicitly saved
+  group, preserving its exact `groupRef`, template version, field mappings,
+  `templateKey`, `displayLabel`, and semantic `description`. Omit `entity` only
+  for default Me; preserve an already selected non-default entity even when the
+  reply does not repeat its name. A new entity needs explicit user identification.
+  Report persistence only from the returned `saveOutcome`, and never repeat values.
 - A MagicPay approval OTP is intentionally accepted in chat only when the exact
   request says `otp_available: true`. Submit that fresh six-digit OTP only with
   `confirm_request_otp` on the same request; never place it in `values` or reuse
