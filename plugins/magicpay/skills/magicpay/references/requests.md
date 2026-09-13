@@ -30,12 +30,14 @@ For operation-owned request inspection or recovery, use `get_request` or
 `approval.requestId`; that identity is not the request-routing UUID. Normal
 composed payment waiting stays with the same `runId` and `wait_payment`.
 
-## One choice request, two presentations
+## One choice request, one conversation control
 
-`request_choice` stores one durable request. Present one chat form (the unchanged
-`chatMessage` or an adapter-native picker) and also expose the returned MagicPay
-widget or `request_url`; these channel paths share the same request and first
-durable result. Normalize source content and follow the full discretionary
+`request_choice` stores one durable request without opening a widget. Prefer
+only the adapter-native picker; when available, do not also show `chatMessage`,
+a widget, or `request_url`. Without a suitable native picker, use one
+`show_session_request` widget or the unchanged `chatMessage` with `request_url`
+as the fallback. Other channels share the same request and first durable
+result. Normalize source content and follow the full discretionary
 choice rules in [choices.md](choices.md). Submit the matched opaque ID, then
 wait on those same IDs:
 

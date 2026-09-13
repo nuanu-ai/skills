@@ -283,9 +283,10 @@ below opens the same secure MCP sign-in page; it does not collect credentials.
   `begin_request_session`, `request_choice`, `decide_request`, and `wait_request`
   are callable. Follow [choices.md](choices.md): when the current Codex host
   exposes a native single-select choice interface, use it with the exact stored
-  titles instead of `chatMessage`; otherwise relay `chatMessage` unchanged;
-  never both. Keep the returned MagicPay widget or options link attached to
-  the same request.
+  titles and decision-relevant descriptions. Show only that native control;
+  do not also show `chatMessage`, a MagicPay widget, or an options link. Without
+  a suitable native control, follow the widget or chat fallback in the choice
+  reference. Preserve the same request and exact option IDs.
 
 ### Verify and disconnect
 
@@ -401,15 +402,15 @@ file names Claude Code commands; the canonical instructions stay host-neutral.
 - In an interactive parent session where `AskUserQuestion` is available, a new
   `waiting_user` result with two to four stored options may use one
   `AskUserQuestion` single-select picker instead of echoing
-  `structuredContent.chatMessage`. This is the chat presentation; also expose
-  the MagicPay widget or returned `request_url`. Use the exact returned
+  `structuredContent.chatMessage`. Show only that native picker; do not also
+  expose a MagicPay widget or `request_url`. Use the exact returned
   `request.spec.prompt`, preserve the stored option order, and build labels and
   descriptions only from returned `request.spec.options`; never use the
   caller-local input. If the exact stored titles cannot be represented
   unambiguously within the host's option-label limits, use the unchanged
   `chatMessage` fallback.
 - `AskUserQuestion` is presentation-only. Keep an exact label-to-opaque-ID map,
-  show either the picker or `chatMessage`, never both chat variants, and do not create a
+  show only the picker when available, and do not create a
   second MagicPay request. After a valid selection, call `decide_request` with
   `decision: 'confirmed'` and that exact `selectedChoiceId` on the same
   `sessionId` and `requestId`, then call `wait_request` on those same IDs.
@@ -525,9 +526,10 @@ file names Grok Build commands; the canonical instructions stay host-neutral.
 - Treat the catalog as choice-ready only when `begin_request_session`,
   `request_choice`, `decide_request`, and `wait_request` are callable. Follow
   [choices.md](choices.md): when this host exposes a native single-select
-  choice interface, use it with the exact stored titles instead of
-  `chatMessage`; otherwise relay `chatMessage` unchanged; never both. Keep the
-  returned MagicPay widget or options link attached to the same request.
+  choice interface, use only it with the exact stored titles and relevant
+  descriptions. Do not also show `chatMessage`, a widget, or an options link.
+  Without a suitable native control, follow the widget or chat fallback in
+  the choice reference. Preserve the same request and exact option IDs.
 
 ### Payment rails on this host
 
@@ -645,8 +647,9 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   paraphrase a title, and never build labels from the caller-local input. If a
   stored title cannot be shown unchanged, paste `chatMessage` instead. Never
   show both.
-- Keep the returned widget or `request_url` in the same message as the
-  question. It is the rich MagicPay surface, not a second chat presentation.
+- When using the native question control, do not also show a widget or
+  `request_url`. Without a suitable native control, follow the widget or chat
+  fallback in [choices.md](choices.md).
 - The control is presentation only. Keep an exact label-to-ID map. An answered
   question submits `decide_request` with `decision: confirmed` and that
   option's stored ID on the same `sessionId` and `requestId`, then

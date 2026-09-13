@@ -111,7 +111,7 @@ Load only the focused reference needed:
 
 Render an explicit view when the user asks to see it. Automatic cases are:
 unified-balance `funding_required` (the existing approval's funding page when `funding_gate` exists; otherwise `show_topup` once),
-a new `request_choice` (widget/link plus chat or a faithful native picker), and `prepare_agent_email` needing exact draft approval (normal request widget/link).
+a new `request_choice` (only the native picker when available; otherwise the choice reference's widget or chat fallback), and `prepare_agent_email` needing exact draft approval (normal request widget/link).
 The commands reference owns presentation policy. Pending funding: state the shortfall and approval deadline; keep the same link. After timeout/expiry, read the same run/request; time or balance never permits replacement. Follow the payment-operations recovery rules.
 
 Preflight, approval, waiting, operation reads, reconciliation, refreshes, and

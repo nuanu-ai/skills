@@ -56,9 +56,10 @@ Automatic presentation cases:
 - Authoritative unified balance returns `funding_required`: call `show_topup`
   once. Service, policy, approval, card-pool, and ambiguous-submission errors
   are not funding requests.
-- A new `request_choice` returns `waiting_user`: show its widget or returned
-  `request_url` and one chat presentation, either unchanged `chatMessage` or a
-  faithful host-native picker. Do not invoke another view tool or repeat the
+- A new `request_choice` returns `waiting_user`: prefer only a faithful
+  host-native picker, with no widget, link, or duplicate chat prompt. Without
+  one, use `show_session_request` for one widget, or unchanged `chatMessage`
+  with `request_url` when no control renders. Do not repeat the
   prompt for a terminal replay. See [choices.md](choices.md).
 - A `prepare_agent_email` result needs approval: show its existing full-draft
   request widget or `request_url` before a decision. Keep the same send and
