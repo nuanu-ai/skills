@@ -13,7 +13,7 @@ this reference alone does not establish that an environment supports an option.
   filter; never silently widen a URL lookup.
 - Use `show_memory_items` only when the user asks to see Memory. Otherwise keep
   management reads silent with `list_memory_items` or `get_memory_item`.
-- Direct CRUD is value-free. Use `create_memory_item` for a typed item under
+- Metadata CRUD is value-free. Use `create_memory_item` for a typed item under
   an exact entity and versioned template, `update_memory_item` for item
   metadata, and `delete_memory_item` to archive an exact item. Updates and
   archival require its current content revision.
@@ -25,13 +25,87 @@ this reference alone does not establish that an environment supports an option.
   Use that returned definition; a template need not already have a saved item.
 - Templates own field keys, labels, types, and sensitivity. Declare only known
   template fields through the item contract; do not invent field definitions
-  or use old field-mutator tools. Values use the collection flow below.
+  or use old field-mutator tools. User-supplied values use direct saving below;
+  browser collection follows its existing resolver.
 - Treat entity IDs, item IDs, field IDs, and content revisions as opaque exact
   references. Supply the current revision whenever required. On conflict, read
   the same item, re-evaluate the requested change, and never overwrite a
   concurrent edit.
 - Stop on an ambiguous target or a read-only provider item. Never invent a
   field or value reference.
+
+## Direct saving of supplied values
+
+When the user explicitly asks to save or update supplied values, call
+`save_memory_item` directly. It accepts all supported user-editable values:
+ordinary fields, passwords, API keys, identity fields, and custom protected
+fields. Saving a sensitive value does not require another confirmation.
+Values alone do not imply Save; an explicit no-save instruction wins.
+
+Resolve the exact entity and template from existing context or a narrow
+`list_memory_items` lookup with `includeTemplates: true`. Ask only about genuine
+ambiguity or missing input needed for the user's request. Reuse their supplied
+label and purpose; do not require a separate description. A partial item is
+valid, so optional missing fields do not block saving the supplied fields.
+
+Create with `clientRequestId`, `entityId`, `templateKey`, the discovered
+`templateVersion`, and `values` keyed by template field key. Updates also need
+the exact `itemId` and current `expectedRevision`. Omitted values preserve
+existing content; explicit `null` clears the named field. Never materialize a
+stored password just to preserve it. Templates own built-in field definitions;
+for `custom.fields`, supply `fieldDefinitions` with `key`, `label`, `valueType`,
+and `isSecret` for each new custom field. Mark sensitive custom fields secret.
+Preserve protected values byte-for-byte, including whitespace.
+
+Use one stable `clientRequestId` and retain the exact payload through an
+uncertain response. Retrying that unchanged save returns its original receipt;
+never generate a new key to recover a timeout. A changed payload with that key
+is a conflict. A stale item revision needs a fresh read and a reviewed change,
+not an overwrite. Read-only provider-managed payment methods remain outside
+this user-editable save operation.
+
+The save needs no payment, request session, collection form, or browser.
+Do not create an empty placeholder, call `request_memory_values`, fabricate a
+resolver, or use the editor as a fallback to this action. If native discovery
+does not expose `save_memory_item`, report that limitation once and preserve
+the existing installation and sign-in.
+
+Confirm only from a successful receipt (`outcome`: `created`, `updated`, or
+`replayed`), using the returned item/entity labels and `savedFields` labels.
+The receipt contains no values. Keep supplied values out of replies, error
+summaries, files, logs, and evidence. A payment and its requested Memory save
+have separate outcomes: report a submitted payment as submitted, then the save
+result. A failed or uncertain save never permits replaying the payment.
+
+Example `save_memory_item` input (synthetic data only; discover real template
+keys, versions and entity IDs before a real call):
+
+```json
+{
+  "clientRequestId": "save-example-api-key-01",
+  "entityId": "11111111-1111-4111-8111-111111111111",
+  "templateKey": "credential.api",
+  "templateVersion": 1,
+  "displayLabel": "Example API key",
+  "resource": {"kind": "site", "key": "example.test", "label": "Example"},
+  "values": {"api_key": "synthetic-test-key-only"}
+}
+```
+
+### Optional clipboard input
+
+This applies only to missing input for standalone saving. If a highly sensitive
+value is missing and the host actually exposes a supported clipboard read,
+offer it once as an optional input method, alongside direct input. For example:
+“You can provide the key directly, or copy it and choose clipboard input.”
+If the value is already supplied, save directly without a clipboard detour.
+
+Read the clipboard only after the user chooses it for that field. A plaintext
+clipboard read exposes the value to the agent; do not claim it is opaque or
+outside the conversation's processing. Never read it speculatively or clear it
+automatically. If clipboard input is unavailable, declined, or fails, continue
+with direct input and save normally once provided. The collection-source
+setting does not redirect already supplied values into a hosted form.
 
 ## Two-stage use in an agent task
 
@@ -163,7 +237,7 @@ two-stage flow above with a stable HTTPS context URL and the same clear purpose.
   Memory approval is not payment approval. Do not infer blanket permission to
   send again or save/update a recipient merely because its values were provided.
 
-## Ordinary and protected V1 values
+## Ordinary and protected V1 recall
 
 Use only a successful whole-batch `ready` result for the exact session, page,
 purpose, selection, and entity bindings. V1 can return approved canonical
@@ -174,11 +248,12 @@ requires the returned approval even when ordinary reuse is automatic.
 
 Payment cards use their separate payment run. Wallet secrets, private keys,
 seed phrases, OTPs, provider-managed values, unknown sensitivity, and unsupported
-templates are not enabled by this Memory contract. Honor `fallback_required`;
+templates are not enabled for this recall contract. This does not restrict
+standalone saving of user-editable values. Honor `fallback_required`;
 never fill a partial batch or create another intent to bypass a denial.
 
-Metadata CRUD does not accept stored values. Use the authorized Memory editor
-for user-directed value changes. During a task, collect values only through
+Metadata CRUD does not accept stored values; `save_memory_item` does. For an
+existing browser resolver, collect missing values only through
 the exact request returned by the resolver below; never create a separate
 collection as a workaround. Denied, expired, failed, or canceled is terminal
 for that request.

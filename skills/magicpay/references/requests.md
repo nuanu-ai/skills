@@ -82,7 +82,9 @@ artifacts, not settlement and not proof that the requested external action ran.
   an item ID or infer a candidate from labels.
 - Submit `provided` values only for ordinary fields the user safely supplied in
   chat. Passwords, protected payment fields, private keys, seeds, and other
-  protected values must use the secure request surface, not `values`.
+  protected values in an existing collection must use the secure request
+  surface, not `decide_request.values`. Standalone explicit saving uses
+  `save_memory_item` directly, including protected supplied values; see [memory.md](memory.md).
 - For a typed Memory collection, follow [memory.md](memory.md). Saving stays off
   unless the user's reply to that exact request explicitly chooses **Save**.
   The reply may accept the one clearly offered reuse description or provide its

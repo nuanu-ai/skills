@@ -27,7 +27,8 @@ Use opaque IDs exactly as returned.
 | Read agent correspondence | `list_agent_email_threads`, `read_agent_email_thread` for the exact owned agent |
 | Prepare and send agent email | `prepare_agent_email`, normal `wait_request` / supported decision flow, then `send_agent_email` when directed; see [email.md](email.md) |
 | Recover an uncertain email send | `get_agent_email_send` with the same send and agent IDs |
-| Manage saved Memory | Use the direct value-free CRUD action matching the intent |
+| Save or update supplied Memory values | `save_memory_item`, including protected values; exact item/revision for updates |
+| Manage Memory metadata | Use the value-free CRUD action matching the intent |
 | Use Memory in an active session | `get_memory_footprint`, then exact `materialize_memory_items` or v3 `resolve_browser_form_values` |
 | Existing request, session, or operation | For payment execution, use only its returned `nextAction`; authorized read-only diagnosis remains available |
 

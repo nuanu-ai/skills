@@ -59,16 +59,15 @@ preference changed.
   `attach_payment_invoice` for its original PDF or supported receipt link. For personal email,
   prefer an existing connector, then native computer use, then ask for the original; never reopen payment.
 - Agent email: use `list_agent_email_threads` / `read_agent_email_thread` for the exact agent. Start outgoing mail with `prepare_agent_email`; follow the email reference for exact approval and sending.
-- Memory management: use the direct CRUD action matching the user's intent;
-  CRUD remains value-free. To use Memory in a task, establish the exact session,
+- Save supplied Memory values: use `save_memory_item` directly, including
+  protected values, on explicit Save; updates require the exact item/revision.
+  Ask only for missing facts or ambiguity. See the Memory reference for optional clipboard input and recovery.
+- Memory metadata CRUD remains value-free. To use Memory in a task, establish the exact session,
   call `get_memory_footprint`, select exact item revisions and field IDs, then
   call `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
 - Browser form needing saved Memory or collection: use `begin_browser_form`,
   then the exact footprint/resolver flow. Already-known ordinary fields can be
   filled directly by the host browser without a MagicPay request.
-- Stored Memory value changes: use the authorized Memory editor. During a
-  task, follow only the exact collection request returned by its resolver;
-  metadata CRUD does not accept values. See the Memory reference.
 
 Load only the focused reference needed:
 
@@ -80,7 +79,7 @@ Load only the focused reference needed:
   [references/payment-operations.md](references/payment-operations.md)
 - generic request/reply/OTP waiting: [references/requests.md](references/requests.md); normalized optional choices across chat and MagicPay channels:
   [references/choices.md](references/choices.md); also load the adapter-owned setup above
-- Memory CRUD, ordinary/protected materialization, and chat or hosted collection with optional Save:
+- Memory saving, ordinary/protected materialization, and chat or hosted collection with optional Save:
   [references/memory.md](references/memory.md)
 - agent-direct browser payment protocol: [references/host-browser-payments.md](references/host-browser-payments.md)
 - receipt email, original documents, and later invoice processing: [references/invoices.md](references/invoices.md)
@@ -120,9 +119,10 @@ as payment approval.
 For Memory, follow the focused reference for exact recall, missing-only chat,
 optional Save, and server-issued different-details choices. Continue the whole
 batch and replay its unchanged resolver. Incomplete saved items are valid.
-Missing protected values use the returned hosted collection; request reads never
-release them. OAuth and third-party OTPs, private keys, and seeds stay outside
-this flow. The MagicPay approval OTP exception is in the request reference.
+In an existing browser collection, missing protected values use the returned
+hosted collection; request reads never release them. Standalone supplied-value
+saving uses `save_memory_item` without a collection request. The MagicPay
+approval OTP exception is in the request reference.
 
 ## Browser checkout
 

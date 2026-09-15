@@ -6,6 +6,7 @@ Choose the focused contract; this map does not add a second protocol.
 | --- | --- |
 | Already-known ordinary browser fields | Host browser directly, within the user's existing task authority. |
 | Browser form needing Memory | `begin_browser_form` → footprint → exact resolver → returned request if needed → same resolver → whole-batch fill. See [memory.md](memory.md). |
+| Explicit Save with supplied values | Resolve the entity/template → `save_memory_item` → value-free receipt. Protected values use the same save; missing sensitive input may use optional host clipboard. See [memory.md](memory.md). |
 | Known checkout URL | `create_checkout_session` → host inspects actual checkout → `run_browser_payment` → same run → host fill and one authorized final action → bounded observation → `record_browser_payment_result`. See [host-browser-payments.md](host-browser-payments.md). |
 | Exact crypto or x402 request | Corresponding composed payment run → `wait_payment` on the same run → settlement/recovery. See [payment-operations.md](payment-operations.md). |
 | Unknown provider | `search_provider_methods` → verify current official docs → exact request under user authority; discovery grants no payment authority. |
