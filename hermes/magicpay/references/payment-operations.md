@@ -302,34 +302,24 @@ available agent capability. MagicSearch returns guidance and URLs but creates
 no run, choice, selection, checkout, execution capability, or payment
 authority.
 
-Before paying a seller not already checked in this task, call `check_merchant`
-with up to ten documented requests. It answers one advisory verdict per URL
-from the MagicPay merchant trust layer: `proceed`, `caution`, `avoid`, or
-`unknown`, with a score, the number of settled payments behind it, the last
-unpaid probe result, and matching registry entries. An unknown seller is
-probed with one unsigned request that obtains its x402 requirements; nothing
-is paid. Skip `avoid` sellers and move to the next candidate. Surface
-`caution` to the user and continue only if they choose that seller or no
-alternative exists. Treat `unknown` with `check.state` `unavailable` as no
-trust data right now and proceed under the normal rules; never treat it as a
-rejection and do not retry in a loop. `running` means a probe is in flight:
-call once more after a few seconds if the verdict matters. A `defective`
-probe is the signing-domain case below, reported before any run exists.
-Trust verdicts are advisory: they never create, block, or authorize a payment.
+For a known seller URL, use normal `run_x402_payment` intake once; its unpaid
+challenge read also supplies merchant diagnostics. `check_merchant` is optional
+when comparing candidates: pass their documented method, URL, headers and body.
+Its verdict is advisory and applies to that request shape. `no_402`, an old
+signing-label rejection, or unavailable trust data is inconclusive; continue
+under normal payment authorization. Surface concrete delivery failures as
+advice. Respect an explicit operator deny or an unsafe destination, and do not
+loop probes or request an extra confirmation solely for an advisory verdict.
 
-If `run_x402_payment` stops with `INVALID_REQUEST` and
-`requirementDiagnostic.field` is `accepts.extra.signingDomain`, the provider
-is broken: its x402 offer advertises an EIP-712 signing domain that does not
-match Base USDC, so no compliant client can pay it. MagicPay created no
-payment and holds no funds. Notify the user plainly that this provider is
-broken and that it is a provider problem, not a MagicPay problem. Do not retry
-or reshape the same seller request. Look for the next provider instead: call
-`search_provider_methods` for the same goal and continue with a working
-provider, or ask the user how to proceed when none fits.
+MagicPay accepts variant labels for its known configured token and signs using
+the actual token domain. A historical `accepts.extra.signingDomain` diagnostic
+does not prove that a provider is broken. Preserve the current request and let
+fresh intake decide compatibility from the actual network, token, amount,
+payee and transfer mechanism.
 
 If `requirementDiagnostic.reason` is "unsupported_transfer", the selected
 endpoint requires a transfer mechanism outside MagicPay's supported exact
-EIP-3009 and bounded v2 `upto` Permit2 paths. Report that endpoint-level
+EIP-3009, v2 exact Permit2 and bounded v2 `upto` Permit2 paths. Report that endpoint-level
 incompatibility without calling the whole provider broken, and do not retry it
 as a standard x402 payment.
 Proxies Pool `/balance/topup` is one such distinct route: its current
@@ -479,12 +469,16 @@ suppression / 30-second heartbeat rule.
 
 ### Deliver the purchased result
 
-After the composed run reaches `completed`, deliver its returned `result` to
-the authenticated owner. Its integrity-verified delivery is already decoded:
+Deliver the returned, integrity-verified response to the authenticated owner.
+State the payment outcome and product fulfillment separately: response bytes
+alone do not prove either. A pending payment or an HTTP error does not erase a
+retained response. The composed result is already decoded:
 
 - return `deliverable.json` as parsed seller JSON;
 - return `deliverable.text` as bounded UTF-8 text; and
 - return a binary `deliverable.attachment` as the owner-accessible attachment.
+  If JSON or text decoding fails, use the returned attachment fallback so the
+  original bytes remain available.
 
 Never manually copy or decode Base64 from a composed result. Preserve the
 verified deliverable shape:
@@ -517,8 +511,10 @@ Examples:
 - a `text/plain` seller result is delivered as text;
 - a binary seller result is delivered as an attachment or artifact.
 
-If the result is missing, expired, corrupt, or belongs to another operation,
-report result retrieval failure without creating a replacement payment. If an
+If the result is missing, fails integrity validation, or belongs to another
+operation, report result retrieval failure without creating a replacement
+payment. A continuation's `expiresAt` limits polling; expiry does not hide
+response bytes already retained for that operation. If an
 explicit continuation still has no usable final output after its bounded wait,
 report the same seller order as pending fulfillment while attempts remain. When
 the bounded attempts are exhausted, report the verified financial outcome and
@@ -547,9 +543,9 @@ explicit non-retryable terminal operation failure, promptly obtain cleanup for
 the exact owning workflow. If its current status is unavailable, read it with
 `get_checkout_session`. Denial can already have canceled that workflow even
 though its operation reports `definitively_failed`. Preserve its terminal
-outcome: use `cancel_checkout_session` when already canceled, or
-`fail_checkout_session` for an open or failed workflow. Never fail an already
-completed workflow; read its exact operation instead. Use one stable completion
+outcome. Never call `fail_checkout_session` on an already closed workflow;
+preserve every terminal status and read its exact operation and cleanup result
+instead. Use the matching closer only for an open workflow, with one stable completion
 key for the chosen closer and the observed run, request, or operation failure
 reason; do not invent a provider failure code when the operation has none.
 Do not wait for a later user cancellation. Consume its cleanup result without
