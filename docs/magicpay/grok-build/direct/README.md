@@ -1,10 +1,10 @@
 # Install MagicPay for Grok Build
 
-Download the release archive and place the magicpay folder in a supported skill directory.
+Copy the `magicpay` folder from this repository's `skills/` directory (same branch as this README) into a supported skill directory. Release archives are not published here.
 
 ## Host plugin (recommended)
 
-The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
+The host plugin bundles this skill and the remote MCP declaration, so no separate skill copy is needed.
 
 - Development channel: add a `[[marketplace.sources]]` entry to `~/.grok/config.toml` with `git = "https://github.com/nuanu-ai/skills.git"` and `branch = "staging"`, or run `grok plugin marketplace add https://github.com/nuanu-ai/skills.git`, then install `magicpay` from the `/plugins` Marketplace tab.
 - Production channel, after promotion: `grok plugin marketplace add nuanu-ai/skills`, then install `magicpay` from the `/plugins` Marketplace tab.
@@ -28,4 +28,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.50
+Release: magicpay-v0.4.51

@@ -582,6 +582,14 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   **Settings → Plugins → MagicPay → Add**. Use the exact requested channel; a
   custom remote entry is an option only when the host supports it. Do not add a
   duplicate connection or install a MagicPay CLI or local server.
+- A connector adds tools only; MagicPay guidance is the skill, which a catalog
+  listing bundles and a custom remote connection does not. After a custom
+  remote Add, also install the skill: copy the `skills/magicpay` folder from
+  https://github.com/nuanu-ai/skills (branch `staging` for the development
+  channel, `main` for production) into the workspace `skills/magicpay`
+  directory (or `~/.cursor/plugins/local/magicpay/skills/`), then read its
+  SKILL.md before the first MagicPay task. Without the installed skill, do not
+  fill forms or checkouts from setup-guide memory.
 - If the requested connector/channel is unavailable or policy blocks Add,
   report that installation limit. The account's relationship with Cursor does
   not prove which OAuth client metadata this connection uses; do not infer Bot

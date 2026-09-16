@@ -4,7 +4,7 @@ Use the host plugin below. The direct skill archive is an optional alternative.
 
 ## Host plugin (recommended)
 
-The host plugin bundles this skill and the remote MCP declaration, so no archive download is needed.
+The host plugin bundles this skill and the remote MCP declaration, so no separate skill copy is needed.
 
 - First discover current-task MagicPay tools, including deferred tools. When `get_magicpay_capabilities` is callable, verify the requested environment and authenticated readiness without requiring separate inventory. An auth challenge goes to Connect; a service failure is not proof of absence. Otherwise inspect `claude plugin list --json` and `claude plugin marketplace list --json` in the same host and configuration scope. Preserve an already-correct installation and authorization, including a supported older version. If inventory is unavailable, state is unknown: hand off `/plugin` to inspect details; Install only if absent, Authenticate only when needed. Report existing duplicates; do not remove them automatically or create another connection. Use existing supported host commands; if unavailable, hand off the native control instead of installing another CLI. A denied host action stops the attempt; do not switch routes to bypass it.
 - Development channel: When development installation is needed, verify any existing `nuanu-skills-staging` source is `nuanu-ai/skills` at ref `staging`; stop on a source/channel mismatch. Register only a missing source with `claude plugin marketplace add https://github.com/nuanu-ai/skills.git#staging` (skip when already registered), then install only the absent plugin with `claude plugin install magicpay@nuanu-skills-staging`. Public-directory listing is not required.
@@ -30,4 +30,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.50
+Release: magicpay-v0.4.51
