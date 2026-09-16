@@ -4,7 +4,7 @@ Choose the focused contract; this map does not add a second protocol.
 
 | Intent | Start and continuation |
 | --- | --- |
-| Non-payment browser form | `begin_browser_form` → footprint → offer matches once by item name → exact resolver → returned request if needed → same resolver → whole-batch fill. No candidate: fill from the task, then offer Save. Chat context never replaces the footprint. See [memory.md](memory.md). |
+| Non-payment browser form | footprint (no session) → offer matches once by item name → exact resolver without `sessionId` (it creates the form session) → returned request if needed → same resolver with that `sessionId` → whole-batch fill. No candidate: fill from the task, then offer Save. Chat context never replaces the footprint. See [memory.md](memory.md). |
 | Explicit Save with supplied values | Resolve the entity/template → `save_memory_item` → value-free receipt. Protected values use the same save; missing sensitive input may use optional host clipboard. See [memory.md](memory.md). |
 | Known checkout URL | `create_checkout_session` → host inspects actual checkout → footprint → saved billing roles as `ordinaryFields` → `run_browser_payment` → same run → host fill and one authorized final action → bounded observation → `record_browser_payment_result`. See [host-browser-payments.md](host-browser-payments.md). |
 | Exact crypto or x402 request | Corresponding composed payment run → `wait_payment` on the same run → settlement/recovery. See [payment-operations.md](payment-operations.md). |

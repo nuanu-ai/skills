@@ -263,18 +263,19 @@ for that request.
 ### Form entry rule
 
 Check Memory before typing into any non-payment form; do not force it. Call
-`begin_browser_form` for the exact page, then `get_memory_footprint`. With at
-least one candidate, offer once, by item name and value-free, to use the saved
+`get_memory_footprint` with the exact page URL and purpose; no session is
+needed. With at least one candidate, offer once, by item name and value-free, to use the saved
 details or enter them manually; with several candidates, offer the choice by
 name. With no candidate, fill from the task and offer Save afterwards; do not
 ask. Values already present in the conversation never replace this check while
 the MagicPay connector is available.
 
-When a browser form needs saved Memory or collection, inspect the page and call
-`begin_browser_form` once with its exact HTTPS URL. Preserve the returned
-workflow `sessionId`, discover with `get_memory_footprint`, then run the exact
-v3 resolver before offering manual entry. Never use a host task ID, a
-caller-generated UUID, or a payment checkout session as the workflow identity.
+When the owner accepts saved Memory or collection is needed, run the exact v3
+resolver without a `sessionId`: MagicPay creates the form session itself and
+returns its `sessionId`. Preserve that identity for the returned request and
+the replay; `begin_browser_form` stays available when an explicit session is
+preferred. Never use a host task ID, a caller-generated UUID, or a payment
+checkout session as the workflow identity.
 
 Before proposing collection mappings, discover current canonical templates with
 `list_memory_items` using `includeTemplates: true` and the exact page URL scope.

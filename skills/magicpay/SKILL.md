@@ -66,12 +66,12 @@ preference changed.
 - Save supplied Memory values: use `save_memory_item` directly, including
   protected values, on explicit Save; updates require the exact item/revision.
   Ask only for missing facts or ambiguity. See the Memory reference for optional clipboard input and recovery.
-- Memory metadata CRUD remains value-free. To use Memory in a task, establish the exact session,
-  call `get_memory_footprint`, select exact item revisions and field IDs, then
+- Memory metadata CRUD remains value-free. To use Memory in a task, call
+  `get_memory_footprint` (no session needed), select exact item revisions and field IDs, then
   call `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
-- Any non-payment browser form: before filling, `begin_browser_form` and
-  `get_memory_footprint` for that page; offer matching items once by name; fill
-  from the task only when none match, then offer Save. Chat context never skips this.
+- Any non-payment browser form: before filling, `get_memory_footprint` for that
+  page; offer matching items once by name; the resolver creates the form session
+  itself. Fill from the task only when none match, then offer Save. Chat context never skips this.
 
 Load only the focused reference needed:
 
