@@ -42,8 +42,8 @@ preference changed.
 - Known x402 resource: build the exact request from current official provider
   documentation and the user's instruction; call `run_x402_payment` within the
   authorized debit. Historical token-label rejections are inconclusive.
-- Known checkout URL: use `create_checkout_session`, then the direct-browser
-  sequence below.
+- Known checkout URL: use `create_checkout_session`, then `get_memory_footprint`
+  for the page; pass saved billing roles as `ordinaryFields`, then the sequence below.
 - Product or provider discovery: `search_provider_methods` when the target is
   unknown; read official docs. For a known URL, use composed payment intake once. Use
   `check_merchant` optionally to compare candidates; inconclusive probes are
@@ -69,9 +69,9 @@ preference changed.
 - Memory metadata CRUD remains value-free. To use Memory in a task, establish the exact session,
   call `get_memory_footprint`, select exact item revisions and field IDs, then
   call `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
-- Browser form needing saved Memory or collection: use `begin_browser_form`,
-  then the exact footprint/resolver flow. Already-known ordinary fields can be
-  filled directly by the host browser without a MagicPay request.
+- Any non-payment browser form: before filling, `begin_browser_form` and
+  `get_memory_footprint` for that page; offer matching items once by name; fill
+  from the task only when none match, then offer Save. Chat context never skips this.
 
 Load only the focused reference needed:
 

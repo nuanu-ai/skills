@@ -260,6 +260,16 @@ for that request.
 
 ## Browser collection, Use once, and Save
 
+### Form entry rule
+
+Check Memory before typing into any non-payment form; do not force it. Call
+`begin_browser_form` for the exact page, then `get_memory_footprint`. With at
+least one candidate, offer once, by item name and value-free, to use the saved
+details or enter them manually; with several candidates, offer the choice by
+name. With no candidate, fill from the task and offer Save afterwards; do not
+ask. Values already present in the conversation never replace this check while
+the MagicPay connector is available.
+
 When a browser form needs saved Memory or collection, inspect the page and call
 `begin_browser_form` once with its exact HTTPS URL. Preserve the returned
 workflow `sessionId`, discover with `get_memory_footprint`, then run the exact
@@ -362,14 +372,15 @@ available only while that request remains pending.
 
 ## Direct browser checkout
 
-For agent-direct checkout, send semantic `ordinaryFieldRoles` in the composed
-run. Role discovery covers legacy saved fields and ready agent defaults; it
-does not select typed Memory items. For a user-selected typed billing entity,
-use `get_memory_footprint` in the exact session/page context, then pass its exact
-item ID as `itemRef`, `contentRevision`, and field ID as `fieldRef`, with the
-semantic `role`, in the composed run's `ordinaryFields`. Keep these selections
-when adding late roles or resuming the same run; do not add a separate Memory
-approval for ordinary reuse. If it returns `ordinary_field_required`, use
+For agent-direct checkout, server-side role discovery covers legacy saved
+fields and ready agent defaults only; it never selects typed Memory items. So
+before the first composed run, always call `get_memory_footprint` in the exact
+session/page context and pass every ordinary role that has a saved candidate as
+its exact item ID (`itemRef`, `contentRevision`) and field ID (`fieldRef`) with
+the semantic `role` in `ordinaryFields`; send only roles without a candidate as
+`ordinaryFieldRoles`, and offer several candidates by item name. Keep these
+selections when adding late roles or resuming the same run; do not add a
+separate Memory approval for ordinary reuse. If it returns `ordinary_field_required`, use
 only the exact run-owned request and continue the same run. Do not create a
 separate Memory collection, another payment run, or a replacement checkout.
 Chat-provided ordinary values remain current-run data unless the user explicitly

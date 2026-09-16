@@ -4,10 +4,9 @@ Choose the focused contract; this map does not add a second protocol.
 
 | Intent | Start and continuation |
 | --- | --- |
-| Already-known ordinary browser fields | Host browser directly, within the user's existing task authority. |
-| Browser form needing Memory | `begin_browser_form` → footprint → exact resolver → returned request if needed → same resolver → whole-batch fill. See [memory.md](memory.md). |
+| Non-payment browser form | `begin_browser_form` → footprint → offer matches once by item name → exact resolver → returned request if needed → same resolver → whole-batch fill. No candidate: fill from the task, then offer Save. Chat context never replaces the footprint. See [memory.md](memory.md). |
 | Explicit Save with supplied values | Resolve the entity/template → `save_memory_item` → value-free receipt. Protected values use the same save; missing sensitive input may use optional host clipboard. See [memory.md](memory.md). |
-| Known checkout URL | `create_checkout_session` → host inspects actual checkout → `run_browser_payment` → same run → host fill and one authorized final action → bounded observation → `record_browser_payment_result`. See [host-browser-payments.md](host-browser-payments.md). |
+| Known checkout URL | `create_checkout_session` → host inspects actual checkout → footprint → saved billing roles as `ordinaryFields` → `run_browser_payment` → same run → host fill and one authorized final action → bounded observation → `record_browser_payment_result`. See [host-browser-payments.md](host-browser-payments.md). |
 | Exact crypto or x402 request | Corresponding composed payment run → `wait_payment` on the same run → settlement/recovery. See [payment-operations.md](payment-operations.md). |
 | Unknown provider | `search_provider_methods` → verify current official docs → exact request under user authority; discovery grants no payment authority. |
 | Candidate sellers | Known URL → normal payment intake once; optional `check_merchant` for comparisons. Use request-specific evidence as advice; respect explicit operator denies and unsafe destinations. |

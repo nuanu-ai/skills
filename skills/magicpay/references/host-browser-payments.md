@@ -57,7 +57,9 @@ confirmation of the same approved facts, and neither do you. After MagicPay
 approval the only confirmation left is one the host itself requires for the
 final action; do not ask the user to approve the same payment again in chat.
 If email, name, phone, country, billing address, city, region, or postal code
-appears later, add it to the sorted unique role union and replay the same run.
+appears later, check the footprint for a saved candidate first: pass one as an
+`ordinaryFields` reference, otherwise add the role to the sorted unique role
+union; then replay the same run.
 For receipt email precedence and an inbox that is not ready yet, follow
 [invoices.md](invoices.md); inbox provisioning must not delay this run.
 Never remove a previously observed role. Passwords, OTPs, identity documents,
