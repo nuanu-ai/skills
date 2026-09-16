@@ -534,6 +534,11 @@ support, and do not claim delivery or automatically purchase again.
 - `available`: unified spendable quantity after reservations.
 - `awaiting_approval`, `external_not_submitted`, `external_pending`, and
   `reconciliation_required`: continue the same operation.
+- After submission (`external_pending`, `reconciliation_required`,
+  `settlement_confirmed`, `failure_confirmed`): MagicPay itself confirms the
+  chain receipt and posts the outcome, so the operation's `nextAction` is
+  `wait`. Keep reading the same run or operation after `waitAfterMs`; do not
+  reconcile or replace it on your own.
 - approval.status: `revoked` preserves the historical decision but cancels its
   pre-submit authority. It cannot resume, be reused, or materialize an
   operation.
