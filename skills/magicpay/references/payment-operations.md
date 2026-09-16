@@ -322,6 +322,11 @@ endpoint requires a transfer mechanism outside MagicPay's supported exact
 EIP-3009, v2 exact Permit2 and bounded v2 `upto` Permit2 paths. Report that endpoint-level
 incompatibility without calling the whole provider broken, and do not retry it
 as a standard x402 payment.
+If `requirementDiagnostic.field` is "accepts.supported" with any other reason, the
+endpoint offers no payment method MagicPay supports, such as a non-x402
+settlement scheme or another network or token. That verdict is final for that
+endpoint: report it as an endpoint limitation, choose another endpoint or
+provider, and never call the whole provider broken.
 Proxies Pool `/balance/topup` is one such distinct route: its current
 documentation requires a wallet transfer followed by a `txHash` in
 `Payment-Signature`. Use it only through a separately supported and authorized
