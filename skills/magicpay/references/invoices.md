@@ -42,11 +42,12 @@ document:
 
 - `automatic_email`: capture can run automatically. End normally; do not
   claim a document was received or processed until the exact operation says so.
-- `external_email`: give the returned guidance once. Any invoice goes to the
-  checkout address, and the user may send the original later to attach it. Do not
-  wait for a reply or say the merchant sent it without explicit delivery evidence.
-- Absent follow-up: routing is unknown; do not infer an external address or a
-  need for manual upload. A fixed merchant account may already use the agent inbox.
+- `external_email`: use the personal-email retrieval below before asking the
+  user for an original. Routing alone does not prove merchant delivery.
+- Absent follow-up: use the actual checkout email and known managed address
+  when available. A fixed merchant account may use either address without an
+  ordinary email field. Missing guidance alone proves neither external routing
+  nor a need for manual upload; leave routing unknown if those facts are missing.
 
 When the exact operation reports no received invoice or receipt, say so plainly.
 Do not turn automatic routing or a completed payment into a claim that a receipt
@@ -57,6 +58,56 @@ reopen the payment, or make another purchase to obtain a receipt. A later user
 request for status uses `get_payment_operation` for the same exact operation.
 Follow a separately requested notification or scheduling task under the host's
 normal capabilities; invoice capture alone does not authorize one.
+
+## Retrieve an invoice from personal email
+
+Keep the exact operation and actual checkout address. First read the operation's
+invoice state: reuse an already attached original instead of importing it again.
+Managed agent email stays on automatic processing; do not search a personal
+mailbox or ask for an upload for that route.
+
+For a personal address, use the user's existing mailbox access under the host's
+normal permissions. Retrieval and attachment need no extra confirmation when
+already authorized by the task and host.
+
+1. **Prefer an existing email connector** that can access the checkout mailbox.
+   Discover actual host tools; MagicPay's agent-email tools do not read personal
+   mail. An unrelated connected mailbox is not a substitute. A verified alias
+   can belong to the accessible mailbox.
+2. **Use native computer use** in accessible webmail or a mail app when the
+   connector is absent, cannot access that mailbox, or cannot retrieve the
+   attachment. If it already found the message, continue from that message in
+   the UI. Use the host's mailbox and download controls. Technical connector
+   limitations allow this fallback; a user or host denial of mailbox access
+   must not be bypassed. Do not install a connector, extract credentials, or
+   start sign-in merely to collect a receipt.
+3. **Search for this purchase**, using the checkout address, merchant, purchase
+   time and known order reference. Inspect relevant candidates in one bounded
+   pass; refining that search is allowed, repeated waiting/polling is not.
+   Check for an explicitly labeled invoice or receipt link as well as a PDF
+   attachment before deciding the original is missing. Inspect that link through
+   the host's supported tools; use the supported merchant receipt-link contract
+   below when it fits. Creator, sharing and help links are not invoice evidence.
+   Prefer the matching order reference and consistent facts. Merchant and amount
+   alone may match several purchases: ask for a choice when ambiguity remains.
+   A conclusive no-match result does not need the same search repeated in the UI.
+4. **Transfer the original** through the existing host file input to
+   `attach_payment_invoice` for the retained operation. A downloaded local PDF,
+   mailbox message ID, email text or browser preview is not a host file object.
+   Confirm supported transport before claiming attachment. The existing backend
+   stores and extracts the original; do not replace it with an agent summary.
+5. **Ask once for the original** if neither route can retrieve and transfer it,
+   or the receipt is not found yet. Say which occurred, finish the payment
+   response normally, and retain the operation for the user's later file or
+   request to check again. A missing connector alone does not justify an upload
+   request when computer use can complete the retrieval.
+
+Use the attachment contract below for supported files or merchant receipt links.
+Email-only text and unsupported formats do not become an invented PDF. After an
+uncertain attachment response, read the same operation before retrying with the
+same file identity. Do not replace an existing document silently.
+The session's missing-invoice notice comes from absent original/link evidence;
+it does not prove a mailbox search ran or that the merchant will never send one.
 
 ## Original documents and AI facts
 

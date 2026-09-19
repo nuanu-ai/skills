@@ -30,12 +30,14 @@ For operation-owned request inspection or recovery, use `get_request` or
 `approval.requestId`; that identity is not the request-routing UUID. Normal
 composed payment waiting stays with the same `runId` and `wait_payment`.
 
-## One choice request, two presentations
+## One choice request, one conversation control
 
-`request_choice` stores one durable request. Present one chat form (the unchanged
-`chatMessage` or an adapter-native picker) and also expose the returned MagicPay
-widget or `request_url`; these channel paths share the same request and first
-durable result. Normalize source content and follow the full discretionary
+`request_choice` stores one durable request without opening a widget. Prefer
+only the adapter-native picker; when available, do not also show `chatMessage`,
+a widget, or `request_url`. Without a suitable native picker, use one
+`show_session_request` widget or the unchanged `chatMessage` with `request_url`
+as the fallback. Other channels share the same request and first durable
+result. Normalize source content and follow the full discretionary
 choice rules in [choices.md](choices.md). Submit the matched opaque ID, then
 wait on those same IDs:
 
@@ -80,15 +82,19 @@ artifacts, not settlement and not proof that the requested external action ran.
   an item ID or infer a candidate from labels.
 - Submit `provided` values only for ordinary fields the user safely supplied in
   chat. Passwords, protected payment fields, private keys, seeds, and other
-  protected values must use the secure request surface, not `values`.
-- For a typed Memory collection, saving stays off unless the user's reply to
-  that exact request includes **Save** and describes what the values are and
-  when to reuse them. Submit `save: true` with one typed `saveGroups` entry per
-  group, including its exact `groupRef`, template version, field mappings,
-  `templateKey`, `displayLabel`, and semantic `description`. Omit `entity` to
-  use the default Me entity; include an exact existing or explicit new entity
-  only when the user identified it. Report persistence only from the returned
-  `saveOutcome`, and never repeat submitted values.
+  protected values in an existing collection must use the secure request
+  surface, not `decide_request.values`. Standalone explicit saving uses
+  `save_memory_item` directly, including protected supplied values; see [memory.md](memory.md).
+- For a typed Memory collection, follow [memory.md](memory.md). Saving stays off
+  unless the user's reply to that exact request explicitly chooses **Save**.
+  The reply may accept the one clearly offered reuse description or provide its
+  own; a complete values-only answer means Use once, without another confirmation.
+  Submit `save: true` with one typed `saveGroups` entry per explicitly saved
+  group, preserving its exact `groupRef`, template version, field mappings,
+  `templateKey`, `displayLabel`, and semantic `description`. Omit `entity` only
+  for default Me; preserve an already selected non-default entity even when the
+  reply does not repeat its name. A new entity needs explicit user identification.
+  Report persistence only from the returned `saveOutcome`, and never repeat values.
 - A MagicPay approval OTP is intentionally accepted in chat only when the exact
   request says `otp_available: true`. Submit that fresh six-digit OTP only with
   `confirm_request_otp` on the same request; never place it in `values` or reuse

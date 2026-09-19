@@ -29,7 +29,20 @@ for one endpoint into duplicate products, claim travel availability without
 dates/occupancy, or invent a missing price, baggage allowance, stock state, or
 commercial term. Narrow a larger result set by relevance before asking.
 
-## One durable request, two channel paths
+For Memory options, use the saved item name as `title`, its entity as `subtitle`,
+and only the requested field labels in `description`. Keep the entity/item
+descriptions when needed to distinguish otherwise identical names. For a
+multi-item option, identify each item and the fields requested from it. Never
+put saved field values in choice metadata.
+
+Memory resolver choices have their own decision contract in [memory.md](memory.md).
+Keep a declared **Provide different details** alternative, including on a
+single-item approval, and submit its exact stored ID with `choose_candidate`.
+It is not the generic “none of these” denial described below. Never synthesize
+this option or hide it to fit a native control; use a faithful fallback when
+needed. Do not create `request_choice` to replace an existing Memory request.
+
+## One durable request, one conversation control
 
 If no relevant MagicPay session already exists, call `begin_request_session`
 once with a plain description, then use its exact `sessionId`. Call
@@ -37,19 +50,20 @@ once with a plain description, then use its exact `sessionId`. Call
 
 For a new `waiting_user` result:
 
-1. Present the options exactly once in this conversation. Echo
-   `structuredContent.chatMessage` unchanged, or use one faithful host-native
-   single-select control with the exact stored titles instead of the echo.
-   Do not show both chat variants. Prefer the native control when it can show
-   every stored title unchanged; otherwise echo `chatMessage`.
-2. Separately, let MagicPay present the same durable request across enabled
-   channels: the MCP app widget when it renders, otherwise the returned
-   `request_url`. This rich surface is complementary to the chat presentation,
-   not a second chat presentation.
+1. Prefer one faithful host-native single-select control with the exact stored
+   prompt, option order, titles, and decision-relevant descriptions. When that
+   native control is available, show only it: do not paste `chatMessage`, open
+   a MagicPay widget, or display `request_url` in this conversation.
+2. Without a suitable native control, present the same request with
+   `show_session_request` when the host renders its widget. If neither control
+   is available, echo `structuredContent.chatMessage` unchanged and include
+   `request_url` when available. Do not duplicate a rendered widget with a
+   chat prompt. `request_choice` itself creates no widget.
 3. Preserve `sessionId`, `requestId`, stored option order, and opaque IDs. Never
    create a sibling request because another channel is open.
 
-The user may answer in chat, the widget, web, mobile, or Telegram. Submit a chat
+Other enabled MagicPay channels may still carry this same request. The user
+may answer in chat, the widget, web, mobile, or Telegram. Submit a chat
 answer only when it maps unambiguously to an in-range ordinal, exact stored
 title, or exact ID. Call `decide_request` with `decision: confirmed` and the
 exact `selectedChoiceId`, then `wait_request` on the same IDs. A native picker
@@ -120,7 +134,7 @@ In a real call, use the returned session ID and observed source facts:
 | Observation | Next action |
 | --- | --- |
 | One factual answer, no material tradeoff | Answer directly; do not create a choice. |
-| Two useful plans differ in price or service | Create one choice, present it once (native picker or chat), plus the returned widget/link. |
+| Two useful plans differ in price or service | Create one choice; prefer only the native picker, otherwise one widget or the chat/link fallback. |
 | Reply could mean two options | Ask which stored option the user means; do not decide or create a sibling. |
 | Another channel selected a different option | Read/wait on the same request; use its recorded winner. |
 | Request expired or was denied/canceled | Report that outcome; no fabricated selection or repeated pending prompt. |

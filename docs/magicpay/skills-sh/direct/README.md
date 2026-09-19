@@ -1,6 +1,6 @@
 # Install MagicPay for General Agent
 
-Download the release archive and place the magicpay folder in a supported skill directory.
+Copy the `magicpay` folder from this repository's `skills/` directory (same branch as this README) into a supported skill directory. Release archives are not published here.
 
 ## Install
 
@@ -20,4 +20,4 @@ analyzes, fills ordinary fields, chooses exact protected targets, and
 interprets results, and owns the one final commitment. Do not install or
 start a second browser controller.
 
-Release: magicpay-v0.4.43
+Release: magicpay-v0.4.55
