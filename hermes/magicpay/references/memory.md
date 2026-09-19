@@ -42,13 +42,36 @@ ordinary fields, passwords, API keys, identity fields, and custom protected
 fields. Saving a sensitive value does not require another confirmation.
 Values alone do not imply Save; an explicit no-save instruction wins.
 
-Resolve the exact entity and template from existing context or a narrow
-`list_memory_items` lookup with `includeTemplates: true`. Ask only about genuine
-ambiguity or missing input needed for the user's request. Reuse their supplied
-label and purpose; do not require a separate description. A partial item is
-valid, so optional missing fields do not block saving the supplied fields.
+Choose **whose details**, then **what item**, then its title:
 
-Create with `clientRequestId`, `entityId`, `templateKey`, the discovered
+- Use the Memory snapshot/entities already in context. If metadata is missing
+  or ambiguous, call `list_memory_items` with `allSites: true` and
+  `includeTemplates: true`; do not repeat a lookup when context is sufficient.
+- Use Me for the account holder's own details. A different named person gets
+  their existing person entity, or `newEntity: {type: "person", displayName}`.
+  A company or other organization gets its existing organization entity, or
+  `newEntity: {type: "organization", displayName}`. Match identity and type,
+  not just spelling: same-name people and organizations can be different.
+- A person's name is an entity label, not the profile item title. Use
+  `profile.person` / `Personal profile` or `profile.organization` /
+  `Organization profile`; omit `displayLabel` to use the template default.
+  Preserve user-supplied custom titles and existing titles on update. Name
+  other items by purpose (for example, Work login or Main USDT address).
+- If context establishes “I am Alex Example; also save Bea Sample's details”,
+  save Alex's Personal profile under Me and Bea's under a separate person.
+  Do not infer that a name belongs to Me from the login email, or invent a
+  relationship. Ask a concise question only for genuine subject ambiguity.
+- Do not block a new save because entity metadata cannot be resolved: omit the
+  selector to save under Me. Missing, malformed, inaccessible, archived or
+  incompatible IDs and invalid new-entity hints fall back to Me. Confirm the
+  actual destination from the receipt. An update with an unusable hint keeps
+  its existing entity. A valid existing ID takes precedence over `newEntity`.
+
+A partial item is valid: optional missing fields and a separate description
+never block saving supplied values. Entity selection creates no extra approval.
+Do not create placeholders, duplicate entities, or rename Me during a save.
+
+Create with `clientRequestId`, optional `entityId` or `newEntity`, `templateKey`, the discovered
 `templateVersion`, and `values` keyed by template field key. Updates also need
 the exact `itemId` and current `expectedRevision`. Omitted values preserve
 existing content; explicit `null` clears the named field. Never materialize a
@@ -345,8 +368,10 @@ and provides `saveAs: { templateKey, displayLabel, description }`. Omit `entity`
 only for the default Me entity. Preserve a selected non-default person or
 organization with `entity: { kind: 'existing', entityId }`; never fall back to Me
 because a reply omits their name. Use `entity: { kind: 'new', type, displayName }`
-only when the user explicitly identified that new entity. Do not infer people
-from values or descriptions, merge groups, or save merely because values were supplied.
+when the instruction and available context identify a new person or organization.
+Use the same subject and item-title guidance as direct saving above. Do not
+invent identities or relationships, merge groups, or save merely because values
+were supplied. Preserve the collection's exact entity/item bindings.
 
 The hosted form offers the whole selected template, with **Use once** and
 **Use & Save** together. Only task-required fields block use; unused template
