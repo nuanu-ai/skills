@@ -66,13 +66,34 @@ reminder schedule, not proof that a merchant charge settled.
 When the user asks to cancel:
 
 1. Call `cancel_subscription({ subscriptionId })` for current details and hints.
-2. Use the host browser to unsubscribe at the merchant. Hints are guidance;
-   adapt to the live page. Prefer stopping renewal while keeping paid access.
-3. Call the same tool with `outcome: "cancelled"` or `"already_cancelled"`, an
+2. Use the host browser to unsubscribe at the merchant. Hints are optional
+   reference information; find the service's account/billing settings when they
+   are missing or stale. Never invent a management URL or buy again. Reuse an
+   existing signed-in browser session and prefer keeping remaining paid access.
+3. If login is required, follow [Memory browser collection](memory.md#browser-collection-use-once-and-save)
+   for this exact site and account: value-free footprint, matching saved details
+   with permission, then the resolver-owned secure request for only missing
+   required login fields. Use once is allowed; saving remains optional. Never
+   request passwords or verification codes in chat or record them in notes.
+   If Memory is denied/unavailable or secure input cannot complete, ask the user
+   to sign in directly in the merchant browser. Missing credentials are a user
+   step, not a reason to claim cancellation or repeat a denied request.
+4. For MFA, CAPTCHA, inaccessible email, account mismatch or a material choice
+   such as a cancellation fee/immediate loss of paid access, report `needs_user`
+   with the exact safe page and action. Unavailable agent email does not rule out
+   other legitimate account-access paths. A merchant failure without a current
+   user action is `unsuccessful`. Keep renewal unchanged and avoid retry loops.
+5. After the user completes that step, reread the same subscription and browser
+   state and continue. If a cancellation click had an unknown result, inspect
+   renewal state before submitting again. Do not create a replacement signup,
+   payment, card closure, account deletion or refund.
+6. Call the same tool with `outcome: "cancelled"` or `"already_cancelled"`, an
    expiration date if known, and a brief note. Your observation is sufficient;
    no additional backend evidence verifier is needed. If login or another step
    needs the user, report `"needs_user"`; otherwise report `"unsuccessful"` and
-   the reason. Neither outcome turns renewal off.
+   the reason and next step. Neither outcome turns renewal off. Read back the
+   saved result and tell the user whether renewal remains active and when paid
+   access ends, if known. Notes are brief and contain no credentials or signed links.
 
 The UI Cancel button opens a modal with a prompt to copy into an agent. Opening
 or copying it does not cancel the merchant subscription. Cancellation does not

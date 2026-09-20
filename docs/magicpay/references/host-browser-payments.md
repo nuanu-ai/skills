@@ -56,10 +56,25 @@ returned expiry and host-required confirmations; MagicPay adds no redundant
 confirmation of the same approved facts, and neither do you. After MagicPay
 approval the only confirmation left is one the host itself requires for the
 final action; do not ask the user to approve the same payment again in chat.
-If email, name, phone, country, billing address, city, region, or postal code
-appears later, check the footprint for a saved candidate first: pass one as an
-`ordinaryFields` reference, otherwise add the role to the sorted unique role
-union; then replay the same run.
+Include visible billing-address roles in the run's sorted unique role union.
+MagicPay checks the approved card's provider billing address before requesting
+missing address fields. Use `browserExecution.card.billingAddress` for that
+card's billing fields when present: `street`, `city`, `postalCode`, and `country`.
+Country may be a country name rather than a two-letter code; select the matching
+rendered checkout option. Do not infer a region or other absent component.
+This address belongs to the card, not the user's residence or shipping address;
+do not save it as a personal address or substitute a public QA address.
+
+If the card has no usable address, or required components are missing, follow
+`ordinary_field_required`: check Memory for an applicable billing candidate,
+otherwise request only the missing details through the existing collection.
+Do not ask for a home address when the card already supplies the required billing
+details. If a billing field appears later, add its role and replay the same run
+so MagicPay can check the same card before collecting anything. Never create a
+replacement payment or repeat a final click to obtain an address.
+For other late ordinary fields (email, name or phone), check the footprint for a
+saved candidate first: pass one as an `ordinaryFields` reference, otherwise add
+the role to the union and replay the same run.
 For receipt email precedence and an inbox that is not ready yet, follow
 [invoices.md](invoices.md); inbox provisioning must not delay this run.
 Never remove a previously observed role. Passwords, OTPs, identity documents,
