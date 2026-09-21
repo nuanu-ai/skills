@@ -64,6 +64,9 @@ billing address as the user's personal address. Keep the same payment run.
 For other late ordinary fields (email, name or phone), check the footprint for a
 saved candidate first: pass one as an `ordinaryFields` reference, otherwise add
 the role to the union and replay the same run.
+If `CHECKOUT_MEMORY_STALE` reports changed saved details before preparation,
+reread Memory under its current reuse policy and resume with current references,
+the same `clientRequestId`/`runId`, and unchanged payment terms.
 For receipt email precedence and an inbox that is not ready yet, follow
 [invoices.md](invoices.md); inbox provisioning must not delay this run.
 Never remove a previously observed role. Passwords, OTPs, identity documents,
