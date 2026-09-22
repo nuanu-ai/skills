@@ -503,12 +503,15 @@ retained response. The composed result is already decoded:
 
 - return `deliverable.json` as parsed seller JSON;
 - return `deliverable.text` as bounded UTF-8 text; and
-- return a binary `deliverable.attachment` as the owner-accessible attachment.
+- present returned image content through the host's image/attachment support;
+- return a binary `deliverable.attachment` through the host's attachment support.
   If JSON or text decoding fails, use the returned attachment fallback so the
   original bytes remain available.
 
-Never manually copy or decode Base64 from a composed result. Preserve the
-verified deliverable shape:
+An embedded resource's `magicpay://` URI is an identifier, not a browser download
+link. Use its returned bytes to create a host attachment when needed; do not
+invent public URLs or repeat the purchase. Keep Base64 out of chat. Preserve the
+verified original response alongside any extracted image:
 
 1. Use the returned validated `mediaType`, `byteLength`, `sha256`, deliverable,
    and `expiresAt`. Keep the bounded response and its integrity values together;

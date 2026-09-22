@@ -35,9 +35,9 @@ again, and never repeat it during active setup or payment work.
 
 If the user asks to change notification channels or preferences, make no MCP,
 API, approval, or database mutation. Send the signed-in user to
-[MagicPay account settings](https://app.magiccard.ai/settings), tell them to
-open **Notifications**, explain the relevant switches, and never claim the
-preference changed.
+https://staging.magiccard.ai/settings for MagicPay Development, or
+https://app.magiccard.ai/settings for production. Tell them to open
+**Notifications**, explain the switches, and never claim the preference changed.
 
 ## Start with the user's intent
 
