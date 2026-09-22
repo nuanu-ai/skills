@@ -9,7 +9,7 @@
       "name": "magicpay",
       "source": "./plugins/magicpay",
       "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
-      "version": "0.4.63-dev.240d92cb0cf8",
+      "version": "0.4.63-dev.794e23dae90f",
       "author": {
         "name": "Nuanu"
       },
