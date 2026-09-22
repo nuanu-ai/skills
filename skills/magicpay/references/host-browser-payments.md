@@ -84,6 +84,11 @@ task follows [memory.md](memory.md); otherwise hand off safely.
 | `reconciliation_required` | Reconcile the exact operation; never replace it. |
 | `completed` | Report success only from the durable completed operation. |
 
+If a pending merchant page later confirms success, report it with the original
+execution-attempt and result identifiers, including any subscription or invoice
+details now available. This updates the merchant context; keep following the same
+payment operation for settlement.
+
 ## Browser ownership and rendered state
 
 Use the host's normal visual and interaction capabilities for the unchanged
