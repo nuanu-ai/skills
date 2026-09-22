@@ -173,6 +173,15 @@ Observation failure is not permission to click again:
 Pass an ordinary receipt address only in `checkoutEmail`, never in
 `valueFreeEvidence`. Approval, card materialization, field fill, click, and
 merchant visibility are not settlement. When the composed result is
-`completed`, stop; do not call a second checkout closer.
+`completed`, stop payment execution; do not call a second checkout closer.
+Finish any product delivery requested in the original task: inspect the
+merchant's visible delivery instructions and follow its explicit download or
+success link, including one on the original product page when the payment
+confirmation has none. Retrieve and present the original purchased file using
+the host's supported file/result surface without waiting for another human
+prompt. Do not guess hidden URLs, submit checkout again, or create another
+payment. If no usable delivery route is available, report payment completion
+and product retrieval as separate outcomes with the observed next step. A
+purchased PDF is the product, not an invoice; do not attach it as a receipt.
 Handle returned `invoiceFollowUp` and later original-document processing through
 [invoices.md](invoices.md), without waiting for mail or AI before the payment reply.
