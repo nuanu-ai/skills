@@ -588,7 +588,8 @@ file names Grok Bot surfaces; the canonical instructions stay host-neutral.
   https://github.com/nuanu-ai/skills (branch `staging` for the development
   channel, `main` for production) into the workspace `skills/magicpay`
   directory (or `~/.cursor/plugins/local/magicpay/skills/`), then read its
-  SKILL.md before the first MagicPay task. Without the installed skill, do not
+  complete SKILL.md before the first MagicPay task, then load the task reference
+  it points to. Installed files do not mean every reference is loaded. Without the installed skill, do not
   fill forms or checkouts from setup-guide memory.
 - If the requested connector/channel is unavailable or policy blocks Add,
   report that installation limit. The account's relationship with Cursor does

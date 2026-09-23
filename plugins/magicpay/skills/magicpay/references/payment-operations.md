@@ -508,9 +508,12 @@ retained response. The composed result is already decoded:
   If JSON or text decoding fails, use the returned attachment fallback so the
   original bytes remain available.
 
-An embedded resource's `magicpay://` URI is an identifier, not a browser download
-link. Use its returned bytes to create a host attachment when needed; do not
-invent public URLs or repeat the purchase. Keep Base64 out of chat. Preserve the
+For an already completed x402 run, retrieve its retained result again with
+`wait_payment({ runId, timeoutMs: 0 })` using that same run ID. This reads the
+saved result without polling or another purchase. An embedded resource's
+`magicpay://` URI identifies the attached bytes; it is not a `resources/read`
+endpoint or browser download link. Use the returned bytes to create a host
+attachment when needed; do not invent public URLs or repeat the purchase. Keep Base64 out of chat. Preserve the
 verified original response alongside any extracted image:
 
 1. Use the returned validated `mediaType`, `byteLength`, `sha256`, deliverable,
