@@ -61,9 +61,16 @@ merchant's current form; if required billing details are still missing, use
 Memory or the existing input flow. Without a card address, follow the ordinary
 field request as usual. Do not invent missing components or save the card's
 billing address as the user's personal address. Keep the same payment run.
-For other late ordinary fields (email, name or phone), check the footprint for a
-saved candidate first: pass one as an `ordinaryFields` reference, otherwise add
-the role to the union and replay the same run.
+For a card checkout's separate receipt email, use the exact agent's ready managed
+email by default. A saved personal email alone does not override receipt routing.
+Use the user's personal email for account registration/ownership, login/recovery,
+KYC, profiles, traveler/patient records, or a checkout field that also owns the
+merchant account. Follow explicit user-selected addresses and preserve fixed
+merchant identity and an address already submitted; do not default general forms
+to agent email.
+For other late ordinary fields (such as name or phone), or email when that
+default does not apply, check the footprint for a saved candidate: pass one as an
+`ordinaryFields` reference, otherwise add the role to the union and replay the same run.
 If `CHECKOUT_MEMORY_STALE` reports changed saved details before preparation,
 reread Memory under its current reuse policy and resume with current references,
 the same `clientRequestId`/`runId`, and unchanged payment terms.

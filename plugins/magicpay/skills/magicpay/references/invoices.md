@@ -9,7 +9,14 @@ on an older backend mean unavailable information, not a failed payment.
 
 ## Use the actual checkout address
 
-For a visible ordinary receipt/contact email field, precedence is:
+For card payments, default a visible receipt-delivery email field to the exact
+agent's ready managed email. A personal email found in Memory is not itself a user override.
+Use another address when the user explicitly selects it or the field represents
+the user's personal/account identity (for example account registration/ownership,
+login, recovery, KYC, traveler/patient details, or personal profile/contact records).
+Do not use agent email merely because a form asks for email. If the checkout field
+also establishes the user's merchant account, use the account's personal address.
+Preserve fixed merchant identity. For a separate card receipt field, precedence is:
 
 1. the merchant account's fixed identity;
 2. an explicit user-approved checkout address;

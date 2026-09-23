@@ -1,7 +1,14 @@
 # Agent email
 
 Each active agent has one stable managed Resend email address. Use the address
-returned for that exact agent when an ordinary form needs receipt delivery.
+returned for that exact agent by default for card-checkout receipt delivery.
+Its main purpose for now is collecting invoices and receipts from card payments,
+not replacing the user's personal email in general forms. Use the user's address
+for personal profiles, account registration/ownership, login/recovery, KYC,
+traveler or patient details, and other personal-record contact fields. A checkout
+email that also owns the merchant account follows that account identity.
+Respect an explicit user-selected receipt address and fixed/already-submitted
+addresses; a saved personal email alone does not override a separate receipt field.
 Do not construct an address from an agent name or create a vendor inbox.
 Invoice capture and matching follow [invoices.md](invoices.md).
 

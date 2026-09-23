@@ -57,8 +57,8 @@ https://app.magiccard.ai/settings for production. Tell them to open
   A quote is not permission to buy. If unavailable, explain why; never run a payment as a probe.
 - Authorized x402 purchase: build the exact request from current official provider documentation and the user's instruction;
   call `run_x402_payment` within the authorized debit. Historical token-label rejections are inconclusive.
-- Known checkout URL: use `create_checkout_session`, then `get_memory_footprint` for the page.
-  Follow the browser-payment reference: use the approved card's billing address first; collect only missing roles.
+- Known checkout URL: use `create_checkout_session`, then `get_memory_footprint`. Follow the browser-payment reference; use the approved card's billing address first and collect only missing roles.
+  Default a card checkout's receipt email to the exact agent's ready address, not personal/account identity fields. Respect user-selected and fixed/submitted addresses; see the invoice reference.
 - Product or provider discovery: `search_provider_methods` when the target is unknown; read official docs.
   For an authorized purchase at a known URL, use composed payment intake once. Use `check_merchant` optionally
   to compare candidates; inconclusive probes are advisory. Respect explicit operator denies and unsafe destinations.
