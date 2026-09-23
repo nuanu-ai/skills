@@ -16,7 +16,8 @@ Use opaque IDs exactly as returned.
 | Generic top-up | `show_topup` |
 | Funding methods, link, or addresses | Use the exact funding action requested |
 | New crypto transfer | `run_crypto_transfer` |
-| Known raw x402 resource | `run_x402_payment` with the exact `httpRequest` envelope |
+| x402 price before payment | `quote_x402_payment`; show the complete price and stop |
+| Authorized purchase of a known raw x402 resource | `run_x402_payment` with the exact `httpRequest` envelope and accepted quote reference when previewed |
 | Known checkout destination | `create_checkout_session` |
 | Unknown product or provider method | `search_provider_methods` |
 | Optional seller comparison | `check_merchant` with up to ten documented seller requests |

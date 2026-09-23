@@ -20,6 +20,13 @@ this reference alone does not establish that an environment supports an option.
 - Creation supplies `entityId`, `templateKey`, and known `fieldKeys`, with
   optional template version, display label, description and resource scope.
   Update and archive supply the exact `itemId` and `expectedRevision`.
+- Archived items remain unavailable for ordinary task reuse even when their
+  content is updated successfully. Read `status` and `reuseRequirement` before
+  describing an item as ready. When the user asks to restore it, use
+  `update_memory_item` with `status: "active"` at its current revision, retaining
+  the same item, entity, fields and access policy. Do not silently restore on
+  Save or create a duplicate. An archived parent or provider-managed item keeps
+  its existing restrictions; explain the returned limitation.
 - Before creating an item, use `list_memory_items` with `includeTemplates: true`
   and the intended management scope to discover current templates and fields.
   Use that returned definition; a template need not already have a saved item.
@@ -95,6 +102,10 @@ the existing installation and sign-in.
 
 Confirm only from a successful receipt (`outcome`: `created`, `updated`, or
 `replayed`), using the returned item/entity labels and `savedFields` labels.
+For an existing-item Save, follow with one value-free `get_memory_item` read:
+the save receipt proves persistence, not current availability. Say “updated in
+the archive” when it is archived; if that read fails, confirm the save but say
+availability could not be verified. Do not materialize values for this check.
 The receipt contains no values. Keep supplied values out of replies, error
 summaries, files, logs, and evidence. A payment and its requested Memory save
 have separate outcomes: report a submitted payment as submitted, then the save

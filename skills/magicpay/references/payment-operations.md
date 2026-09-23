@@ -216,6 +216,28 @@ MagicPay will notify you when it settles.”
 
 ## x402
 
+### Price preview before authorization
+
+For “show the total”, “including fees” or “do not pay yet”, use
+`quote_x402_payment` and stop after displaying its merchant price, fees, total
+USD debit (scale 6), exact-versus-maximum classification and expiry. A zero fee
+is valid only when returned explicitly. The current safe preview supports GET
+without a body; a POST or unsupported request returns a limitation. Never use
+`run_x402_payment`, a tiny spending cap or an approval refusal as a preview.
+Quoting creates only an unpaid requirement snapshot, even with auto-approval;
+it creates no payment run, approval, reservation, signature or submission.
+
+After the user explicitly accepts buying, call `run_x402_payment` with the
+returned `acceptedQuoteRef` (the quote's `quoteRef`) and **the same**
+`clientRequestId`, exact HTTP request and returned `maximumDebit`. Keep the
+agent/account scope unchanged. Changed or expired terms require a fresh quote
+and renewed acceptance, not a silent purchase. Once a purchase exists, retain
+its operation/run and reconcile it on uncertainty; a new quote never authorizes
+buying it again. Verify the seller's actual date, timezone and deliverable
+coverage independently of its payment price.
+
+### Authorized purchase
+
 Before the first fresh x402 purchase in a newly connected task, use the current
 `get_magicpay_capabilities` result only when `x402PaymentRun.status` is `ready`,
 its contract is `magicpay.payment-run/v1` schema `1.1`, and
@@ -223,7 +245,7 @@ its contract is `magicpay.payment-run/v1` schema `1.1`, and
 revalidates ownership. If any field is blocked or incompatible, stop before
 payment state and follow only its safe `nextAction`.
 
-For a known resource URL, skip MagicSearch and call `run_x402_payment` with the
+For an authorized purchase at a known resource URL, skip MagicSearch and call `run_x402_payment` with the
 exact HTTP request, maximum debit, and one caller-generated stable
 `clientRequestId`. Construct the request from current official provider
 documentation and the user's instruction; the user need not supply a serialized
@@ -302,7 +324,7 @@ available agent capability. MagicSearch returns guidance and URLs but creates
 no run, choice, selection, checkout, execution capability, or payment
 authority.
 
-For a known seller URL, use normal `run_x402_payment` intake once; its unpaid
+For an authorized purchase at a known seller URL, use normal `run_x402_payment` intake once; its unpaid
 challenge read also supplies merchant diagnostics. `check_merchant` is optional
 when comparing candidates: pass their documented method, URL, headers and body.
 Its verdict is advisory and applies to that request shape. `no_402`, an old
@@ -481,12 +503,15 @@ retained response. The composed result is already decoded:
 
 - return `deliverable.json` as parsed seller JSON;
 - return `deliverable.text` as bounded UTF-8 text; and
-- return a binary `deliverable.attachment` as the owner-accessible attachment.
+- present returned image content through the host's image/attachment support;
+- return a binary `deliverable.attachment` through the host's attachment support.
   If JSON or text decoding fails, use the returned attachment fallback so the
   original bytes remain available.
 
-Never manually copy or decode Base64 from a composed result. Preserve the
-verified deliverable shape:
+An embedded resource's `magicpay://` URI is an identifier, not a browser download
+link. Use its returned bytes to create a host attachment when needed; do not
+invent public URLs or repeat the purchase. Keep Base64 out of chat. Preserve the
+verified original response alongside any extracted image:
 
 1. Use the returned validated `mediaType`, `byteLength`, `sha256`, deliverable,
    and `expiresAt`. Keep the bounded response and its integrity values together;

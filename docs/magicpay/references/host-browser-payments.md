@@ -56,10 +56,24 @@ returned expiry and host-required confirmations; MagicPay adds no redundant
 confirmation of the same approved facts, and neither do you. After MagicPay
 approval the only confirmation left is one the host itself requires for the
 final action; do not ask the user to approve the same payment again in chat.
-If email, name, phone, country, billing address, city, region, or postal code
-appears later, check the footprint for a saved candidate first: pass one as an
-`ordinaryFields` reference, otherwise add the role to the sorted unique role
-union; then replay the same run.
+Use `browserExecution.card.billingAddress` when provided. Adapt it to the
+merchant's current form; if required billing details are still missing, use
+Memory or the existing input flow. Without a card address, follow the ordinary
+field request as usual. Do not invent missing components or save the card's
+billing address as the user's personal address. Keep the same payment run.
+For a card checkout's separate receipt email, use the exact agent's ready managed
+email by default. A saved personal email alone does not override receipt routing.
+Use the user's personal email for account registration/ownership, login/recovery,
+KYC, profiles, traveler/patient records, or a checkout field that also owns the
+merchant account. Follow explicit user-selected addresses and preserve fixed
+merchant identity and an address already submitted; do not default general forms
+to agent email.
+For other late ordinary fields (such as name or phone), or email when that
+default does not apply, check the footprint for a saved candidate: pass one as an
+`ordinaryFields` reference, otherwise add the role to the union and replay the same run.
+If `CHECKOUT_MEMORY_STALE` reports changed saved details before preparation,
+reread Memory under its current reuse policy and resume with current references,
+the same `clientRequestId`/`runId`, and unchanged payment terms.
 For receipt email precedence and an inbox that is not ready yet, follow
 [invoices.md](invoices.md); inbox provisioning must not delay this run.
 Never remove a previously observed role. Passwords, OTPs, identity documents,
@@ -76,6 +90,11 @@ task follows [memory.md](memory.md); otherwise hand off safely.
 | `external_pending` | Reconcile the same operation; never click again. |
 | `reconciliation_required` | Reconcile the exact operation; never replace it. |
 | `completed` | Report success only from the durable completed operation. |
+
+If a pending merchant page later confirms success, report it with the original
+execution-attempt and result identifiers, including any subscription or invoice
+details now available. This updates the merchant context; keep following the same
+payment operation for settlement.
 
 ## Browser ownership and rendered state
 
@@ -161,6 +180,15 @@ Observation failure is not permission to click again:
 Pass an ordinary receipt address only in `checkoutEmail`, never in
 `valueFreeEvidence`. Approval, card materialization, field fill, click, and
 merchant visibility are not settlement. When the composed result is
-`completed`, stop; do not call a second checkout closer.
+`completed`, stop payment execution; do not call a second checkout closer.
+Finish any product delivery requested in the original task: inspect the
+merchant's visible delivery instructions and follow its explicit download or
+success link, including one on the original product page when the payment
+confirmation has none. Retrieve and present the original purchased file using
+the host's supported file/result surface without waiting for another human
+prompt. Do not guess hidden URLs, submit checkout again, or create another
+payment. If no usable delivery route is available, report payment completion
+and product retrieval as separate outcomes with the observed next step. A
+purchased PDF is the product, not an invoice; do not attach it as a receipt.
 Handle returned `invoiceFollowUp` and later original-document processing through
 [invoices.md](invoices.md), without waiting for mail or AI before the payment reply.
