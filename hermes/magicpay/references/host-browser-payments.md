@@ -103,7 +103,18 @@ approved checkout. Inspect the intended visible fields and final control; a
 hidden DOM entry or accessibility presence alone does not prove visibility.
 Use screenshots when they help resolve ambiguity, without a prescribed count
 or field order. After a page transition, discard stale targets and reacquire
-current controls. Stop if the bound payment facts changed.
+current controls. Stop submission if the bound payment facts changed.
+
+Resolve known tax/shipping choices before approval when possible. If the final
+price changes later, the old approval does not cover it. Record the observed
+`not_submitted` result and finish cleanup; follow [safe replacement after terminal
+release](statuses.md#safe-replacement-after-terminal-release) before starting fresh.
+When the same purchase still fits the user's existing budget, continue with the
+final total and a fresh exact MagicPay approval/policy, without another chat
+confirmation. Stabilize the final total first. Retain host-required approvals;
+ask the user only for an above-budget total or a material product/recurrence
+change. Uncertain submission or unresolved cleanup keeps the original operation
+in recovery; this is not permission to retry a decline or a canceled purchase.
 
 Payment-method selectors, accordions, and next/continue controls may reveal a
 form without submitting payment. Determine the actual action from the rendered
