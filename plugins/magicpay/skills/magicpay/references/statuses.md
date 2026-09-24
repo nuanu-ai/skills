@@ -64,12 +64,12 @@ the same word is not a universal workflow transition.
 - `canceled`: terminal for workflow authority immediately. A separately
   preserved dispatched or uncertain operation may still be nonterminal and
   require same-operation reconciliation; cancellation does not release its
-  held Ledger reservation by itself. Trust only returned `cleanupDisposition`
-  and `freshStartAllowed` for that old payment's cleanup and safe-replacement
-  disposition, not account-wide permission to make purchases.
-- `cleanup_pending`: the workflow is canceled but the exact operation release is
-  not verified. Replay only the same cancellation as directed by
-  `retry_cleanup_same_operation`.
+  held Ledger reservation by itself. Use the current operation, settlement and
+  cleanup outcome for that payment. `freshStartAllowed` is a legacy summary,
+  not permission to browse, recover fields or perform another authorized task.
+- `cleanup_pending`: the workflow is canceled and background recovery is checking
+  the exact reservation. Read its status when useful; a second cancellation or
+  continuous foreground polling is not required.
 - `failed`: the workflow closes through `fail_checkout_session` with one exact
   failure code and stable idempotency key. A separately unresolved or possibly
   dispatched operation remains bound to the returned same-operation
@@ -85,7 +85,6 @@ return all of:
 
 - `cleanupDisposition`: `released_pre_submit` or `released_after_failure`;
 - `settlementStatus`: `failed` or `not_started`;
-- `freshStartAllowed: true`; and
 - `nextAction: none`.
 
 `released_pre_submit` proves the exact non-submitted operation authority or
@@ -97,7 +96,7 @@ replacement as safely released. These facts do not themselves authorize spending
 
 ## Separately authorized additional purchase
 
-`freshStartAllowed:false` concerns the old payment, not an account-wide lock.
+The legacy `freshStartAllowed:false` does not block another task or purchase.
 Unrelated purchases follow normal authorization. For another purchase of the
 same item or service while the first is unresolved, the user must explicitly
 authorize the additional spend, including the possibility that both purchases
@@ -114,8 +113,8 @@ resubmit the old operation, or infer permission for repeated additional purchase
 
 Keep the old workflow canceled when canceled, with its exact operation available
 for reconciliation. Do not make manual recovery of that old payment or continuous
-foreground polling a prerequisite for the authorized new purchase. This does not
-promise automatic background reconciliation or change either payment's status.
+foreground polling a prerequisite for the authorized new purchase. Background
+recovery continues independently of the new payment.
 
 Status, cancellation, and reconciliation reads remain silent supporting calls.
 An error, hard stop, separately pending reconciliation, or required user action does not

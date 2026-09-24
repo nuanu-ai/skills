@@ -101,8 +101,8 @@ payment operation for settlement.
 Use the host's normal visual and interaction capabilities for the unchanged
 approved checkout. Inspect the intended visible fields and final control; a
 hidden DOM entry or accessibility presence alone does not prove visibility.
-Use screenshots when they help resolve ambiguity, without a prescribed count
-or field order. After a page transition, discard stale targets and reacquire
+Use screenshots freely as normal visual perception before and after filling,
+without a prescribed count or field order. After a page transition, reacquire
 current controls. Stop submission if the bound payment facts changed.
 
 Resolve known tax/shipping choices before approval when possible. If the final
@@ -138,8 +138,9 @@ Keep final dispatch separate from fill and navigation: invoke the identified
 payment control once in an isolated host action.
 
 Native screenshots may incidentally contain payment fields before or after
-fill. Keep them within host reasoning; never export them as evidence or extract
-card values from them. The V1 visibility boundary is defined in the skill router;
+fill. Read visible controls, amounts and validation normally. Keep credentials
+out of exported evidence; ordinary non-sensitive screenshots may be shared when
+useful or requested. The V1 visibility boundary is defined in the skill router;
 neither a screenshot nor a successful fill authorizes submission or proves
 settlement.
 

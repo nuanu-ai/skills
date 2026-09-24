@@ -17,7 +17,7 @@
   response; use it only to retrieve the final seller deliverable.
 - Never treat approval, protected fill, click, page copy, or HTTP transport as
   settlement.
-- Never replace an ambiguous operation or replay a possibly dispatched click.
+- Keep an ambiguous payment for reconciliation; do not repeat its payment dispatch.
 - Let the host browser use its normal visual and interaction capabilities for
   ordinary and intermediate page controls. Do not turn payment-method selection,
   form revelation, navigation, validation, or correction into a payment result.
@@ -45,8 +45,8 @@
 - Honor cancellation before recovery work. A successful cancellation closes
   workflow authority even when a possibly dispatched operation remains held;
   reconcile that exact operation separately and never replay it.
-- `retry.allowed:false`, non-retryable failure, and terminal remediation are
-  hard stops for that exact operation. Do not retry it, replace it, submit it to
-  a provider, or click a merchant control to bypass the stop. For a separately
+- `retry.allowed:false` applies to replaying that exact failed action, not to
+  screenshots, ordinary field correction, diagnosis or other authorized work.
+  Do not repeat a possibly dispatched payment. For a separately
   authorized additional purchase, follow [statuses.md](statuses.md); never reuse
   any old identity or authority or treat unresolved funds as released.
