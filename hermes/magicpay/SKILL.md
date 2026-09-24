@@ -127,6 +127,8 @@ The host browser owns navigation, page understanding, ordinary/protected input,
 challenges, authorized submission, and result observation. MagicPay supplies
 authorization and materialized values, not another browser. Use the browser
 payment reference for payments and the Memory reference for non-payment forms.
+Use normal screenshots, visual reading and supported input methods before and
+after filling. Intermediate controls and field recovery are ordinary browser work.
 Respect the host's actual APIs, permissions, and required confirmations. If it
 cannot perform the required input, report that limitation; do not invent a
 secret sink or silently switch browser controllers.
@@ -143,8 +145,9 @@ credentials with arbitrary page-evaluation code. See the guardrails reference.
 User cancellation preempts approval, fill, commit, and reconciliation. Cancel
 the exact session immediately, then follow its cleanup and same-operation
 reconciliation result. Cancellation does not prove settlement or release.
-`preserved_for_reconciliation` permits only same-operation reconciliation for
-that old payment; it does not block an independently authorized purchase.
+`preserved_for_reconciliation` keeps the old payment in recovery while normal
+browsing and independently authorized tasks remain available. Cancellation
+recovery runs in the background; repeated cancellation is not a prerequisite.
 
 Only the latest successful `get_magicpay_capabilities` result for the connected
 environment can enable this: if `environment: development`, review each terminal
@@ -152,7 +155,7 @@ or canceled session once after cleanup/reconciliation and before the final respo
 
 On an explicit native non-retryable failure, read the owning workflow and its
 cleanup. Preserve every terminal status; use `fail_checkout_session` only for
-an open workflow. See the payment-operations reference. Never replay a click;
+an open workflow. See the payment-operations reference. Never repeat a possibly dispatched payment;
 replace an operation only through the statuses reference's safe replacement
 after confirmed release. Preserve unrelated reservations. A separately
 authorized additional purchase may incur another charge. Every fresh operation
@@ -163,8 +166,7 @@ needs its own exact MagicPay approval/policy and identities.
 - An integrity-verified seller response is user-owned output. Present it privately
   by provenance and purpose; state payment and fulfillment outcomes separately.
   Keep any explicit seller continuation capability private.
-- Pending, held, submitted, ambiguous, non-retryable, or click-uncertain work is
-  never replayed. Timeout or missing output permits only same-operation status
-  and reconciliation.
+- Do not repeat a possibly dispatched payment. Read/reconcile that same operation
+  after a timeout or missing result; continue ordinary browser work as needed.
 - For fresh x402, use only the eligible composed run; `fallbackAllowed: false`
   forbids replacement or route switching for that refused payment; read-only diagnosis remains available.

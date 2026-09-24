@@ -86,7 +86,7 @@ purchase under [statuses.md](statuses.md#separately-authorized-additional-purcha
 | --- | --- | --- |
 | Pending approval with `funding_gate.status: insufficient` | Explain the shortfall and returned approval deadline, then open the existing request URL for top-up and approval. Partial funding keeps it pending while valid. After durable funding, the user explicitly approves that same valid request, then continue the same run. | Never open another `show_topup` flow, resubmit approval automatically, create another payment session, or treat an unavailable gate as zero balance. |
 | funding_required with `resume_same_operation_after_funding` | Call `show_topup` once, retain the same `runId`, request, approval, operation, and facts, then continue the same run with `wait_payment` after durable funding. | Never call `create_topup_link` automatically, mint a new `clientRequestId`, or start another payment. |
-| funding_required with `fresh_approval_if_permitted` | The backend has safely closed this operation before submission. Explain that top-up is followed by a new approval under the user's still-valid payment authorization. | Never revive the terminal operation or create a replacement while cleanup is unresolved or `freshStartAllowed` is false. |
+| funding_required with `fresh_approval_if_permitted` | The backend has closed this operation before submission. Top-up is followed by a new approval under the user's still-valid payment authorization. | Check the original hold's actual release before replacing that payment; ordinary browsing and other authorized tasks remain available. |
 | service_unavailable from card-pool insufficiency | Explain the temporary service issue and provide support guidance. User-facing shape: “MagicPay card payments are temporarily unavailable. No balance top-up is needed. Contact [MagicPay support](mailto:support@magiccard.ai) if you need help.” | Card-pool capacity is not a user-balance funding request. During failure handling, never call `show_topup`, `create_topup_link`, or any fresh payment tool; there is no automatic replacement operation. |
 | fresh approval required | Present the exact original request's approval recovery. | Never reuse an expired, revoked, identity-mismatched, or facts-mismatched approval and never substitute another operation. |
 | possible or known submission | Read or reconcile the same operation silently according to `action`. | Never top up as a guess, replay submission, or replace the operation. |
@@ -126,9 +126,9 @@ payment. Preserve the old operation's terminal `retry.allowed: false`.
 Only backend-confirmed fresh-approval eligibility, verified exact pre-submit
 closure and cleanup, still-valid user intent, and a supported recovery path
 that preserves manual confirmation can permit a fresh run with a new
-`clientRequestId`. Sufficient balance alone never does. Respect
-`freshStartAllowed: false`; uncertain submission or cleanup permits only
-same-operation status/reconciliation. If the deployed path cannot preserve
+`clientRequestId`. Sufficient balance alone never does. Reconcile uncertain
+submission or cleanup on the existing payment; continue other authorized work.
+The legacy `freshStartAllowed` flag is not a task-wide permission. If the deployed path cannot preserve
 manual confirmation, stop at status checking. Any balance polling stays
 bounded by the active request and uses backoff; never turn unavailable into zero.
 
