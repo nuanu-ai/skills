@@ -274,11 +274,14 @@ two-stage flow above with a stable HTTPS context URL and the same clear purpose.
 ## Ordinary and protected V1 recall
 
 Use only a successful whole-batch `ready` result for the exact session, page,
-purpose, selection, and entity bindings. V1 can return approved canonical
-passport/national-ID fields, site-bound login passwords, and site-bound API
-credentials as `model_visible_form`, alongside ordinary fields. Preserve exact
-returned bytes; do not trim or normalize protected values. Protected selection
-requires the returned approval even when ordinary reuse is automatic.
+purpose, selection, and entity bindings. V1 can return approved protected fields from supported identity templates,
+site-bound login passwords and API credentials, and owner-defined protected
+fields on a custom template as `model_visible_form`, alongside ordinary fields. Preserve exact returned bytes; do not trim
+or normalize protected values. Protected selection requires the returned
+approval even when ordinary reuse is automatic. If the user explicitly asks to
+see a protected value in chat, use a purpose that clearly says so and show it
+only after the matching approval. Approval for form entry alone does not imply
+chat disclosure.
 
 Payment cards use their separate payment run. Wallet secrets, private keys,
 seed phrases, OTPs, provider-managed values, unknown sensitivity, and unsupported

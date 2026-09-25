@@ -95,6 +95,8 @@ When the user asks to cancel:
    saved result and tell the user whether renewal remains active and when paid
    access ends, if known. Notes are brief and contain no credentials or signed links.
 
+If cancellation is not visibly complete, save a short `evidence` observation and `nextAction` on the same subscription. Choose `nextCheckAt` only when a follow-up time is useful. You may link an existing `supportSendId` and a short `supportDraft`; use agent email with the normal send approval if contacting the provider. A prepared or uncertain email is not a submitted case: read that same send before claiming that the provider is handling cancellation. On a reply notification, read the linked correspondence and cancellation history, interpret the provider's message, and report the next outcome. Acknowledgement alone does not establish cancellation. The agent decides what to ask the provider and whether another follow-up is needed; MagicPay only keeps the progress and correspondence together. If later evidence contradicts a saved success, reopen that subscription and say renewal is unconfirmed until resolved.
+
 The UI Cancel button opens a modal with a prompt to copy into an agent. Opening
 or copying it does not cancel the merchant subscription. Cancellation does not
 create a payment or a new signup. Future reminders stop after reported success;
