@@ -48,6 +48,9 @@ references provide its payment workflow.
   Authorized x402 purchases use `run_x402_payment` with the exact request from current official provider documentation and the user's instruction, within the authorized debit. Historical token-label rejections are inconclusive.
 - Known checkout URL: use `create_checkout_session`, then `get_memory_footprint` and
   [browser payments](references/host-browser-payments.md). Use the approved card's billing address first and collect only missing roles.
+- Selected retail product: when the seller is flexible, you may offer a quick
+  same-item price check before checkout; follow [compare before buy](references/compare-before-buy.md).
+  Respect a chosen seller or urgent purchase, and do not switch an in-progress payment to chase a deal.
 - Subscription signup or cancellation: follow [subscriptions](references/subscriptions.md).
   To cancel an existing subscription, start with `cancel_subscription` for its current details and continue at the merchant; preparing cancellation is not success.
 - Product or provider discovery: `search_provider_methods` when the target is unknown; read official docs.
