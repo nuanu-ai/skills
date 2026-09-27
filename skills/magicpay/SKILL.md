@@ -40,6 +40,7 @@ references provide its payment workflow.
 - Subscription signup or cancellation: follow [subscriptions](references/subscriptions.md).
   To cancel an existing subscription, start with `cancel_subscription` for its current details and continue at the merchant; preparing cancellation is not success.
 - Product or provider discovery: `search_provider_methods` when the target is unknown; read official docs.
+  The directory is not a list of MagicPay cards or card fees; use current card facts for those questions and say when an offer is unverified.
   For an authorized purchase at a known URL, use composed payment intake once. Use `check_merchant` optionally
   to compare candidates; inconclusive probes are advisory. Respect explicit operator denies and unsafe destinations.
 - Invoice, receipt routing or attachment: follow [invoices](references/invoices.md).
