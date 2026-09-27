@@ -8,7 +8,12 @@
   "pluginName": "magicpay",
   "installMode": "host-native-plugin",
   "mcpTransport": "remote-streamable-http",
-  "npmPackages": [],
+  "npmPackages": [
+    {
+      "name": "@nuanu-ai/magicpay-sdk",
+      "version": "0.5.11"
+    }
+  ],
   "portableDir": "portable/magicpay",
   "runtimes": [
     {
