@@ -6,6 +6,11 @@ and a save-card checkbox do not establish a subscription. Look for the billing
 period, renewal language and selected plan/quantity. Paying an existing invoice
 is payment of that invoice, not a new subscription signup.
 
+When comparing plans, respect the user's billing cadence and amount due now;
+an annual plan is not a monthly option because its monthly equivalent fits a
+monthly limit. Ask one short region or ecosystem question when that changes the
+available offer or price.
+
 Create a checkout with `type: "subscription"`. Recurring intent follows the
 session. On `run_browser_payment`, use `paymentType: "subscription"` and the
 actual final action, including `subscribe`. Payment and recurring terms appear
@@ -14,6 +19,7 @@ in one MagicPay approval; continue the same run after approval or funding.
 Provide optional `subscriptionDetails` at checkout creation or on the browser
 payment run: `recurringAmount`, `recurringCurrency`, `intervalUnit`, `intervalCount`,
 `recurringAmountKind`, optional legacy `interval`, `trialEndAt`, `nextRenewalAt`,
+`introductoryPeriod: { count, unit }` for a stated paid introductory price,
 `expiresAt`, `autoRenews`, `cancellationUrl`, `cancellationHint`, `serviceLogoUrl`,
 and `estimatedRenewalUsd`. Decide reasonable dates from the checkout and your own
 judgment. Missing values are fine; no invoice, proof upload or separate date
@@ -31,6 +37,9 @@ do not substitute zero or a first-charge discount. Reinspect changed plan or
 quantity before submission; changed money, interval count or trial end requires
 updated approval terms on the existing checkout. Never create a second purchase
 to get past a conflict.
+
+Use `trialEndAt` only for a real free trial. A paid introductory period is not
+a trial; provide its observed duration through `introductoryPeriod` when known.
 
 For Stripe-hosted checkout, keep `merchantDomain` equal to the checkout host and
 supply the separately observed `sellerDomain` and `sellerName` on
