@@ -68,9 +68,12 @@ KYC, profiles, traveler/patient records, or a checkout field that also owns the
 merchant account. Follow explicit user-selected addresses and preserve fixed
 merchant identity and an address already submitted; do not default general forms
 to agent email.
-For other late ordinary fields (such as name or phone), or email when that
-default does not apply, check the footprint for a saved candidate: pass one as an
-`ordinaryFields` reference, otherwise add the role to the union and replay the same run.
+For visible ordinary fields (such as billing name), use `get_memory_footprint`
+before the first run: pass saved candidates as `ordinaryFields` references, or
+request missing roles through `ordinaryFieldRoles`. If a role appears later,
+continue this same run after its current approval is resolved; do not create a
+separate Memory request while that approval is waiting. See
+[Memory's direct-checkout guidance](memory.md#direct-browser-checkout).
 If `CHECKOUT_MEMORY_STALE` reports changed saved details before preparation,
 reread Memory under its current reuse policy and resume with current references,
 the same `clientRequestId`/`runId`, and unchanged payment terms.

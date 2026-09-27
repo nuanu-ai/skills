@@ -508,6 +508,9 @@ retained response. The composed result is already decoded:
   If JSON or text decoding fails, use the returned attachment fallback so the
   original bytes remain available.
 
+When the owner asks to see a purchase again, present the retained original or
+its authenticated Sessions download before replacing it with a summary.
+
 For an already completed x402 run, retrieve its retained result again with
 `wait_payment({ runId, timeoutMs: 0 })` using that same run ID. This reads the
 saved result without polling or another purchase. An embedded resource's
