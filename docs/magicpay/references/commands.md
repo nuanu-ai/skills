@@ -12,6 +12,7 @@ Use opaque IDs exactly as returned.
 | Account readiness | `account_status` |
 | Identity-verification help | `help_identity_verification` |
 | Recent user activity | `list_recent_transactions` |
+| Recent charges on a checkout's card | `list_card_transactions` with its checkout session ID |
 | Balance | `get_payment_balance` |
 | Generic top-up | `show_topup` |
 | Funding methods, link, or addresses | Use the exact funding action requested |

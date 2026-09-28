@@ -58,6 +58,8 @@ references provide its payment workflow.
 - Generic request/reply/OTP waiting: follow [requests](references/requests.md).
 - Payment status or ambiguity: use `get_payment_operation`, or `reconcile_payment_operation`
   only for that same operation when directed; follow [statuses and recovery](references/statuses.md).
+  For browser card payments, inspect the current result page and use `list_card_transactions`
+  to compare recent charges on the session's card when useful.
   Existing requests, runs, sessions and operations retain their returned `nextAction`; read-only status and authorized diagnosis remain available.
 - For an end-to-end overview, see the [compact workflow](references/workflow.md).
   [Guardrails](references/guardrails.md) covers value handling; [development session review](references/development-session-review.md) applies only when enabled below.

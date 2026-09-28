@@ -182,6 +182,19 @@ stays with the same operation.
 
 ## Record the result once
 
+After submission or a human handoff, inspect the current rendered page before
+asking for more login or payment steps. Use a fresh screenshot when useful;
+recognize a completed receipt or thank-you page in its checkout context.
+For a card payment, `list_card_transactions` reads the card associated with the
+same checkout session ID. Compare nearby timestamps, currency and approximately the
+charged amount (including ordinary fees or FX differences). Assess merchant
+descriptors in context: a processor, trading name or abbreviated label may differ
+from the checkout name. Use your judgment; no exact-name match is required for
+this observation. A pending row or empty page may simply need more time.
+Report merchant confirmation and a probable card charge clearly, then read or
+reconcile the original operation for its accounting state. Do not request login
+or repeat checkout merely because that accounting update is still pending.
+
 After the final action, make a bounded fresh observation and call
 `record_browser_payment_result` for the exact run and execution attempt.
 Observation failure is not permission to click again:
