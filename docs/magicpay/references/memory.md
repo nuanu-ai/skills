@@ -163,7 +163,13 @@ Use one exact active session for both stages:
    Do not claim that no Memory exists from a bounded page or excerpt. Resolve
    relevant unseen candidates or missing metadata before choosing collection;
    describe any lookup limitation without widening the search unnecessarily.
-2. Select only the items and fields needed for the task. Map the returned
+2. Select only the items and fields needed for the task. Use descriptions,
+   entity and form context to choose a clear match without another question.
+   For language variants of the same person's profile, prefer the version
+   matching the form's language or script (for example, Latin-script details
+   for an English international travel form). Include only suitable candidates
+   in the resolver; ask when multiple suitable candidates or identities remain.
+   Map the returned
    `item.id` to `itemId`, `item.contentRevision` to `expectedRevision`, and each
    `field.id` / `field.key` to `fieldId` / `fieldKey`; never rebuild any of
    them. A normal single-subject selection may omit a group binding and use the

@@ -39,7 +39,7 @@ references provide its payment workflow.
   Respect a chosen seller or urgent purchase, and do not switch an in-progress payment to chase a deal.
 - Subscription signup or cancellation: follow [subscriptions](references/subscriptions.md).
   To cancel an existing subscription, start with `cancel_subscription` for its current details and continue at the merchant; preparing cancellation is not success.
-- Product or provider discovery: `search_provider_methods` when the target is unknown; read official docs.
+- Product or provider discovery: `search_provider_methods` when the target is unknown; read provider guidance and official docs. For MCP methods inspect `list_provider_mcp_tools`, then use `call_provider_mcp_tool` with the exact URL and advertised arguments.
   The directory is not a list of MagicPay cards or card fees; use current card facts for those questions and say when an offer is unverified.
   For an authorized purchase at a known URL, use composed payment intake once. Use `check_merchant` optionally
   to compare candidates; inconclusive probes are advisory. Respect explicit operator denies and unsafe destinations.
@@ -52,7 +52,7 @@ references provide its payment workflow.
 - Memory saving, use and non-payment forms: follow [Memory](references/memory.md).
   On explicit Save, use `save_memory_item` directly, including protected values; updates require the exact item/revision. Ask only for missing facts or ambiguity.
   Metadata CRUD remains value-free. For use, call `get_memory_footprint` (no session needed), select exact revisions/field IDs, then `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
-  Before filling any non-payment form, get the page's footprint and offer matching items once by name; the resolver creates its session. Fill from the task only when none match, then offer Save. Chat context never skips this.
+  Before filling a non-payment form, get the page's footprint and choose a clear task-compatible match from its metadata; ask once by name only when the choice matters or remains ambiguous. The resolver creates its session. Fill from the task only when none match, then offer Save. Chat context never skips discovery.
 - A few closed-world items with a material user preference: use an existing
   session or `begin_request_session`, then `request_choice` once. Follow [choices](references/choices.md) and this host's presentation guidance above.
 - Generic request/reply/OTP waiting: follow [requests](references/requests.md).
