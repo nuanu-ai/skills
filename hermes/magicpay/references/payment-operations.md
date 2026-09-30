@@ -151,6 +151,21 @@ with those exact pairings; do not generalize either asset to the other network.
 This list applies only to direct crypto transfers. It does not describe funding
 methods, x402 settlement networks, or browser/card payments.
 
+Use these exact API asset identifiers for `run_crypto_transfer`:
+
+| Transfer | `namespace` | `assetId` | `network` | Atomic scale |
+| --- | --- | --- | --- | --- |
+| USDT on TRON | `caip-19` | `slip44:usdt` | `tron:mainnet` | 6 |
+| USDC on Ethereum | `caip-19` | `erc20:usdc` | `eip155:1` | 6 |
+
+These are case-sensitive API selectors, not human labels or token contract
+addresses. Never use `tron` as the namespace, `USDT` as the asset ID, or `TRON`
+as the network. For 5 USDT the principal is `"5000000"`; keep the user's exact
+maximum debit separately. An invalid asset tuple is a request error, not proof
+that USDT/TRON transfers are unsupported. Preserve the failed run identity and
+follow its recovery instructions; never silently replay or replace a payment.
+
+
 Before the first fresh crypto transfer in a newly connected task, use the
 current `get_magicpay_capabilities` result only when
 `cryptoPaymentRun.status` is `ready`, its contract is
