@@ -10,6 +10,18 @@ browser support.
 
 ## One run, one approval
 
+Questions during approval are normal conversation. Answer the user's actual
+question using the known task state while leaving the approval open. Answer
+before entering another wait, including when the message starts a new turn
+after an earlier turn ended with a pending approval. Asking a
+question does not approve or deny payment. If the host can interrupt a read-only
+`wait_payment` call, yield to the message and resume that same run afterward.
+If it cannot process messages during a tool call, use bounded waits of at most
+30 seconds, within its tool budget, so control returns regularly. Keep the
+same `runId` and progress cursor; a paused or timed-out wait is not a failed
+payment and does not permit a replacement purchase. Use the host's normal
+conversation tools; hosted chat reply tools are not required in other hosts.
+
 Create the checkout session for the known destination. Use the Browser to reach
 the actual payment-dispatch surface without activating it, then observe the
 merchant/recipient, exact merchant amount and currency, recurrence, payment
