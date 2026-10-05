@@ -133,6 +133,10 @@ Resolve known tax/shipping choices before approval when possible. If the final
 price changes later, the old approval does not cover it. Record the observed
 `not_submitted` result and finish cleanup; follow [safe replacement after terminal
 release](statuses.md#safe-replacement-after-terminal-release) before starting fresh.
+When no final payment action was activated, record `result: "not_clicked"`,
+`submissionState: "not_submitted"`, and `nonSubmissionReason: "checkout_total_changed"`
+so the exact cause survives cleanup. Never use this reason after a click or with
+uncertain submission.
 When the same purchase still fits the user's existing budget, continue with the
 final total and a fresh exact MagicPay approval/policy, without another chat
 confirmation. Stabilize the final total first. Retain host-required approvals;

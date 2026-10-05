@@ -323,6 +323,15 @@ an absent, empty, and non-empty body. Never reorder or reconstruct a signed
 body. Once bound to a run, do not change the URL, method, headers, or body. Do not
 turn a direct URL into discovery.
 
+For a flight-data search, resolve cities to the identifiers required by the
+documented provider before binding a paid request. Google Flights via SerpAPI
+requires uppercase three-letter airport codes or `/m/` / `/g/` location IDs for
+the departure_id and arrival_id parameters; a literal city name such as `Bangkok` is not an
+airport ID. Preserve the user's airport scope; do not silently narrow a city
+with several airports to one. Read current provider documentation and clarify
+only an unresolved choice. A failed bound request stays immutable and follows
+its own recovery; do not rewrite it to another airport and repay.
+
 Keep a provider's service duration separate from the x402 authorization
 window. When current Agent Camo documentation specifies
 `{"countryCode":"us","ttl":5}`, `ttl` is the requested service duration in
