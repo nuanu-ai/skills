@@ -143,6 +143,14 @@ setting does not redirect already supplied values into a hosted form.
 
 ## Two-stage use in an agent task
 
+Before saying a preference is currently saved, read its current footprint and
+selected item revision, then materialize the needed fields through the existing
+consent flow. Another chat may have updated it. A remembered value from chat or
+an old materialization is historical until checked; distinguish it from a
+current-run instruction. Keep each person's exact entity binding separate.
+Compaction does not change the current task, grant consent again, or restore a
+denied request. Continue an unchanged authorized batch with its original IDs.
+
 Use one exact active session for both stages:
 
 1. Call `get_memory_footprint` with that `sessionId` and the exact page URL and

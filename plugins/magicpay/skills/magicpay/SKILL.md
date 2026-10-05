@@ -12,6 +12,9 @@ Approval, reservation, form fill, final action, provider submission, and
 merchant confirmation are not settlement. Only a durable completed payment
 operation proves settlement.
 
+Keep the latest task and corrections through compaction/reconnect: outcome, people, dates, route, options, spending limits and “do not buy”. Old invoices are background unless requested now.
+After compaction, finish the current task. Recover exact existing operation IDs; never restart a payment to reconstruct context.
+
 Read this complete entry file once when MagicPay is first used, then load only
 the focused reference needed for the current task. When the task changes, use
 its matching reference. Host skills provide browser capabilities; MagicPay's
@@ -20,6 +23,9 @@ references provide its payment workflow.
 ## Start with the user's intent
 
 - Balance: call `get_payment_balance` directly; no setup or reference detour is needed for an already connected account.
+- Spending: `list_recent_transactions` is paginated agent-scoped workflow activity; follow `nextPage` with the same `limit`. Amounts/update times are not settled debits/dates.
+  Separate posted purchases, helper compute, reserves, confirmed fees and refunds; specify period, timezone and scope. Incomplete reads yield only a visible subtotal with its missing scope.
+  Never infer an exact remaining test allowance from incomplete activity. Wallet available balance is a different number.
 - Connect or recover authentication: call `get_magicpay_capabilities`, then
   `get_magicpay_status`; follow [setup](references/setup.md) and this host's
   [install/connect guidance](references/runtime-setup.md) only when needed. Reuse a valid connection; never restore a CLI or local server.
