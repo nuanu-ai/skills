@@ -80,6 +80,9 @@ KYC, profiles, traveler/patient records, or a checkout field that also owns the
 merchant account. Follow explicit user-selected addresses and preserve fixed
 merchant identity and an address already submitted; do not default general forms
 to agent email.
+When one checkout email field also controls merchant login or account ownership,
+use the account email and explain that receipts may go there too. Promise separate
+receipt routing only when the seller provides a separate receipt field or confirms it.
 For visible ordinary fields (such as billing name), use `get_memory_footprint`
 before the first run: pass saved candidates as `ordinaryFields` references, or
 request missing roles through `ordinaryFieldRoles`. If a role appears later,
@@ -116,6 +119,12 @@ payment operation for settlement.
 Use the host's normal visual and interaction capabilities for the unchanged
 approved checkout. Inspect the intended visible fields and final control; a
 hidden DOM entry or accessibility presence alone does not prove visibility.
+Before recommending accommodation or proposing a booking payment, inspect the
+seller's overall and cleanliness ratings and material recent review concerns.
+Apply the user's quality requirements before selecting the offer, and disclose
+poor ratings or cleanliness concerns alongside the price, deposit, remaining
+payment and possible surcharges. Attribute review reports to the seller or guests;
+do not present them as independently verified conditions.
 Use screenshots freely as normal visual perception before and after filling,
 without a prescribed count or field order. After a page transition, reacquire
 current controls. Stop submission if the bound payment facts changed.
