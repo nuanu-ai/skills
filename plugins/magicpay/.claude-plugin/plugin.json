@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "magicpay",
-  "version": "0.4.83-dev.36c2b43b42eb",
+  "version": "0.4.83-dev.dc19db119dac",
   "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
   "author": {
     "name": "Nuanu",
