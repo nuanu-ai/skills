@@ -12,14 +12,14 @@ Fetch or observe the current source first. Turn comparable results into the
 small stable `request_choice` shape:
 
 - `prompt`: a short question plus only the shared context needed to choose.
-- `notes`: optional shared source qualifications or caveats, rendered after the
-  options. Put local-time conventions, source/quote freshness and limitations
-  common to every option here instead of making the question a long paragraph.
+- `notes`: optional shared decision-relevant caveats, rendered after the options.
+  Put local-time conventions, price freshness and material limitations common
+  to every option here instead of making the question a long paragraph.
 - `id`: opaque and unique within this request; never derive authority from it.
 - `type`: a lower-case semantic hint such as `flight`, `hotel`, `product`,
   `plan`, or `service`; unknown content uses a useful generic key.
 - `title`: short, unique human label.
-- `subtitle` and `description`: provider/context and the tradeoff that matters.
+- `subtitle` and `description`: product/seller context and the tradeoff that matters.
 - `attributes`: ordered `{key,label,value}` facts that compare across options.
   Keep zero and false values. Include units and qualification in the value.
 - `price`: display text with currency, billing interval, per-unit/total, and tax
@@ -38,6 +38,16 @@ times on each option so its selected receipt is self-contained. Preserve the
 currency, total/per-person basis and supplied fare qualifications in `price`.
 Send these fields as plain text; the host owns bold titles/prices and note
 formatting. Never add HTML or Markdown decorations to the stored choice fields.
+
+Keep retrieval-provider attribution (such as "from Google Flights"), API/tool
+names and "official"/"unofficial" implementation labels out of customer-facing
+choice text. State the actual decision-relevant limitation instead: baggage
+allowance is not confirmed, the price must be rechecked before booking, or
+selecting an option does not book or pay. Preserve observed airline, seller and
+service identities and all material product terms; never turn an unknown fact
+into a reassuring claim. If the user explicitly asks about the source or
+implementation, answer truthfully without adding routine attribution to choice
+notes.
 
 For Memory options, use the saved item name as `title`, its entity as `subtitle`,
 and only the requested field labels in `description`. Keep the entity/item
