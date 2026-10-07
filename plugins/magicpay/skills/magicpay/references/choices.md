@@ -11,6 +11,10 @@ replace payment, Memory, login, or other protected approval.
 Fetch or observe the current source first. Turn comparable results into the
 small stable `request_choice` shape:
 
+- `prompt`: a short question plus only the shared context needed to choose.
+- `notes`: optional shared source qualifications or caveats, rendered after the
+  options. Put local-time conventions, source/quote freshness and limitations
+  common to every option here instead of making the question a long paragraph.
 - `id`: opaque and unique within this request; never derive authority from it.
 - `type`: a lower-case semantic hint such as `flight`, `hotel`, `product`,
   `plan`, or `service`; unknown content uses a useful generic key.
@@ -28,6 +32,12 @@ Use actual current source facts. Do not convert payment-network alternatives
 for one endpoint into duplicate products, claim travel availability without
 dates/occupancy, or invent a missing price, baggage allowance, stock state, or
 commercial term. Narrow a larger result set by relevance before asking.
+Keep option-specific terms in that option's description or attributes, not in
+shared notes. For flights, include observed date, route and departure/arrival
+times on each option so its selected receipt is self-contained. Preserve the
+currency, total/per-person basis and supplied fare qualifications in `price`.
+Send these fields as plain text; the host owns bold titles/prices and note
+formatting. Never add HTML or Markdown decorations to the stored choice fields.
 
 For Memory options, use the saved item name as `title`, its entity as `subtitle`,
 and only the requested field labels in `description`. Keep the entity/item
@@ -54,6 +64,9 @@ For a new `waiting_user` result:
    prompt, option order, titles, and decision-relevant descriptions. When that
    native control is available, show only it: do not paste `chatMessage`, open
    a MagicPay widget, or display `request_url` in this conversation.
+   Preserve shared notes beneath the options when the control supports them;
+   otherwise use the faithful widget/chat fallback rather than dropping a
+   qualification that changes the user's decision.
 2. Without a suitable native control, present the same request with
    `show_session_request` when the host renders its widget. If neither control
    is available, echo `structuredContent.chatMessage` unchanged and include
@@ -77,6 +90,9 @@ All open views converge on the first durable decision. If submission is late,
 ambiguous, or loses a race, read/wait on the exact request and use its recorded
 outcome. Never overwrite the winner or report a local draft as selected. A
 terminal replay omits a new prompt: do not present the options again.
+When the displayed request already shows the selected state, skip another
+“You chose…” acknowledgement. If work continues, describe the next meaningful
+step from actual execution instead of repeating the selected option or price.
 
 The selected option authorizes only which branch the agent may continue with.
 It does not book, buy, subscribe, transfer funds, submit a form, or approve a
@@ -99,6 +115,7 @@ In a real call, use the returned session ID and observed source facts:
   "sessionId": "11111111-1111-4111-8111-111111111111",
   "idempotencyKey": "compare-plans-01",
   "prompt": "Which plan fits your preference?",
+  "notes": ["Prices are observed quotes and may change before purchase."],
   "options": [
     {
       "id": "plan-starter",
