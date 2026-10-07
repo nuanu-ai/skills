@@ -10,6 +10,18 @@ browser support.
 
 ## One run, one approval
 
+Questions during approval are normal conversation. Answer the user's actual
+question using the known task state while leaving the approval open. Answer
+before entering another wait, including when the message starts a new turn
+after an earlier turn ended with a pending approval. Asking a
+question does not approve or deny payment. If the host can interrupt a read-only
+`wait_payment` call, yield to the message and resume that same run afterward.
+If it cannot process messages during a tool call, use bounded waits of at most
+30 seconds, within its tool budget, so control returns regularly. Keep the
+same `runId` and progress cursor; a paused or timed-out wait is not a failed
+payment and does not permit a replacement purchase. Use the host's normal
+conversation tools; hosted chat reply tools are not required in other hosts.
+
 Create the checkout session for the known destination. Use the Browser to reach
 the actual payment-dispatch surface without activating it, then observe the
 merchant/recipient, exact merchant amount and currency, recurrence, payment
@@ -68,6 +80,9 @@ KYC, profiles, traveler/patient records, or a checkout field that also owns the
 merchant account. Follow explicit user-selected addresses and preserve fixed
 merchant identity and an address already submitted; do not default general forms
 to agent email.
+When one checkout email field also controls merchant login or account ownership,
+use the account email and explain that receipts may go there too. Promise separate
+receipt routing only when the seller provides a separate receipt field or confirms it.
 For visible ordinary fields (such as billing name), use `get_memory_footprint`
 before the first run: pass saved candidates as `ordinaryFields` references, or
 request missing roles through `ordinaryFieldRoles`. If a role appears later,
@@ -104,6 +119,12 @@ payment operation for settlement.
 Use the host's normal visual and interaction capabilities for the unchanged
 approved checkout. Inspect the intended visible fields and final control; a
 hidden DOM entry or accessibility presence alone does not prove visibility.
+Before recommending accommodation or proposing a booking payment, inspect the
+seller's overall and cleanliness ratings and material recent review concerns.
+Apply the user's quality requirements before selecting the offer, and disclose
+poor ratings or cleanliness concerns alongside the price, deposit, remaining
+payment and possible surcharges. Attribute review reports to the seller or guests;
+do not present them as independently verified conditions.
 Use screenshots freely as normal visual perception before and after filling,
 without a prescribed count or field order. After a page transition, reacquire
 current controls. Stop submission if the bound payment facts changed.
@@ -112,6 +133,10 @@ Resolve known tax/shipping choices before approval when possible. If the final
 price changes later, the old approval does not cover it. Record the observed
 `not_submitted` result and finish cleanup; follow [safe replacement after terminal
 release](statuses.md#safe-replacement-after-terminal-release) before starting fresh.
+When no final payment action was activated, record `result: "not_clicked"`,
+`submissionState: "not_submitted"`, and `nonSubmissionReason: "checkout_total_changed"`
+so the exact cause survives cleanup. Never use this reason after a click or with
+uncertain submission.
 When the same purchase still fits the user's existing budget, continue with the
 final total and a fresh exact MagicPay approval/policy, without another chat
 confirmation. Stabilize the final total first. Retain host-required approvals;
@@ -181,6 +206,19 @@ payment. After any possible dispatch, observation is read-only and recovery
 stays with the same operation.
 
 ## Record the result once
+
+After submission or a human handoff, inspect the current rendered page before
+asking for more login or payment steps. Use a fresh screenshot when useful;
+recognize a completed receipt or thank-you page in its checkout context.
+For a card payment, `list_card_transactions` reads the card associated with the
+same checkout session ID. Compare nearby timestamps, currency and approximately the
+charged amount (including ordinary fees or FX differences). Assess merchant
+descriptors in context: a processor, trading name or abbreviated label may differ
+from the checkout name. Use your judgment; no exact-name match is required for
+this observation. A pending row or empty page may simply need more time.
+Report merchant confirmation and a probable card charge clearly, then read or
+reconcile the original operation for its accounting state. Do not request login
+or repeat checkout merely because that accounting update is still pending.
 
 After the final action, make a bounded fresh observation and call
 `record_browser_payment_result` for the exact run and execution attempt.

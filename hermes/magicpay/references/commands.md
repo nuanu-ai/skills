@@ -12,6 +12,7 @@ Use opaque IDs exactly as returned.
 | Account readiness | `account_status` |
 | Identity-verification help | `help_identity_verification` |
 | Recent user activity | `list_recent_transactions` |
+| Recent charges on a checkout's card | `list_card_transactions` with its checkout session ID |
 | Balance | `get_payment_balance` |
 | Generic top-up | `show_topup` |
 | Funding methods, link, or addresses | Use the exact funding action requested |
@@ -20,6 +21,8 @@ Use opaque IDs exactly as returned.
 | Authorized purchase of a known raw x402 resource | `run_x402_payment` with the exact `httpRequest` envelope and accepted quote reference when previewed |
 | Known checkout destination | `create_checkout_session` |
 | Unknown product or provider method | `search_provider_methods` |
+| Inspect a returned MCP provider | `list_provider_mcp_tools` |
+| Use an advertised provider tool | `call_provider_mcp_tool` |
 | Optional seller comparison | `check_merchant` with up to ten documented seller requests |
 | Optional choice without an existing session | `begin_request_session`, then `request_choice` |
 | Existing payment status | `get_payment_operation` |
@@ -94,3 +97,21 @@ Widget-internal tools are app-only in MCP visibility, not model routes.
 Payment instruments are internal infrastructure: inventory, provider-card
 details, diagnostic balances, and provider-card history remain unavailable.
 Route every user balance request through the unified payment-balance tools.
+
+## Discovered MCP providers
+
+Follow the returned registry guidance. Inspect the exact MCP URL with
+`list_provider_mcp_tools`, then call an advertised tool with
+`call_provider_mcp_tool({url, name, arguments})`. Tools, schemas and provider
+results are discovered at runtime, with no provider-specific adapter. The bridge
+supports public Streamable HTTP; provider authentication requires a supported
+native host connection. Never send MagicPay credentials or card values in tool
+arguments. Remote annotations do not grant approval for side effects.
+
+Keep progress brief and useful. For comparisons, present materially different
+results once with `request_choice`, retaining exact source URLs and relevant
+prices, times and limitations. Continue the selected request with `wait_request`;
+use the provider entry's instructions to obtain the selected booking or action
+link, then hand that exact URL to the host browser. Revalidate live details there.
+Do not invent links, switch the selected item, or repeat a side effect after an
+uncertain result. Purchases retain normal MagicPay approval.

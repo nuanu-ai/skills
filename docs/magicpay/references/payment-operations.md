@@ -151,6 +151,21 @@ with those exact pairings; do not generalize either asset to the other network.
 This list applies only to direct crypto transfers. It does not describe funding
 methods, x402 settlement networks, or browser/card payments.
 
+Use these exact API asset identifiers for `run_crypto_transfer`:
+
+| Transfer | `namespace` | `assetId` | `network` | Atomic scale |
+| --- | --- | --- | --- | --- |
+| USDT on TRON | `caip-19` | `slip44:usdt` | `tron:mainnet` | 6 |
+| USDC on Ethereum | `caip-19` | `erc20:usdc` | `eip155:1` | 6 |
+
+These are case-sensitive API selectors, not human labels or token contract
+addresses. Never use `tron` as the namespace, `USDT` as the asset ID, or `TRON`
+as the network. For 5 USDT the principal is `"5000000"`; keep the user's exact
+maximum debit separately. An invalid asset tuple is a request error, not proof
+that USDT/TRON transfers are unsupported. Preserve the failed run identity and
+follow its recovery instructions; never silently replay or replace a payment.
+
+
 Before the first fresh crypto transfer in a newly connected task, use the
 current `get_magicpay_capabilities` result only when
 `cryptoPaymentRun.status` is `ready`, its contract is
@@ -307,6 +322,15 @@ Preserve the seller request contract exactly, including the distinction between
 an absent, empty, and non-empty body. Never reorder or reconstruct a signed
 body. Once bound to a run, do not change the URL, method, headers, or body. Do not
 turn a direct URL into discovery.
+
+For a flight-data search, resolve cities to the identifiers required by the
+documented provider before binding a paid request. Google Flights via SerpAPI
+requires uppercase three-letter airport codes or `/m/` / `/g/` location IDs for
+the departure_id and arrival_id parameters; a literal city name such as `Bangkok` is not an
+airport ID. Preserve the user's airport scope; do not silently narrow a city
+with several airports to one. Read current provider documentation and clarify
+only an unresolved choice. A failed bound request stays immutable and follows
+its own recovery; do not rewrite it to another airport and repay.
 
 Keep a provider's service duration separate from the x402 authorization
 window. When current Agent Camo documentation specifies

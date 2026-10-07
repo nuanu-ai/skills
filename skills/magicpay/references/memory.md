@@ -143,6 +143,14 @@ setting does not redirect already supplied values into a hosted form.
 
 ## Two-stage use in an agent task
 
+Before saying a preference is currently saved, read its current footprint and
+selected item revision, then materialize the needed fields through the existing
+consent flow. Another chat may have updated it. A remembered value from chat or
+an old materialization is historical until checked; distinguish it from a
+current-run instruction. Keep each person's exact entity binding separate.
+Compaction does not change the current task, grant consent again, or restore a
+denied request. Continue an unchanged authorized batch with its original IDs.
+
 Use one exact active session for both stages:
 
 1. Call `get_memory_footprint` with that `sessionId` and the exact page URL and
@@ -163,7 +171,13 @@ Use one exact active session for both stages:
    Do not claim that no Memory exists from a bounded page or excerpt. Resolve
    relevant unseen candidates or missing metadata before choosing collection;
    describe any lookup limitation without widening the search unnecessarily.
-2. Select only the items and fields needed for the task. Map the returned
+2. Select only the items and fields needed for the task. Use descriptions,
+   entity and form context to choose a clear match without another question.
+   For language variants of the same person's profile, prefer the version
+   matching the form's language or script (for example, Latin-script details
+   for an English international travel form). Include only suitable candidates
+   in the resolver; ask when multiple suitable candidates or identities remain.
+   Map the returned
    `item.id` to `itemId`, `item.contentRevision` to `expectedRevision`, and each
    `field.id` / `field.key` to `fieldId` / `fieldKey`; never rebuild any of
    them. A normal single-subject selection may omit a group binding and use the

@@ -14,6 +14,9 @@ Approval, reservation, form fill, final action, provider submission, and
 merchant confirmation are not settlement. Only a durable completed payment
 operation proves settlement.
 
+Keep the latest task and corrections through compaction/reconnect: outcome, people, dates, route, options, spending limits and “do not buy”. Old invoices are background unless requested now.
+After compaction, finish the current task. Recover exact existing operation IDs; never restart a payment to reconstruct context.
+
 Read this complete entry file once when MagicPay is first used, then load only
 the focused reference needed for the current task. When the task changes, use
 its matching reference. Host skills provide browser capabilities; MagicPay's
@@ -22,6 +25,9 @@ references provide its payment workflow.
 ## Start with the user's intent
 
 - Balance: call `get_payment_balance` directly; no setup or reference detour is needed for an already connected account.
+- Spending: `list_recent_transactions` is paginated agent-scoped workflow activity; follow `nextPage` with the same `limit`. Amounts/update times are not settled debits/dates.
+  Separate posted purchases, helper compute, reserves, confirmed fees and refunds; specify period, timezone and scope. Incomplete reads yield only a visible subtotal with its missing scope.
+  Never infer an exact remaining test allowance from incomplete activity. Wallet available balance is a different number.
 - Connect or recover authentication: call `get_magicpay_capabilities`, then
   `get_magicpay_status`; follow [setup](references/setup.md) and this host's
   [install/connect guidance](references/runtime-setup.md) only when needed. Reuse a valid connection; never restore a CLI or local server.
@@ -39,7 +45,7 @@ references provide its payment workflow.
   Respect a chosen seller or urgent purchase, and do not switch an in-progress payment to chase a deal.
 - Subscription signup or cancellation: follow [subscriptions](references/subscriptions.md).
   To cancel an existing subscription, start with `cancel_subscription` for its current details and continue at the merchant; preparing cancellation is not success.
-- Product or provider discovery: `search_provider_methods` when the target is unknown; read official docs.
+- Product or provider discovery: `search_provider_methods` when the target is unknown; read provider guidance and official docs. For MCP methods inspect `list_provider_mcp_tools`, then use `call_provider_mcp_tool` with the exact URL and advertised arguments.
   The directory is not a list of MagicPay cards or card fees; use current card facts for those questions and say when an offer is unverified.
   For an authorized purchase at a known URL, use composed payment intake once. Use `check_merchant` optionally
   to compare candidates; inconclusive probes are advisory. Respect explicit operator denies and unsafe destinations.
@@ -52,12 +58,14 @@ references provide its payment workflow.
 - Memory saving, use and non-payment forms: follow [Memory](references/memory.md).
   On explicit Save, use `save_memory_item` directly, including protected values; updates require the exact item/revision. Ask only for missing facts or ambiguity.
   Metadata CRUD remains value-free. For use, call `get_memory_footprint` (no session needed), select exact revisions/field IDs, then `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
-  Before filling any non-payment form, get the page's footprint and offer matching items once by name; the resolver creates its session. Fill from the task only when none match, then offer Save. Chat context never skips this.
+  Before filling a non-payment form, get the page's footprint and choose a clear task-compatible match from its metadata; ask once by name only when the choice matters or remains ambiguous. The resolver creates its session. Fill from the task only when none match, then offer Save. Chat context never skips discovery.
 - A few closed-world items with a material user preference: use an existing
   session or `begin_request_session`, then `request_choice` once. Follow [choices](references/choices.md) and this host's presentation guidance above.
 - Generic request/reply/OTP waiting: follow [requests](references/requests.md).
 - Payment status or ambiguity: use `get_payment_operation`, or `reconcile_payment_operation`
   only for that same operation when directed; follow [statuses and recovery](references/statuses.md).
+  For browser card payments, inspect the current result page and use `list_card_transactions`
+  to compare recent charges on the session's card when useful.
   Existing requests, runs, sessions and operations retain their returned `nextAction`; read-only status and authorized diagnosis remain available.
 - For an end-to-end overview, see the [compact workflow](references/workflow.md).
   [Guardrails](references/guardrails.md) covers value handling; [development session review](references/development-session-review.md) applies only when enabled below.

@@ -55,10 +55,21 @@ Cancel subscription; choose cancel at period end to keep paid access.” If it i
 unknown, leave it absent; the UI supplies a general guide. Never invent a portal
 URL. A missing logo, hint or invoice must not delay the payment reply.
 
-Zero-due trials are not supported by the current positive-charge browser run.
-Report this limitation before any enrollment submission; never invent a nominal
-charge, weaken the amount, or use another payment route to bypass it. A paid
-signup does not prove that a retained card or future merchant renewal works.
+For a zero-due enrollment that the user will complete manually, create a
+subscription checkout session at the exact inspected URL, then call
+`request_subscription_enrollment` with `amountDueNow: 0`, `executionOwner: "user"`,
+a stable `clientRequestId`, full recurring amounts and intervals, and
+`billingTerms` containing deferred fees, usage prices and included allowances.
+Follow the same approval request with `get_request` and `wait_request`. The user
+enters their own card and submits at the merchant. After observing the result,
+call `complete_checkout_session` with `enrollmentOutcome`, including the exact
+request ID, approved terms hash, checkout URL and observed outcome. This records
+enrollment separately from settlement and releases no MagicPay card. Preserve an
+ambiguous signup for reconciliation; never submit a second enrollment.
+
+The positive-charge browser run still rejects zero. Automatic zero-due card
+provisioning is unavailable. Never invent a nominal charge or weaken the amount.
+A signup does not prove that the retained card or future renewal works.
 
 After signup, report updated details with `record_browser_payment_result`.
 Dates and hints are editable metadata; commercial amounts and recurrence still
