@@ -11,7 +11,7 @@
   "npmPackages": [
     {
       "name": "@nuanu-ai/magicpay-sdk",
-      "version": "0.5.15"
+      "version": "0.5.16"
     }
   ],
   "portableDir": "portable/magicpay",
