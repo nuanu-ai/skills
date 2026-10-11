@@ -171,8 +171,17 @@ Use one exact active session for both stages:
    Do not claim that no Memory exists from a bounded page or excerpt. Resolve
    relevant unseen candidates or missing metadata before choosing collection;
    describe any lookup limitation without widening the search unnecessarily.
+   `search` matches literal metadata text, not semantic equivalents. A search
+   for “passenger” can miss “Personal profile”. Before collecting after a
+   narrow no-match search, look for the suitable item type or the intended
+   person's items while preserving the exact URL and purpose.
 2. Select only the items and fields needed for the task. Use descriptions,
    entity and form context to choose a clear match without another question.
+   Match the meaning of each field, not the item title or page section name.
+   A Personal profile can supply passenger, booking-contact or other personal
+   form details for that same person. Combine suitable fields from several
+   items when needed; a missing Passport does not make saved profile fields
+   missing. Keep distinct people and genuinely different meanings separate.
    For language variants of the same person's profile, prefer the version
    matching the form's language or script (for example, Latin-script details
    for an English international travel form). Include only suitable candidates
@@ -195,6 +204,18 @@ Use one exact active session for both stages:
    supports it, set `collectionMappingScope: 'form/v1'` and map every current-task
    field in `collectionGroups`, including fields that have saved candidates.
    The server derives missing fields; do not send a second missing-only map.
+   Saved values are selected through `candidateAssemblies.selections` and
+   mapped to browser fields with `targetBindings`. Each `targetRef` must equal
+   that requested `fields[].fieldKey`; a browser snapshot ref is only for the
+   later browser fill and is not this resolver identity. Include an
+   `entityBindings` entry only for a group used by saved `selections` in that
+   assembly. Missing-only groups, such as a new Passport, identify their person
+   with `collectionGroups[].entityId`, without an unused entity binding.
+   `collectionGroups.target`
+   only proposes an existing item for a Save/update; it never reads or selects
+   that item's values. Keep partial saved selections for every usable field
+   and collect only the rest. Use the empty assembly only when no requested
+   saved fields are usable or the user chose to provide different details.
    Preserve an existing operation’s original scope and inputs on replay.
 4. If the result requires a choice or approval, continue the exact request. A
    Memory candidate choice uses `decision: 'choose_candidate'` with its exact
@@ -315,13 +336,16 @@ for that request.
 
 Check Memory before typing into any non-payment form; do not force it. Call
 `get_memory_footprint` with the exact page URL and purpose; no session is
-needed. With at least one candidate, offer once, by item name and value-free, to use the saved
-details or enter them manually; with several candidates, offer the choice by
-name. With no candidate, fill from the task and offer Save afterwards; do not
-ask. Values already present in the conversation never replace this check while
-the MagicPay connector is available.
+needed. Choose a clear compatible match from its metadata; ask by item name
+only when the intended person or suitable details remain ambiguous. The
+resolver enforces the current reuse policy and returns any required choice or
+approval, including Provide different details; do not add a separate question
+before an unambiguous automatic reuse. With no usable candidate, fill from the
+task and offer Save afterwards; do not ask for facts already known. Values
+already present in the conversation never replace this check while the
+MagicPay connector is available.
 
-When the owner accepts saved Memory or collection is needed, run the exact v3
+When using saved Memory or collection is needed, run the exact v3
 resolver without a `sessionId`: MagicPay creates the form session itself and
 returns its `sessionId`. Preserve that identity for the returned request and
 the replay; `begin_browser_form` stays available when an explicit session is
@@ -339,6 +363,41 @@ selected entity on its collection group. Do not invent a placeholder item or
 change the discovered URL or purpose to make the resolver accept a request.
 A partial saved item is valid: its missing postcode can be collected without
 asking for unrelated template fields or demanding a complete address item.
+For example, if a travel form needs name, birth date, email, phone and passport
+details, select the fitting ready Personal-profile fields for the passenger
+and collect only the missing passport fields. Naming that profile as a
+collection target with an empty candidate assembly would instead ask for all
+the values again. Passport collection still follows the protected hosted flow.
+
+Example partial form input with one saved first name and one missing passport
+number (synthetic identities only). The live browser might identify the first
+name textbox as `p-first`; the resolver binds "traveler_first_name", the exact
+requested field key. Both collection groups identify the same person, while
+only the saved profile group has an assembly entity binding:
+
+```json
+{
+  "clientRequestId": "traveler-form-01",
+  "footprintRevision": "footprint-example-7",
+  "pageUrl": "https://example.com/travel",
+  "purpose": "Complete the selected traveler's details",
+  "groups": [{"groupRef": "traveler-profile"}, {"groupRef": "traveler-passport"}],
+  "fields": [
+    {"fieldKey": "traveler_first_name", "label": "First name", "inputType": "text", "groupRef": "traveler-profile"},
+    {"fieldKey": "traveler_passport", "label": "Passport number", "inputType": "password", "groupRef": "traveler-passport"}
+  ],
+  "collectionMappingScope": "form/v1",
+  "collectionGroups": [
+    {"groupRef": "traveler-profile", "templateKey": "profile.person", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [{"requestFieldKey": "traveler_first_name", "templateFieldKey": "given_name"}]},
+    {"groupRef": "traveler-passport", "templateKey": "identity.passport", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [{"requestFieldKey": "traveler_passport", "templateFieldKey": "passport_number"}]}
+  ],
+  "candidateAssemblies": [{
+    "selections": [{"itemId": "22222222-2222-4222-8222-222222222222", "expectedRevision": "profile-example-3", "groupRef": "traveler-profile", "requestedFields": [{"fieldId": "33333333-3333-4333-8333-333333333333", "fieldKey": "given_name"}]}],
+    "entityBindings": [{"groupRef": "traveler-profile", "entityId": "66666666-6666-4666-8666-666666666666"}],
+    "targetBindings": [{"targetRef": "traveler_first_name", "itemId": "22222222-2222-4222-8222-222222222222", "fieldId": "33333333-3333-4333-8333-333333333333", "groupRef": "traveler-profile"}]
+  }]
+}
+```
 
 - `ready`: fill only the returned exact browser fields with the host browser
   and verify the resulting form without reading values back. Materialization
