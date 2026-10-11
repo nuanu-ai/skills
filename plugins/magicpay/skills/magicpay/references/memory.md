@@ -6,6 +6,31 @@ atomic operations. The skill owns scope choice, safe sequencing, and exact
 continuation. Use the connected tools’ schemas and returned request capabilities;
 this reference alone does not establish that an environment supports an option.
 
+## People, items and form roles
+
+An entity is **whose details**: Me, another person or an organization. Its items
+describe **what details**. Discover live templates with `includeTemplates: true`
+even when there is no saved item of that type.
+
+| Form information | Typical item |
+| --- | --- |
+| Title, name, birth date, email, phone | Personal profile (`profile.person`) |
+| Passport number, passport nationality/sex, issuing country, expiry | Passport (`identity.passport`) |
+| Address lines, city, region, postcode, country | Postal address (`address.postal`) |
+
+Passenger, traveler and booking contact are merchant roles. Bind a role to the
+intended entity, then choose matching fields from its items. Reuse suitable saved
+fields first and collect genuinely missing fields through their known templates.
+No saved Passport or Address does not mean no fitting template exists. A Title
+can come from Personal profile while Passport details are collected under the
+same Me entity. Do not infer passport sex from Title or nationality from residence.
+
+Use a custom one-time group only for a requirement no canonical template fits.
+Keep fitting typed groups and saved selections alongside that remainder. A
+validation error or a missing saved field is not a reason to discard typed
+collection. Resolve the returned error using current definitions and bindings;
+do not loop through replacement requests or silently downgrade the whole form.
+
 ## Management and direct CRUD
 
 - Choose exactly one of a URL scope or all-sites scope for management reads with
@@ -369,11 +394,13 @@ and collect only the missing passport fields. Naming that profile as a
 collection target with an empty candidate assembly would instead ask for all
 the values again. Passport collection still follows the protected hosted flow.
 
-Example partial form input with one saved first name and one missing passport
-number (synthetic identities only). The live browser might identify the first
-name textbox as `p-first`; the resolver binds "traveler_first_name", the exact
-requested field key. Both collection groups identify the same person, while
-only the saved profile group has an assembly entity binding:
+Example for a form requiring Title, a split phone and five passport fields
+(synthetic identities only). Title and phone are already available from Personal
+profile; the Passport item is missing. Both collection groups identify Me,
+while only the saved profile group has an assembly entity binding. Resolver
+target bindings use requested field keys, not browser snapshot refs. The phone
+country options below must come from the rendered merchant select; they are
+not profile residence. Other live requirements need their own exact mappings.
 
 ```json
 {
@@ -383,21 +410,51 @@ only the saved profile group has an assembly entity binding:
   "purpose": "Complete the selected traveler's details",
   "groups": [{"groupRef": "traveler-profile"}, {"groupRef": "traveler-passport"}],
   "fields": [
-    {"fieldKey": "traveler_first_name", "label": "First name", "inputType": "text", "groupRef": "traveler-profile"},
-    {"fieldKey": "traveler_passport", "label": "Passport number", "inputType": "password", "groupRef": "traveler-passport"}
+    {"fieldKey": "traveler_title", "label": "Title (Mr/Ms)", "inputType": "select", "groupRef": "traveler-profile"},
+    {"fieldKey": "traveler_phone", "label": "Phone", "inputType": "tel", "groupRef": "traveler-profile", "phoneTargets": [
+      {"targetRef": "phone_national", "label": "Phone number", "projection": "national"},
+      {"targetRef": "phone_country", "label": "Phone country", "projection": "country", "options": [{"country": "ID", "value": "Indonesia"}, {"country": "US", "value": "UnitedStates"}]}
+    ]},
+    {"fieldKey": "traveler_passport", "label": "Passport number", "inputType": "password", "groupRef": "traveler-passport"},
+    {"fieldKey": "traveler_nationality", "label": "Nationality as shown in passport", "inputType": "country", "groupRef": "traveler-passport"},
+    {"fieldKey": "traveler_sex", "label": "Gender as shown in passport", "inputType": "select", "groupRef": "traveler-passport"},
+    {"fieldKey": "traveler_issuing_country", "label": "Passport issuing country", "inputType": "country", "groupRef": "traveler-passport"},
+    {"fieldKey": "traveler_expiry", "label": "Passport expiry date", "inputType": "date", "groupRef": "traveler-passport"}
   ],
   "collectionMappingScope": "form/v1",
   "collectionGroups": [
-    {"groupRef": "traveler-profile", "templateKey": "profile.person", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [{"requestFieldKey": "traveler_first_name", "templateFieldKey": "given_name"}]},
-    {"groupRef": "traveler-passport", "templateKey": "identity.passport", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [{"requestFieldKey": "traveler_passport", "templateFieldKey": "passport_number"}]}
+    {"groupRef": "traveler-profile", "templateKey": "profile.person", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [{"requestFieldKey": "traveler_title", "templateFieldKey": "title"}, {"requestFieldKey": "traveler_phone", "templateFieldKey": "phone"}]},
+    {"groupRef": "traveler-passport", "templateKey": "identity.passport", "templateVersion": 1, "entityId": "66666666-6666-4666-8666-666666666666", "fields": [
+      {"requestFieldKey": "traveler_passport", "templateFieldKey": "passport_number"},
+      {"requestFieldKey": "traveler_nationality", "templateFieldKey": "nationality"},
+      {"requestFieldKey": "traveler_sex", "templateFieldKey": "sex"},
+      {"requestFieldKey": "traveler_issuing_country", "templateFieldKey": "issuing_country"},
+      {"requestFieldKey": "traveler_expiry", "templateFieldKey": "expiry_date"}
+    ]}
   ],
   "candidateAssemblies": [{
-    "selections": [{"itemId": "22222222-2222-4222-8222-222222222222", "expectedRevision": "profile-example-3", "groupRef": "traveler-profile", "requestedFields": [{"fieldId": "33333333-3333-4333-8333-333333333333", "fieldKey": "given_name"}]}],
+    "selections": [{"itemId": "22222222-2222-4222-8222-222222222222", "expectedRevision": "profile-example-3", "groupRef": "traveler-profile", "requestedFields": [
+      {"fieldId": "33333333-3333-4333-8333-333333333333", "fieldKey": "title"},
+      {"fieldId": "44444444-4444-4444-8444-444444444444", "fieldKey": "phone"}
+    ]}],
     "entityBindings": [{"groupRef": "traveler-profile", "entityId": "66666666-6666-4666-8666-666666666666"}],
-    "targetBindings": [{"targetRef": "traveler_first_name", "itemId": "22222222-2222-4222-8222-222222222222", "fieldId": "33333333-3333-4333-8333-333333333333", "groupRef": "traveler-profile"}]
+    "targetBindings": [
+      {"targetRef": "traveler_title", "itemId": "22222222-2222-4222-8222-222222222222", "fieldId": "33333333-3333-4333-8333-333333333333", "groupRef": "traveler-profile"},
+      {"targetRef": "traveler_phone", "itemId": "22222222-2222-4222-8222-222222222222", "fieldId": "44444444-4444-4444-8444-444444444444", "groupRef": "traveler-profile"}
+    ]
   }]
 }
 ```
+
+For a genuinely unmapped remainder, use `templateKey: "custom.fields"` with
+the discovered version and explicit `fieldDefinitions` keyed by each group's
+`templateFieldKey`, for example
+`{"delivery_note":{"label":"Delivery note","valueType":"text","isSecret":false}}`.
+Its keys must exactly match that group's mappings. Sensitive custom fields use
+`isSecret: true` and the appropriate value type; the server determines their
+collection surface. These fields are Use once, have no Save target, and remain
+in the same request alongside known typed groups. Ordinary direct custom Save
+is a separate explicit user action, not an implied part of collection.
 
 - `ready`: fill only the returned exact browser fields with the host browser
   and verify the resulting form without reading values back. Materialization
@@ -409,8 +466,12 @@ only the saved profile group has an assembly entity binding:
   resolver input and `clientRequestId`, including its original footprint revision
   after Save; reads, waits, and claims are not release paths. A Save-induced
   revision change is handled by that continuation, not a replacement operation.
-- `fallback_required`: explain the returned reason briefly and offer manual
-  page entry; do not silently switch a protected or unsupported request to chat.
+- `fallback_required` with `memory_missing_fields`: use the returned
+  `missingFields` to repair the typed mappings for this same workflow, retaining
+  fitting saved selections. Missing values or a mapping error do not make a
+  known Passport, Personal profile or Address requirement a custom form.
+  For other fallback reasons, explain the reason briefly and offer manual page
+  entry; do not silently switch protected collection to chat.
 - `stale_footprint`: rediscover and re-evaluate the changed selection as directed.
   Do not reuse released values or assume an old approval covers new facts.
 
