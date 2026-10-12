@@ -1,10 +1,18 @@
 # Normalized Choices
 
-Use a MagicPay choice when the agent has two to eight concrete, closed-world
-options and the user's preference materially changes the next step. It is an
-optional human-in-the-loop aid, not a required checkpoint. Do not create one
-for a single obvious result, a factual lookup, an open-ended question, or to
-replace payment, Memory, login, or other protected approval.
+For an unresolved material shopping preference among two to eight observed
+merchant options, use `request_choice` instead of asking an independent
+plain-chat question. Include accurate product-variant photos when the merchant
+supplies them, resolving their observed URLs to absolute HTTPS URLs. Preserve
+the observed price and exact detail link for each option. Ask color and delivery
+as separate requests; one selection must not silently decide both preferences.
+Skip a redundant choice when the user already specified or authorized the
+option, and continue with it.
+
+For other tasks, a MagicPay choice remains an optional human-in-the-loop aid
+when concrete, closed-world options materially change the next step. Do not
+create one for a single obvious result, a factual lookup, an open-ended
+question, or to replace payment, Memory, login, or other protected approval.
 
 ## Normalize messy sources
 

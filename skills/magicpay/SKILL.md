@@ -59,8 +59,13 @@ references provide its payment workflow.
   On explicit Save, use `save_memory_item` directly, including protected values; updates require the exact item/revision. Ask only for missing facts or ambiguity.
   Metadata CRUD remains value-free. For use, call `get_memory_footprint` (no session needed), select exact revisions/field IDs, then `materialize_memory_items` or the v3 `resolve_browser_form_values` path.
   Before filling a non-payment form, get the page's footprint and choose a clear task-compatible match from its metadata; ask once by name only when the choice matters or remains ambiguous. The resolver creates its session. Fill from the task only when none match, then offer Save. Chat context never skips discovery.
-- A few closed-world items with a material user preference: use an existing
-  session or `begin_request_session`, then `request_choice` once. Follow [choices](references/choices.md) and this host's presentation guidance above.
+- Shopping preferences: when a material preference is unresolved among two to
+  eight observed merchant options, use an existing session or
+  `begin_request_session`.
+  Use `request_choice` instead of independent chat questions; follow [choices](references/choices.md).
+  Include observed product-variant photos. Skip redundant choices
+  when the user already specified or authorized the option. For other tasks,
+  choices remain an optional aid. Follow this host's presentation guidance above.
 - Generic request/reply/OTP waiting: follow [requests](references/requests.md).
 - Payment status or ambiguity: use `get_payment_operation`, or `reconcile_payment_operation`
   only for that same operation when directed; follow [statuses and recovery](references/statuses.md).
