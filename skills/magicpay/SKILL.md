@@ -22,6 +22,8 @@ the focused reference needed for the current task. When the task changes, use
 its matching reference. Host skills provide browser capabilities; MagicPay's
 references provide its payment workflow.
 
+Use a short purchase-intent task/session description, such as `Flight Denpasar → Singapore · 14 Oct`. Preserve it across seller changes; keep the seller in the merchant field and update intent through the host's supported description path.
+
 ## Start with the user's intent
 
 - Balance: call `get_payment_balance` directly; no setup or reference detour is needed for an already connected account.
