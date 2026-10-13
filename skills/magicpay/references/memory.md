@@ -379,12 +379,27 @@ task and offer Save afterwards; do not ask for facts already known. Values
 already present in the conversation never replace this check while the
 MagicPay connector is available.
 
-When using saved Memory or collection is needed, run the exact v3
-resolver without a `sessionId`: MagicPay creates the form session itself and
-returns its `sessionId`. Preserve that identity for the returned request and
-the replay; `begin_browser_form` stays available when an explicit session is
-preferred. Never use a host task ID, a caller-generated UUID, or a payment
-checkout session as the workflow identity.
+When using saved Memory or collection is needed, run the exact v3 resolver in
+the existing MagicPay general task session. Reuse its `sessionId`; hosted
+execution supplies it automatically. A standalone host with no existing task
+can omit it to create its initial form session. `begin_browser_form` can reuse
+an explicitly supplied general session without changing its title. Never use
+a native host thread ID or caller-generated UUID as a MagicPay session ID.
+Preserve the exact request, clientRequestId and resolver inputs after Save or
+Use once; Save changing the footprint does not require another use approval.
+
+Between a ready batch and filling, perform a focused agent mapping step in the
+same task/browser: inspect current rendered controls and full relevant options,
+map the approved logical fields to their actual targets, fill, and verify.
+`phoneParts` describes the authorized phone; `phoneTargets` supplies compatible
+projections when known. A target with `mappingRequired:true` deliberately has
+no value: map its country/calling-code/national representation using fresh
+merchant controls, without recollection or a new saved-Memory approval. Never
+infer residence from a phone prefix, fabricate an option, change the original
+resolver fingerprint under its existing key, or reuse values for another
+purpose. Re-observe once for a concrete mismatch, then explain an unresolved
+blocker. Keep values out of chat/logs. Form preparation never authorizes booking
+or payment submission; protected releases retain their own expiry.
 
 Before proposing collection mappings, discover current canonical templates with
 `list_memory_items` using `includeTemplates: true` and the exact page URL scope.
