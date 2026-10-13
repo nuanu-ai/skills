@@ -20,9 +20,9 @@ Fetch or observe the current source first. Turn comparable results into the
 small stable `request_choice` shape:
 
 - `prompt`: a short question plus only the shared context needed to choose.
-- `notes`: optional shared decision-relevant caveats, rendered after the options.
-  Put local-time conventions, price freshness and material limitations common
-  to every option here instead of making the question a long paragraph.
+- `notes`: optional concrete limitations shared by the options that change the
+  user's decision, rendered after the options. Omit them when no such limitation
+  is observed. Keep routine explanations out of both notes and the prompt.
 - `id`: opaque and unique within this request; never derive authority from it.
 - `type`: a lower-case semantic hint such as `flight`, `hotel`, `product`,
   `plan`, or `service`; unknown content uses a useful generic key.
@@ -49,13 +49,15 @@ formatting. Never add HTML or Markdown decorations to the stored choice fields.
 
 Keep retrieval-provider attribution (such as "from Google Flights"), API/tool
 names and "official"/"unofficial" implementation labels out of customer-facing
-choice text. State the actual decision-relevant limitation instead: baggage
-allowance is not confirmed, the price must be rechecked before booking, or
-selecting an option does not book or pay. Preserve observed airline, seller and
-service identities and all material product terms; never turn an unknown fact
-into a reassuring claim. If the user explicitly asks about the source or
-implementation, answer truthfully without adding routine attribution to choice
-notes.
+choice text. Preserve observed airline, seller and service identities and all
+material product terms; never turn an unknown fact into a reassuring claim.
+Keep concrete baggage or fare restrictions in the affected option. Do not add
+generic disclaimers such as "Local times shown", "All options are nonstop
+economy", "recheck fare availability and baggage before purchase", or "selection
+does not book or pay". Show the actual itinerary and fare facts once on each
+option; verify current availability and terms internally before checkout. If
+the user explicitly asks about the source or implementation, answer truthfully
+without adding routine attribution to choice notes.
 
 For Memory options, use the saved item name as `title`, its entity as `subtitle`,
 and only the requested field labels in `description`. Keep the entity/item
@@ -133,7 +135,6 @@ In a real call, use the returned session ID and observed source facts:
   "sessionId": "11111111-1111-4111-8111-111111111111",
   "idempotencyKey": "compare-plans-01",
   "prompt": "Which plan fits your preference?",
-  "notes": ["Prices are observed quotes and may change before purchase."],
   "options": [
     {
       "id": "plan-starter",
