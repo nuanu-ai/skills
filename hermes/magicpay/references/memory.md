@@ -241,6 +241,15 @@ Use one exact active session for both stages:
    that item's values. Keep partial saved selections for every usable field
    and collect only the rest. Use the empty assembly only when no requested
    saved fields are usable or the user chose to provide different details.
+   When the explicitly named subject has no matching owned entity, put
+   `newEntity: { type: "person", displayName: "Iris Demo" }` on each of that
+   subject's collection groups instead of `entityId`. This is a value-free
+   proposal for the human to review, not permission to create a person. Never
+   infer a subject from an item title, substitute Me, or create a placeholder
+   profile before collection. Do not combine `newEntity` with an existing
+   entity or update target. Use once creates no entity/item; only explicit Save
+   persists the reviewed destination. Existing-person missing Passport/Address
+   groups keep that person's exact `entityId`, even if the typed item is absent.
    Preserve an existing operation’s original scope and inputs on replay.
 4. If the result requires a choice or approval, continue the exact request. A
    Memory candidate choice uses `decision: 'choose_candidate'` with its exact
