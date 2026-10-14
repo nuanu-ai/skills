@@ -244,7 +244,9 @@ it creates no payment run, approval, reservation, signature or submission.
 
 After the user explicitly accepts buying, call `run_x402_payment` with the
 returned `acceptedQuoteRef` (the quote's `quoteRef`) and **the same**
-`clientRequestId`, exact HTTP request and returned `maximumDebit`. Keep the
+`clientRequestId` and exact HTTP request. The execution `maximumDebit` may be
+tightened to the accepted fee-inclusive debit, within the preview's maximum;
+it must cover the quoted debit and cannot widen the preview ceiling. Keep the
 agent/account scope unchanged. Changed or expired terms require a fresh quote
 and renewed acceptance, not a silent purchase. Once a purchase exists, retain
 its operation/run and reconcile it on uncertainty; a new quote never authorizes

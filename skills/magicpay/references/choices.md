@@ -20,9 +20,9 @@ Fetch or observe the current source first. Turn comparable results into the
 small stable `request_choice` shape:
 
 - `prompt`: a short question plus only the shared context needed to choose.
-- `notes`: optional shared decision-relevant caveats, rendered after the options.
-  Put local-time conventions, price freshness and material limitations common
-  to every option here instead of making the question a long paragraph.
+- `notes`: optional concrete limitations shared by the options that change the
+  user's decision, rendered after the options. Omit them when no such limitation
+  is observed. Keep routine explanations out of both notes and the prompt.
 - `id`: opaque and unique within this request; never derive authority from it.
 - `type`: a lower-case semantic hint such as `flight`, `hotel`, `product`,
   `plan`, or `service`; unknown content uses a useful generic key.
@@ -49,13 +49,15 @@ formatting. Never add HTML or Markdown decorations to the stored choice fields.
 
 Keep retrieval-provider attribution (such as "from Google Flights"), API/tool
 names and "official"/"unofficial" implementation labels out of customer-facing
-choice text. State the actual decision-relevant limitation instead: baggage
-allowance is not confirmed, the price must be rechecked before booking, or
-selecting an option does not book or pay. Preserve observed airline, seller and
-service identities and all material product terms; never turn an unknown fact
-into a reassuring claim. If the user explicitly asks about the source or
-implementation, answer truthfully without adding routine attribution to choice
-notes.
+choice text. Preserve observed airline, seller and service identities and all
+material product terms; never turn an unknown fact into a reassuring claim.
+Keep concrete baggage or fare restrictions in the affected option. Do not add
+generic disclaimers such as "Local times shown", "All options are nonstop
+economy", "recheck fare availability and baggage before purchase", or "selection
+does not book or pay". Show the actual itinerary and fare facts once on each
+option; verify current availability and terms internally before checkout. If
+the user explicitly asks about the source or implementation, answer truthfully
+without adding routine attribution to choice notes.
 
 For Memory options, use the saved item name as `title`, its entity as `subtitle`,
 and only the requested field labels in `description`. Keep the entity/item
@@ -97,10 +99,25 @@ Other enabled MagicPay channels may still carry this same request. The user
 may answer in chat, the widget, web, mobile, or Telegram. Submit a chat
 answer only when it maps unambiguously to an in-range ordinal, exact stored
 title, or exact ID. Call `decide_request` with `decision: confirmed` and the
-exact `selectedChoiceId`, then `wait_request` on the same IDs. A native picker
-is presentation only and follows the same decide/wait path: an answered option
-submits `confirmed` with its stored ID; an explicit cancel or "none of these"
-submits `denied`; a skipped or dismissed control is not a decision, so present
+exact `selectedChoiceId`, then `wait_request` on the same IDs.
+
+A follow-up that changes cabin, date, passenger count or another search fact
+refines the same task. If the generic choice permits adjustments, submit
+`decide_request` with `decision: confirmed` and `adjustmentPrompt` containing
+the user's correction, with no selectedChoiceId, values or Save. Read its exact
+adjustment_requested outcome with `wait_request`, then search and publish
+updated options in the same task. Use one new stable choice idempotency key for
+the revised result set in the same session; reuse that new key on retries and
+keep the old adjustment outcome immutable. An active hosted turn that consumes the
+adjustment owns this search; continue in that turn without creating a second
+continuation. If the host instead resumes a saved adjustment after the source
+turn ended, that continuation is its sole owner.
+Do not use `denied` to clear an old choice. Status and side questions leave it
+pending. When the scope is unclear, clarify it before making a decision.
+
+A native picker is presentation only and follows the same decide/wait path:
+an answered option submits `confirmed` with its stored ID; an explicit task
+cancel or rejection without refinement submits `denied`; a skipped or dismissed control is not a decision, so present
 the same stored options once more through the same control and never create a
 sibling request.
 
@@ -133,7 +150,6 @@ In a real call, use the returned session ID and observed source facts:
   "sessionId": "11111111-1111-4111-8111-111111111111",
   "idempotencyKey": "compare-plans-01",
   "prompt": "Which plan fits your preference?",
-  "notes": ["Prices are observed quotes and may change before purchase."],
   "options": [
     {
       "id": "plan-starter",
