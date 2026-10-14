@@ -99,10 +99,25 @@ Other enabled MagicPay channels may still carry this same request. The user
 may answer in chat, the widget, web, mobile, or Telegram. Submit a chat
 answer only when it maps unambiguously to an in-range ordinal, exact stored
 title, or exact ID. Call `decide_request` with `decision: confirmed` and the
-exact `selectedChoiceId`, then `wait_request` on the same IDs. A native picker
-is presentation only and follows the same decide/wait path: an answered option
-submits `confirmed` with its stored ID; an explicit cancel or "none of these"
-submits `denied`; a skipped or dismissed control is not a decision, so present
+exact `selectedChoiceId`, then `wait_request` on the same IDs.
+
+A follow-up that changes cabin, date, passenger count or another search fact
+refines the same task. If the generic choice permits adjustments, submit
+`decide_request` with `decision: confirmed` and `adjustmentPrompt` containing
+the user's correction, with no selectedChoiceId, values or Save. Read its exact
+adjustment_requested outcome with `wait_request`, then search and publish
+updated options in the same task. Use one new stable choice idempotency key for
+the revised result set in the same session; reuse that new key on retries and
+keep the old adjustment outcome immutable. An active hosted turn that consumes the
+adjustment owns this search; continue in that turn without creating a second
+continuation. If the host instead resumes a saved adjustment after the source
+turn ended, that continuation is its sole owner.
+Do not use `denied` to clear an old choice. Status and side questions leave it
+pending. When the scope is unclear, clarify it before making a decision.
+
+A native picker is presentation only and follows the same decide/wait path:
+an answered option submits `confirmed` with its stored ID; an explicit task
+cancel or rejection without refinement submits `denied`; a skipped or dismissed control is not a decision, so present
 the same stored options once more through the same control and never create a
 sibling request.
 
