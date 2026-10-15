@@ -94,6 +94,19 @@ recorded. Neither disposition makes the old attempt retryable or releases
 unrelated reservations. Missing or unresolved evidence forbids treating a
 replacement as safely released. These facts do not themselves authorize spending.
 
+## Explicit platform-liability release
+
+`cleanupDisposition: released_platform_liability` with the workflow canceled,
+`CARD_CANCELLATION_WRITTEN_OFF`, and `nextAction: none` confirms that the
+customer's hold was released and MagicPay assumed the unresolved cost. The
+issuer outcome can remain pending. Do not call this pre-submit release or a
+verified issuer decline. Keep the old checkout closed and never repeat its Pay.
+If the user still wants the purchase, verify merchant failure/no booking, then
+use fresh exact payment approval within the user's budget and available issuer
+funding. Link the original operation in the new session's metadata as
+replaces_payment_operation_ref. This release does not reset spend limits or
+create card liquidity. A still-pending ledger release does not qualify.
+
 ## Separately authorized additional purchase
 
 The legacy `freshStartAllowed:false` does not block another task or purchase.

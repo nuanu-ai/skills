@@ -109,10 +109,13 @@ task follows [memory.md](memory.md); otherwise hand off safely.
 | `reconciliation_required` | Reconcile the exact operation; never replace it. |
 | `completed` | Report success only from the durable completed operation. |
 
-If a pending merchant page later confirms success, report it with the original
-execution-attempt and result identifiers, including any subscription or invoice
-details now available. This updates the merchant context; keep following the same
-payment operation for settlement.
+If a pending merchant page later confirms success **or displays a payment error**,
+report that observation with the original execution-attempt and result identifiers.
+Keep the original click and submission posture; later merchant failure is not proof
+that the issuer never received a request. Include available subscription/invoice
+details for success, or the value-free visible error and observation time for failure.
+Continue reconciliation of the same operation. Explain a visible failure promptly;
+do not promise eventual confirmation while the checkout reports an error.
 
 ## Browser ownership and rendered state
 
@@ -128,6 +131,16 @@ do not present them as independently verified conditions.
 Use screenshots freely as normal visual perception before and after filling,
 without a prescribed count or field order. After a page transition, reacquire
 current controls. Stop submission if the bound payment facts changed.
+
+For travel, default optional extras off unless the user or applicable saved
+preferences request them: keep included cabin baggage; decline extra checked
+bags, insurance, disruption assistance, paid seats, priority, meals and donations.
+Choose the base fare meeting the stated requirements. Do not ask a separate
+question for every upsell; summarize these defaults once with the final itinerary
+and total. Ask only for a mandatory unresolved choice, material fare restriction,
+budget change or preference conflict. With children, respect required seating
+rules and choose free adjacent assignment where available; never silently accept
+child/adult separation or an unavoidable paid seating charge.
 
 Resolve known tax/shipping choices before approval when possible. If the final
 price changes later, the old approval does not cover it. Record the observed
@@ -205,7 +218,7 @@ to the user when needed. A pre-dispatch challenge does not fail or replace the
 payment. After any possible dispatch, observation is read-only and recovery
 stays with the same operation.
 
-## Record the result once
+## Record the action once and update later observations
 
 After submission or a human handoff, inspect the current rendered page before
 asking for more login or payment steps. Use a fresh screenshot when useful;
@@ -220,7 +233,14 @@ Report merchant confirmation and a probable card charge clearly, then read or
 reconcile the original operation for its accounting state. Do not request login
 or repeat checkout merely because that accounting update is still pending.
 
-After the final action, make a bounded fresh observation and call
+After the final action, observe fresh rendered state until a receipt, explicit
+error, challenge, or an observation deadline (normally up to 60 seconds). A
+processing spinner is intermediate. Use screenshots freely and inspect the
+existing browser's network inventory for payment/tokenization failures when
+useful. Separate the click, merchant request, merchant outcome and issuer outcome;
+a merchant processing error plus no issuer row does not prove non-submission.
+Record pending if the observation deadline expires, then continue read-only
+observation on the same attempt. Call
 `record_browser_payment_result` for the exact run and execution attempt.
 Observation failure is not permission to click again:
 

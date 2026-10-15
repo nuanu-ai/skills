@@ -278,7 +278,18 @@ all relevant options, use a faithful supported fallback. Only show an alternativ
 actually declared by that request; generic non-form materialization does not
 supply this browser-form continuation.
 
-One operation may select several items, such as Profile and Passport. The
+One operation may select several items across several people. For a wife and
+son, discover both exact entities, select their profiles and passports in one
+`materialize_memory_items` call, and bind distinct groupRefs such as `wife` and
+`son` to their respective entity IDs. If approval is required, present the one
+returned approval for the complete bundle; do not ask separately for each person
+or document. If no approval is required, continue with the complete ready result.
+Never assign a spouse's fields to a child's entity or substitute the default
+person. When collecting missing data for several people, keep each person's own
+`newEntity` destination on their profile and passport groups; one Save can create
+multiple reviewed identities atomically.
+
+The
 whole batch is authoritative: never fill from a partial result. A stale
 footprint or item revision requires fresh discovery and re-evaluation, not a
 blind retry.
