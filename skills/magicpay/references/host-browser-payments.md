@@ -117,6 +117,18 @@ details for success, or the value-free visible error and observation time for fa
 Continue reconciliation of the same operation. Explain a visible failure promptly;
 do not promise eventual confirmation while the checkout reports an error.
 
+A paid receipt or a paid booking confirmation is a successful merchant payment
+even when ValutNet keeps the purchase row `PENDING`; the associated fee may show
+success first. State the successful purchase clearly, including its amount and
+booking/order reference. Re-record the later `merchantOutcome: success` with the
+original run, execution attempt and client result ID. MagicPay finalizes that
+same operation using the matched card debit and releases unused authorization.
+Do not close only the workflow and leave the payment observation as pending.
+Provider clearing can be described separately when relevant, without presenting
+the confirmed purchase as failed or requiring another Pay. Omit internal
+operation/request IDs from normal success messages; include them only for an
+explicit support/debugging request.
+
 ## Browser ownership and rendered state
 
 Use the host's normal visual and interaction capabilities for the unchanged
