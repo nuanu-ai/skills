@@ -12,6 +12,12 @@ Choose the focused contract; this map does not add a second protocol.
 | Candidate sellers | Known URL → normal payment intake once; optional `check_merchant` for comparisons. Use request-specific evidence as advice; respect explicit operator denies and unsafe destinations. |
 | Material shortlist | One normalized choice request → exact durable selection → selected branch only. See [choices.md](choices.md). |
 
+For travel, decline optional baggage, insurance, paid seats, priority, meals,
+donations and assistance unless the user or applicable saved preference asks for
+them. Keep included cabin allowance, meet the requested fare requirements and
+mandatory child-seating rules, and summarize omitted extras once with the total.
+Do not ask a separate choice for every upsell.
+
 The host owns browsing. MagicPay owns authorization, materialization, and durable
 payment state. A Memory fill is not a new submit authority; an intermediate
 checkout control is not necessarily payment dispatch. After possible dispatch,
@@ -32,5 +38,11 @@ Follow the exact cleanup and same-operation reconciliation result. Preserve the
 owning workflow's status: read the existing cleanup result for any already
 closed workflow. Use `fail_checkout_session` only for an open workflow with a
 non-retryable failure. Never relabel any terminal workflow.
-Neither failure nor expiry permits a replacement payment. [statuses.md](statuses.md)
+When the backend explicitly reports `CARD_CANCELLATION_WRITTEN_OFF` and the
+original workflow is closed, explain that the customer reserve was released
+and MagicPay assumed the unresolved liability; do not call it an issuer decline.
+Check booking/merchant state before following the returned fresh-payment
+recovery action. Keep the replacement linked to the original and obtain its
+normal exact payment approval. This disposition does not add issuer liquidity.
+Otherwise, neither failure nor expiry permits a replacement payment. [statuses.md](statuses.md)
 owns the complete recovery and fresh-start rules.
