@@ -166,6 +166,22 @@ automatically. If clipboard input is unavailable, declined, or fails, continue
 with direct input and save normally once provided. The collection-source
 setting does not redirect already supplied values into a hosted form.
 
+## Saved people during purchasing research
+
+Use `get_memory_profile_context` for a bounded person index before asking for
+facts the user already saved. Once the intended person and travel/stay date are
+known, read again with their exact `entityId` and `asOfDate` (YYYY-MM-DD).
+`age.kind=ready` supplies age for that date and source revisions, without the
+birth date. Use that age instead of asking again. Never persist age as a
+replacement for a birth date or assume today's age applies to a future trip.
+
+A consent-required result means saved data exists but requires the existing Memory
+approval flow at the real task destination. Do not invent a form URL or collect
+the same value as though it were missing. Missing or ambiguous results need a
+focused clarification; unavailable or changed sources need a fresh read. This
+research read does not approve form filling, booking, or payment. The ordinary
+value-free footprint and exact form materialization below remain unchanged.
+
 ## Two-stage use in an agent task
 
 Before saying a preference is currently saved, read its current footprint and
