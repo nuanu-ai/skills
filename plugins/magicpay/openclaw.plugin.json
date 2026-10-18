@@ -1,7 +1,7 @@
 {
   "id": "magicpay",
   "name": "MagicPay Development",
-  "version": "0.4.96-dev.84840075b057",
+  "version": "0.4.96-dev.dc1c28ef3898",
   "description": "Use MagicPay through its remote MCP while the host browser owns the complete direct browser flow.",
   "configSchema": {
     "type": "object",
